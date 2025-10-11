@@ -92,7 +92,8 @@ public class Game3D extends Panel /* DAVE Applet*/ implements ActionListener, Te
     isLocal = true;
     Game3D game3D = new Game3D();
     AppFrame appFrame = new AppFrame(/* DAVE game3D,*/ "Jet slalom");
-    appFrame.show();
+    // DAVE appFrame.show();
+    appFrame.setVisible(true); // DAVE
     // DAVE appFrame.setLayout(new AbsoluteLayout());
     appFrame.setLayout(null); // DAVE
     
@@ -103,6 +104,7 @@ public class Game3D extends Panel /* DAVE Applet*/ implements ActionListener, Te
     game3D.init();
     appFrame.validate();
     appFrame.pack();
+    appFrame.setSize(800, 600); // DAVE
     game3D.start();
   }
   

@@ -142,8 +142,7 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
   private StringObject[] hiScoreInfoObj;
   
   public void stop() {
-    if (this.gameThread != null)
-      this.gameThread.stop(); 
+    // DAVE if (this.gameThread != null) this.gameThread.stop(); 
     this.gameThread = null;
     this.registMode = false;
     this.gameMode = 1;
@@ -379,7 +378,7 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
   public void mouseClicked(MouseEvent paramMouseEvent) {}
   
   public void mousePressed(MouseEvent paramMouseEvent) {
-    int i = paramMouseEvent.getModifiers();
+    int i = paramMouseEvent.getModifiersEx(); // DAVE deprecated warning, but since the constants aren't used here, this probably breaks things BUTTON3_MASK VS BUTTON3_DOWN_MASK
     if ((i & 0x4) != 0) {
       this.rFlag = true;
       this.lFlag = false;
@@ -512,7 +511,7 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
     this.score = 0;
     this.vx = 0.0D;
     this.gameMode = 1;
-    while (true) {
+    while (this.gameThread != null) {
       if (this.rounds[this.round].isNextRound(this.score))
         this.round++; 
       keyOperate();
