@@ -1,4 +1,4 @@
-import java.applet.AudioClip;
+// DAVE import java.applet.AudioClip;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -93,7 +93,7 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
   
   MediaTracker tracker;
   
-  AudioClip auBomb = null;
+  // DAVE AudioClip auBomb = null;
   
   boolean isLoaded = false;
   
@@ -229,7 +229,7 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
     this.env.nowCos = co[i];
     if (this.vx > 0.0D)
       this.env.nowSin = -this.env.nowSin; 
-    for (Obstacle obstacle = this.obstacles.head.next; obstacle != this.obstacles.tail; obstacle = obstacle1) {
+    for (Obstacle obstacle = this.obstacles.head.next; obstacle != this.obstacles.tail;) {
       Obstacle obstacle1 = obstacle.next;
       obstacle.move(this.vx, 0.0D, -1.0D);
       DPoint3[] arrayOfDPoint3 = obstacle.points;
@@ -238,7 +238,8 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
         if (-d < (arrayOfDPoint3[2]).x && (arrayOfDPoint3[0]).x < d)
           this.damaged++; 
         obstacle.release();
-      } 
+      }
+      obstacle = obstacle1;
     } 
     this.rounds[this.round].move(this.vx);
     this.rounds[this.round].generateObstacle(this.obstacles, gameRecorder);
@@ -393,12 +394,14 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
       return;
     } 
     if (this.isInPage && this.gameMode == 1)
+      /* DAVE
       try {
-        this.parent.getAppletContext().showDocument(new URL("http://www.kdn.gr.jp/~shii/"));
+        // DAVE this.parent.getAppletContext().showDocument(new URL("http://www.kdn.gr.jp/~shii/"));
         return;
       } catch (MalformedURLException malformedURLException) {
         return;
-      }  
+      } 
+      */
     startGame(0, false);
   }
   
@@ -462,8 +465,7 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
       endGame();
       return;
     } 
-    if (this.damaged == 1 && this.auBomb != null)
-      this.auBomb.play(); 
+    // DAVE if (this.damaged == 1 && this.auBomb != null) this.auBomb.play(); 
     this.gra.setColor(new Color(255, 255 - this.damaged * 12, 240 - this.damaged * 12));
     int i = this.damaged * 8 * this.width / 320;
     int j = this.damaged * 4 * this.height / 200;
@@ -473,11 +475,11 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
   
   private Image loadImage(String paramString) {
     Image image;
-    if (Game3D.isLocal) {
+    //if (Game3D.isLocal) {
       image = getToolkit().getImage(ClassLoader.getSystemResource(paramString));
-    } else {
-      image = this.parent.getImage(this.parent.getCodeBase(), paramString);
-    } 
+    //} else {
+      // DAVE image = this.parent.getImage(this.parent.getCodeBase(), paramString);
+    //} 
     this.tracker.addImage(image, 0);
     return image;
   }

@@ -23,12 +23,12 @@ public class DrawEnv {
     DPoint3[] arrayOfDPoint3 = paramFace.points;
     double d1 = (arrayOfDPoint3[1]).x - (arrayOfDPoint3[0]).x;
     double d2 = (arrayOfDPoint3[1]).y - (arrayOfDPoint3[0]).y;
-    arrayOfDPoint3[1];
-    arrayOfDPoint3[0];
+    // DAVE arrayOfDPoint3[1];
+    // DAVE arrayOfDPoint3[0];
     double d3 = (arrayOfDPoint3[2]).x - (arrayOfDPoint3[0]).x;
     double d4 = (arrayOfDPoint3[2]).y - (arrayOfDPoint3[0]).y;
-    arrayOfDPoint3[2];
-    arrayOfDPoint3[0];
+    // DAVE arrayOfDPoint3[2];
+    // DAVE arrayOfDPoint3[0];
     float f = (float)(Math.abs(d1 * d4 - d2 * d3) / paramFace.maxZ);
     paramGraphics.setColor(new Color(paramFace.red * f, paramFace.green * f, paramFace.blue * f));
     double d5 = this.width / 320.0D;

@@ -1,4 +1,4 @@
-import java.applet.Applet;
+// DAVE import java.applet.Applet;
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Color;
@@ -16,7 +16,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Calendar;
 
-public class Game3D extends Applet implements ActionListener, TextListener {
+public class Game3D extends Panel /* DAVE Applet*/ implements ActionListener, TextListener {
   static final boolean isFreeware = true;
   
   MainGame game;
@@ -69,6 +69,7 @@ public class Game3D extends Applet implements ActionListener, TextListener {
   }
   
   private synchronized void sendScore(int paramInt, String paramString) {
+    /*
     if (this.sentScore_ >= paramInt && !this.isModified_)
       return; 
     try {
@@ -84,16 +85,19 @@ public class Game3D extends Applet implements ActionListener, TextListener {
       System.out.println(exception);
     } 
     loadRanking();
+    */
   }
   
   public static void main(String[] paramArrayOfString) {
     isLocal = true;
     Game3D game3D = new Game3D();
-    AppFrame appFrame = new AppFrame(game3D, "Jet slalom");
+    AppFrame appFrame = new AppFrame(/* DAVE game3D,*/ "Jet slalom");
     appFrame.show();
-    appFrame.setLayout(new AbsoluteLayout());
-	layout.setWidth("800px");
-	layout.setHeight("600px");
+    // DAVE appFrame.setLayout(new AbsoluteLayout());
+    appFrame.setLayout(null); // DAVE
+    
+// DAVE	layout.setWidth("800px");
+// DAVE	layout.setHeight("600px");
     appFrame.add("Center", game3D);
     game3D.init();
     appFrame.validate();
@@ -113,7 +117,7 @@ public class Game3D extends Applet implements ActionListener, TextListener {
   
   public void init() {
     if (!isLocal) {
-      String str = getParameter("LANG");
+      String str = "JP"; // DAVE getParameter("LANG");
       if (!isLocal && str != null && str.equals("JP"))
         this.lang = 1; 
     } 

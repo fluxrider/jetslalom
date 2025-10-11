@@ -6,9 +6,10 @@ public class ObstacleCollection {
   Obstacle tail = new Obstacle();
   
   synchronized void removeAll() {
-    for (Obstacle obstacle = this.head.next; obstacle != this.tail; obstacle = obstacle1) {
+    for (Obstacle obstacle = this.head.next; obstacle != this.tail; ) {
       Obstacle obstacle1 = obstacle.next;
       obstacle.release();
+      obstacle = obstacle1;
     } 
   }
   

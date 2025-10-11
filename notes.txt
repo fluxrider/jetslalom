@@ -1,0 +1,2 @@
+javac -Xlint:deprecation Game3D.java -d java_out
+java -Dsun.java2d.uiScale.enabled=true -Dsun.java2d.uiScale=2 -Djava.awt.headless=false -cp java_out Game3D
