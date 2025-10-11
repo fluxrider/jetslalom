@@ -98,6 +98,7 @@ public class Game3D extends Panel /* DAVE Applet*/ implements ActionListener, Te
     
 // DAVE	layout.setWidth("800px");
 // DAVE	layout.setHeight("600px");
+    game3D.setSize(800, 600); // DAVE
     appFrame.add("Center", game3D);
     game3D.init();
     appFrame.validate();

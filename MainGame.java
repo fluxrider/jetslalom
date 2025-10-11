@@ -527,6 +527,11 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
   }
   
   public void init() {
+    // DAVE
+    this.gra = getGraphics();
+    this.titleFont = new Font("Courier", Font.PLAIN, 12);
+    this.title = new StringObject(this.titleFont, Color.white, "Jet slalom", width/2, centerY);
+    
     // Byte code:
     //   0: aload_0
     //   1: sipush #320
