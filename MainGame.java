@@ -527,7 +527,6 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
   
   public void init() {
     // DAVE
-    this.gra = getGraphics();
     this.titleFont = new Font("Courier", Font.PLAIN, 12);
     this.title = new StringObject(this.titleFont, Color.white, "Jet slalom", 100, 80); // width/2, centerY);
     this.author = new StringObject(this.titleFont, Color.white, "author", 100, 100);
@@ -535,48 +534,14 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
     this.contMsg = new StringObject(this.titleFont, Color.white, "contMsg", 100, 140);
     this.clickMsg = new StringObject(this.titleFont, Color.white, "clickMsg", 100, 160);
     this.hpage = new StringObject(this.titleFont, Color.white, "hpage", 100, 180);
-    // Byte code:
-    //   0: aload_0
-    //   1: sipush #320
-    //   4: putfield width : I
-    //   7: aload_0
-    //   8: sipush #200
-    //   11: putfield height : I
-    //   14: aload_0
-    //   15: aload_0
-    //   16: getfield width : I
-    //   19: iconst_2
-    //   20: idiv
-    //   21: putfield centerX : I
-    //   24: aload_0
-    //   25: aload_0
-    //   26: getfield height : I
-    //   29: iconst_2
-    //   30: idiv
-    //   31: putfield centerY : I
-    //   34: aload_0
-    //   35: getfield env : LDrawEnv;
-    //   38: aload_0
-    //   39: getfield width : I
-    //   42: putfield width : I
-    //   45: aload_0
-    //   46: getfield env : LDrawEnv;
-    //   49: aload_0
-    //   50: getfield height : I
-    //   53: putfield height : I
-    //   56: aload_0
-    //   57: aload_0
-    //   58: aload_0
-    //   59: getfield width : I
-    //   62: aload_0
-    //   63: getfield height : I
-    //   66: invokevirtual createImage : (II)Ljava/awt/Image;
-    //   69: putfield img : Ljava/awt/Image;
-    //   72: aload_0
-    //   73: aload_0
-    //   74: getfield img : Ljava/awt/Image;
-    //   77: invokevirtual getGraphics : ()Ljava/awt/Graphics;
-    //   80: putfield gra : Ljava/awt/Graphics;
+    width = 320;
+    height = 200;
+    centerX = width / 2;
+    centerY = height / 2;
+    env.width = width;
+    env.height = height;
+    img = createImage(width, height);
+    this.gra = img.getGraphics();
     //   83: aload_0
     //   84: getfield gra : Ljava/awt/Graphics;
     //   87: new java/awt/Color
