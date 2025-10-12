@@ -542,24 +542,12 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
     env.height = height;
     img = createImage(width, height);
     this.gra = img.getGraphics();
-    //   83: aload_0
-    //   84: getfield gra : Ljava/awt/Graphics;
-    //   87: new java/awt/Color
-    //   90: dup
-    //   91: iconst_0
-    //   92: sipush #128
-    //   95: sipush #128
-    //   98: invokespecial <init> : (III)V
-    //   101: invokevirtual setColor : (Ljava/awt/Color;)V
-    //   104: aload_0
-    //   105: getfield gra : Ljava/awt/Graphics;
-    //   108: iconst_0
-    //   109: iconst_0
-    //   110: aload_0
-    //   111: getfield width : I
-    //   114: aload_0
-    //   115: getfield height : I
-    //   118: invokevirtual fillRect : (IIII)V
+    this.gra.setColor(new Color(0,128,128));
+    this.gra.fillRect(0, 0, width, height);
+    for(int i = 0; i < si.length; i++) {
+      si[i] = Math.sin(Math.PI * 75 / 6);
+      co[i] = Math.cos(Math.PI * 75 / 6);
+    }
     //   121: iconst_0
     //   122: istore_1
     //   123: getstatic MainGame.si : [D
