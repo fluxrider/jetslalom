@@ -512,7 +512,7 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
     this.round = 0;
     this.score = 0;
     this.vx = 0.0D;
-    this.gameMode = 1;
+    this.gameMode = PLAY_MODE; // DAVE PLAY_MODE, TITLE_MODE, DEMO_MODE
     while (this.gameThread != null) {
       if (this.rounds[this.round].isNextRound(this.score))
         this.round++; 
@@ -528,7 +528,7 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
   }
   
   public void init() {
-    // DAVE
+    // DAVE this semi inspired by the commented bytecode that was there
     this.titleFont = new Font("Courier", Font.PLAIN, 12);
     this.normalFont = new Font("Courier", Font.PLAIN, 12);
     this.title = new StringObject(this.titleFont, Color.white, "Jet slalom", 100, 80); // width/2, centerY);
@@ -548,8 +548,10 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
     this.gra.setColor(new Color(0,128,128));
     this.gra.fillRect(0, 0, width, height);
     for(int i = 0; i < si.length; i++) {
-      si[i] = Math.sin(Math.PI * 75 / 6);
-      co[i] = Math.cos(Math.PI * 75 / 6);
+      //si[i] = Math.sin(Math.PI * 75 / 6);
+      //co[i] = Math.cos(Math.PI * 75 / 6);
+      si[i] = Math.sin(Math.PI * (i / (double)si.length));
+      co[i] = Math.cos(Math.PI * (i / (double)si.length));
     }
     this.mywidth2 = (int)(this.width * this.mywidth * 120 / 1.6 / 320);
     // DAVE load the bomb audio
