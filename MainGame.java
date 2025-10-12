@@ -13,6 +13,8 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.net.MalformedURLException;
 import java.net.URL;
+import javax.imageio.ImageIO;
+import java.io.*;
 
 class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionListener, KeyListener {
   static double[] si = new double[128];
@@ -528,12 +530,13 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
   public void init() {
     // DAVE
     this.titleFont = new Font("Courier", Font.PLAIN, 12);
+    this.normalFont = new Font("Courier", Font.PLAIN, 12);
     this.title = new StringObject(this.titleFont, Color.white, "Jet slalom", 100, 80); // width/2, centerY);
-    this.author = new StringObject(this.titleFont, Color.white, "author", 100, 100);
+    this.author = new StringObject(this.titleFont, Color.white, "Programed by MR-C", 100, 100);
     this.startMsg = new StringObject(this.titleFont, Color.white, "startMsg", 100, 120);
     this.contMsg = new StringObject(this.titleFont, Color.white, "contMsg", 100, 140);
     this.clickMsg = new StringObject(this.titleFont, Color.white, "clickMsg", 100, 160);
-    this.hpage = new StringObject(this.titleFont, Color.white, "hpage", 100, 180);
+    this.hpage = new StringObject(this.titleFont, Color.white, "http://www.kdn.gr.jp/~shii/", 100, 180);
     width = 320;
     height = 200;
     centerX = width / 2;
@@ -548,256 +551,16 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
       si[i] = Math.sin(Math.PI * 75 / 6);
       co[i] = Math.cos(Math.PI * 75 / 6);
     }
-    //   121: iconst_0
-    //   122: istore_1
-    //   123: getstatic MainGame.si : [D
-    //   126: iload_1
-    //   127: ldc2_w 3.141592653589793
-    //   130: iload_1
-    //   131: i2d
-    //   132: dmul
-    //   133: ldc2_w 75.0
-    //   136: ddiv
-    //   137: ldc2_w 6.0
-    //   140: ddiv
-    //   141: invokestatic sin : (D)D
-    //   144: dastore
-    //   145: getstatic MainGame.co : [D
-    //   148: iload_1
-    //   149: ldc2_w 3.141592653589793
-    //   152: iload_1
-    //   153: i2d
-    //   154: dmul
-    //   155: ldc2_w 75.0
-    //   158: ddiv
-    //   159: ldc2_w 6.0
-    //   162: ddiv
-    //   163: invokestatic cos : (D)D
-    //   166: dastore
-    //   167: iinc #1, 1
-    //   170: iload_1
-    //   171: sipush #128
-    //   174: if_icmplt -> 123
-    //   177: aload_0
-    //   178: aload_0
-    //   179: getfield width : I
-    //   182: i2d
-    //   183: aload_0
-    //   184: getfield mywidth : D
-    //   187: dmul
-    //   188: ldc2_w 120.0
-    //   191: dmul
-    //   192: ldc2_w 1.6
-    //   195: ddiv
-    //   196: ldc2_w 320.0
-    //   199: ddiv
-    //   200: d2i
-    //   201: putfield mywidth2 : I
-    //   204: getstatic Game3D.isLocal : Z
-    //   207: ifne -> 231
-    //   210: aload_0
-    //   211: aload_0
-    //   212: getfield parent : LGame3D;
-    //   215: aload_0
-    //   216: getfield parent : LGame3D;
-    //   219: invokevirtual getCodeBase : ()Ljava/net/URL;
-    //   222: ldc_w 'bomb.au'
-    //   225: invokevirtual getAudioClip : (Ljava/net/URL;Ljava/lang/String;)Ljava/applet/AudioClip;
-    //   228: putfield auBomb : Ljava/applet/AudioClip;
-    //   231: aload_0
-    //   232: new java/awt/MediaTracker
-    //   235: dup
-    //   236: aload_0
-    //   237: getfield parent : LGame3D;
-    //   240: invokespecial <init> : (Ljava/awt/Component;)V
-    //   243: putfield tracker : Ljava/awt/MediaTracker;
-    //   246: aload_0
-    //   247: aload_0
-    //   248: ldc_w 'jiki.gif'
-    //   251: invokespecial loadImage : (Ljava/lang/String;)Ljava/awt/Image;
-    //   254: putfield myImg : Ljava/awt/Image;
-    //   257: aload_0
-    //   258: aload_0
-    //   259: ldc_w 'jiki2.gif'
-    //   262: invokespecial loadImage : (Ljava/lang/String;)Ljava/awt/Image;
-    //   265: putfield myImg2 : Ljava/awt/Image;
-    //   268: aload_0
-    //   269: getfield tracker : Ljava/awt/MediaTracker;
-    //   272: invokevirtual waitForAll : ()V
-    //   275: goto -> 279
-    //   278: pop
-    //   279: aload_0
-    //   280: aload_0
-    //   281: getfield myImg : Ljava/awt/Image;
-    //   284: aload_0
-    //   285: getfield mywidth2 : I
-    //   288: iconst_2
-    //   289: imul
-    //   290: aload_0
-    //   291: getfield mywidth2 : I
-    //   294: bipush #16
-    //   296: imul
-    //   297: bipush #52
-    //   299: idiv
-    //   300: iconst_4
-    //   301: invokevirtual getScaledInstance : (III)Ljava/awt/Image;
-    //   304: putfield myRealImg : Ljava/awt/Image;
-    //   307: aload_0
-    //   308: aload_0
-    //   309: getfield myImg2 : Ljava/awt/Image;
-    //   312: aload_0
-    //   313: getfield mywidth2 : I
-    //   316: iconst_2
-    //   317: imul
-    //   318: aload_0
-    //   319: getfield mywidth2 : I
-    //   322: bipush #16
-    //   324: imul
-    //   325: bipush #52
-    //   327: idiv
-    //   328: iconst_4
-    //   329: invokevirtual getScaledInstance : (III)Ljava/awt/Image;
-    //   332: putfield myRealImg2 : Ljava/awt/Image;
-    //   335: aload_0
-    //   336: new java/awt/Font
-    //   339: dup
-    //   340: ldc_w 'TimesRoman'
-    //   343: iconst_1
-    //   344: aload_0
-    //   345: getfield width : I
-    //   348: bipush #32
-    //   350: imul
-    //   351: sipush #320
-    //   354: idiv
-    //   355: iconst_4
-    //   356: iadd
-    //   357: invokespecial <init> : (Ljava/lang/String;II)V
-    //   360: putfield titleFont : Ljava/awt/Font;
-    //   363: aload_0
-    //   364: new java/awt/Font
-    //   367: dup
-    //   368: ldc_w 'Courier'
-    //   371: iconst_0
-    //   372: bipush #12
-    //   374: invokespecial <init> : (Ljava/lang/String;II)V
-    //   377: putfield normalFont : Ljava/awt/Font;
-    //   380: aload_0
-    //   381: new StringObject
-    //   384: dup
-    //   385: aload_0
-    //   386: getfield titleFont : Ljava/awt/Font;
-    //   389: getstatic java/awt/Color.white : Ljava/awt/Color;
-    //   392: ldc_w 'Jet slalom'
-    //   395: aload_0
-    //   396: getfield width : I
-    //   399: iconst_2
-    //   400: idiv
-    //   401: aload_0
-    //   402: getfield centerY : I
-    //   405: bipush #20
-    //   407: aload_0
-    //   408: getfield width : I
-    //   411: imul
-    //   412: sipush #320
-    //   415: idiv
-    //   416: isub
-    //   417: invokespecial <init> : (Ljava/awt/Font;Ljava/awt/Color;Ljava/lang/String;II)V
-    //   420: putfield title : LStringObject;
-    //   423: aload_0
-    //   424: new StringObject
-    //   427: dup
-    //   428: aload_0
-    //   429: getfield normalFont : Ljava/awt/Font;
-    //   432: getstatic java/awt/Color.black : Ljava/awt/Color;
-    //   435: ldc_w 'Programed by MR-C'
-    //   438: aload_0
-    //   439: getfield centerX : I
-    //   442: aload_0
-    //   443: getfield centerY : I
-    //   446: bipush #68
-    //   448: iadd
-    //   449: invokespecial <init> : (Ljava/awt/Font;Ljava/awt/Color;Ljava/lang/String;II)V
-    //   452: putfield author : LStringObject;
-    //   455: aload_0
-    //   456: new StringObject
-    //   459: dup
-    //   460: aload_0
-    //   461: getfield normalFont : Ljava/awt/Font;
-    //   464: getstatic java/awt/Color.black : Ljava/awt/Color;
-    //   467: aload_0
-    //   468: getfield parent : LGame3D;
-    //   471: getfield toStartMsg : [Ljava/lang/String;
-    //   474: aload_0
-    //   475: getfield parent : LGame3D;
-    //   478: getfield lang : I
-    //   481: aaload
-    //   482: aload_0
-    //   483: getfield centerX : I
-    //   486: aload_0
-    //   487: getfield centerY : I
-    //   490: bipush #24
-    //   492: iadd
-    //   493: invokespecial <init> : (Ljava/awt/Font;Ljava/awt/Color;Ljava/lang/String;II)V
-    //   496: putfield startMsg : LStringObject;
-    //   499: aload_0
-    //   500: new StringObject
-    //   503: dup
-    //   504: aload_0
-    //   505: getfield normalFont : Ljava/awt/Font;
-    //   508: getstatic java/awt/Color.black : Ljava/awt/Color;
-    //   511: aload_0
-    //   512: getfield parent : LGame3D;
-    //   515: getfield contMsg : [Ljava/lang/String;
-    //   518: aload_0
-    //   519: getfield parent : LGame3D;
-    //   522: getfield lang : I
-    //   525: aaload
-    //   526: aload_0
-    //   527: getfield centerX : I
-    //   530: aload_0
-    //   531: getfield centerY : I
-    //   534: bipush #44
-    //   536: iadd
-    //   537: invokespecial <init> : (Ljava/awt/Font;Ljava/awt/Color;Ljava/lang/String;II)V
-    //   540: putfield contMsg : LStringObject;
-    //   543: aload_0
-    //   544: new StringObject
-    //   547: dup
-    //   548: aload_0
-    //   549: getfield normalFont : Ljava/awt/Font;
-    //   552: getstatic java/awt/Color.red : Ljava/awt/Color;
-    //   555: aload_0
-    //   556: getfield parent : LGame3D;
-    //   559: getfield clickMsg : [Ljava/lang/String;
-    //   562: aload_0
-    //   563: getfield parent : LGame3D;
-    //   566: getfield lang : I
-    //   569: aaload
-    //   570: aload_0
-    //   571: getfield centerX : I
-    //   574: aload_0
-    //   575: getfield centerY : I
-    //   578: invokespecial <init> : (Ljava/awt/Font;Ljava/awt/Color;Ljava/lang/String;II)V
-    //   581: putfield clickMsg : LStringObject;
-    //   584: aload_0
-    //   585: new StringObject
-    //   588: dup
-    //   589: aload_0
-    //   590: getfield normalFont : Ljava/awt/Font;
-    //   593: getstatic java/awt/Color.black : Ljava/awt/Color;
-    //   596: ldc_w 'http://www.kdn.gr.jp/~shii/'
-    //   599: aload_0
-    //   600: getfield centerX : I
-    //   603: aload_0
-    //   604: getfield centerY : I
-    //   607: bipush #86
-    //   609: iadd
-    //   610: invokespecial <init> : (Ljava/awt/Font;Ljava/awt/Color;Ljava/lang/String;II)V
-    //   613: putfield hpage : LStringObject;
-    //   616: return
-    // Exception table:
-    //   from	to	target	type
-    //   268	275	278	java/lang/InterruptedException
+    this.mywidth2 = (int)(this.width * this.mywidth * 120 / 1.6 / 320);
+    // DAVE load the bomb audio
+    try {
+      myImg = ImageIO.read(new File("jiki.gif"));
+      myImg2 = ImageIO.read(new File("jiki2.gif"));
+    } catch(IOException e) {
+      e.printStackTrace();
+    }
+    myRealImg = myImg.getScaledInstance(mywidth2 * 2, mywidth2 / 4, Image.SCALE_FAST);
+    myRealImg2 = myImg2.getScaledInstance(mywidth2 * 2, mywidth2 / 4, Image.SCALE_FAST);
   }
   
   void endGame() {
