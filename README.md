@@ -19,8 +19,9 @@ I stripped the applet part. Now it's just a AWT window. I even removed the canva
 ### Future Work
 
 - Gamepad
-  - Organise project such that it can be built without gamepad support, and therefore without external libraries.
-  - Allow to configure the gamepad trigger range. Right now I play it safe.
+ - Organise project such that it can be built without gamepad support, and therefore without external libraries.
+ - Allow to configure the gamepad trigger range. Right now I play it safe.
+ - Plug and Play would be nice in 2025 (right now jinput, at least on Linux, requires the gamepad to be plugged before app is launched).
 - Fix the title
 - Remove unused code
 - Fix the turn strenght, because I'm pretty sure it's way too hard right now.

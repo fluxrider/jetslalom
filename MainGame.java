@@ -15,10 +15,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import javax.imageio.ImageIO;
 import java.io.*;
-import net.java.games.input.*;
 import static java.awt.event.KeyEvent.*;
 
 class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListener {
+
+  Gamepad gamepad = new Gamepad();
   
   static double[] si = new double[128];
   
@@ -506,58 +507,21 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
     this.vx = 0.0D;
     this.gameMode = PLAY_MODE; // DAVE PLAY_MODE, TITLE_MODE, DEMO_MODE
     while (this.gameThread != null) {
-    
-      // gamepad: note that the external library I found does not seem to support plug and play at least in my Linux environment (i.e. the gamepad must be plugged before the game starts)
-      boolean gamepad_left = false, gamepad_right = false;
-      for(Controller controller : ControllerEnvironment.getDefaultEnvironment().getControllers()) {
-        if(controller.getType() != Controller.Type.GAMEPAD) continue;
-        controller.poll();
-        // EventQueue queue = controller.getEventQueue(); Event event = new Event(); while(queue.getNextEvent(event)) { System.out.println(event); }
-        
-        Component left_stick_x = controller.getComponent(Component.Identifier.Axis.X);
-        Component right_stick_x = controller.getComponent(Component.Identifier.Axis.RX);
-        Component dpad = controller.getComponent(Component.Identifier.Axis.POV);
-        Component left_button = controller.getComponent(Component.Identifier.Button.LEFT_THUMB);
-        Component right_button = controller.getComponent(Component.Identifier.Button.RIGHT_THUMB);
-        Component left_trigger = controller.getComponent(Component.Identifier.Axis.Z);
-        Component right_trigger = controller.getComponent(Component.Identifier.Axis.RZ);
-        Component start = controller.getComponent(Component.Identifier.Button.START);
-        Component button_a_south_maybe = controller.getComponent(Component.Identifier.Button.A);
-        Component button_y_north_maybe = controller.getComponent(Component.Identifier.Button.Y);
-        Component button_x_west_maybe = controller.getComponent(Component.Identifier.Button.X);
-        Component button_b_east_maybe = controller.getComponent(Component.Identifier.Button.B);
-        if(this.gameMode != PLAY_MODE) {
-          if((start != null && start.getPollData() > 0) ||
-          (button_a_south_maybe != null && button_a_south_maybe.getPollData() > 0) ||
-          (button_y_north_maybe != null && button_y_north_maybe.getPollData() > 0) ||
-          (button_x_west_maybe != null && button_x_west_maybe.getPollData() > 0) ||
-          (button_b_east_maybe != null && button_b_east_maybe.getPollData() > 0)
-          ) startGame(PLAY_MODE, false);
-        }
 
-        double dead_zone = .05;
-        if(left_stick_x != null) {
-          if(left_stick_x.getPollData() < -dead_zone) gamepad_left = true;
-          if(left_stick_x.getPollData() > dead_zone) gamepad_right = true;
-        }
-        if(right_stick_x != null) {
-          if(right_stick_x.getPollData() < -dead_zone) gamepad_left = true;
-          if(right_stick_x.getPollData() > dead_zone) gamepad_right = true;
-        }
-        if(dpad != null) {
-          if(dpad.getPollData() == Component.POV.LEFT) gamepad_left = true;
-          if(dpad.getPollData() == Component.POV.DOWN_LEFT) gamepad_left = true;
-          if(dpad.getPollData() == Component.POV.UP_LEFT) gamepad_left = true;
-          if(dpad.getPollData() == Component.POV.RIGHT) gamepad_right = true;
-          if(dpad.getPollData() == Component.POV.DOWN_RIGHT) gamepad_right = true;
-          if(dpad.getPollData() == Component.POV.UP_RIGHT) gamepad_right = true;
-        }
-        if(left_button != null && left_button.getPollData() > 0) gamepad_left = true;
-        if(right_button != null && right_button.getPollData() > 0) gamepad_right = true;
-        // triggers are messy, some library use a full [-1, 1] range, and other [0,1]. Not being sure if jinput just uses whatever the platform give it or if it rearranges the range. So to be safe, I use > 0 instead of > -1. But that means it only registers halfway in if the library uses [-1, 1].
-        if(left_trigger != null && left_trigger.getPollData() > 0) gamepad_left = true;
-        if(right_trigger != null && right_trigger.getPollData() > 0) gamepad_right = true;
-      }
+      // gamepad: note that the external library I found does not seem to support plug and play at least in my Linux environment (i.e. the gamepad must be plugged before the game starts)
+      if(this.gameMode != PLAY_MODE && (gamepad.start || gamepad.south_maybe || gamepad.north_maybe || gamepad.west_maybe || gamepad.east_maybe)) startGame(PLAY_MODE, false);
+      boolean gamepad_left = false, gamepad_right = false; double dead_zone = .05;
+      gamepad.poll();
+      if(gamepad.lx < -dead_zone) gamepad_left = true;
+      if(gamepad.lx > dead_zone) gamepad_right = true;
+      if(gamepad.rx < -dead_zone) gamepad_left = true;
+      if(gamepad.rx > dead_zone) gamepad_right = true;
+      if(gamepad.left) gamepad_left = true;
+      if(gamepad.right) gamepad_right = true;
+      if(gamepad.left_shoulder) gamepad_left = true;
+      if(gamepad.right_shoulder) gamepad_right = true;
+      if(gamepad.left_trigger > 0) gamepad_left = true;
+      if(gamepad.right_trigger > 0) gamepad_right = true;
     
       if (this.rounds[this.round].isNextRound(this.score))
         this.round++; 
