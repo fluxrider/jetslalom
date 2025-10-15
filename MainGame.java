@@ -6,7 +6,64 @@ import java.net.*;
 import javax.imageio.*;
 import javax.sound.sampled.*;
 
-class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListener {
+class MainGame extends Panel implements Runnable, MouseListener, MouseMotionListener, KeyListener, WindowListener {
+
+  private static Frame window;
+  public void windowDeactivated(WindowEvent paramWindowEvent) {}
+  public void windowClosing(WindowEvent paramWindowEvent) { System.exit(0); }
+  public void windowOpened(WindowEvent paramWindowEvent) {}
+  public void windowClosed(WindowEvent paramWindowEvent) {}
+  public void windowDeiconified(WindowEvent paramWindowEvent) {}
+  public void windowActivated(WindowEvent paramWindowEvent) {}
+  public void windowIconified(WindowEvent paramWindowEvent) {}
+  public void toggleFullScreen() {
+    GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+    if(gd.isFullScreenSupported()) gd.setFullScreenWindow(gd.getFullScreenWindow() == window? null : window);
+  }  
+
+  Label hiScoreLabel;
+  Label lblContinue;
+  NumberLabel scoreWin;
+  
+  public static void main(String[] args) {
+    window = new Frame("Jet Slalom Resurrected");
+    MainGame game = new MainGame();
+    window.addWindowListener(game);
+    window.setLayout(new BorderLayout());
+    window.add(game, BorderLayout.CENTER);
+    window.setVisible(true);
+    
+    game.setLayout(new BorderLayout());
+    game.setBackground(new Color(160, 208, 176));
+    game.scoreWin = new NumberLabel(64, 12);
+    game.lblContinue = new Label("            ");
+    Panel panel = new Panel(new FlowLayout(0, 5, 0));
+    panel.setLayout(new FlowLayout());
+    panel.add(new Label("Score:"));
+    panel.add(game.scoreWin);
+    panel.add(new Label("Continue penalty:"));
+    panel.add(game.lblContinue);
+    game.add(panel, BorderLayout.NORTH);
+    game.hiScoreLabel = new Label("Your Hi-score:0         ");
+    game.add(game.hiScoreLabel, BorderLayout.SOUTH);
+    
+    game.addKeyListener(game);
+    game.addMouseListener(game);
+    game.addMouseMotionListener(game);
+    for (byte b = 1; b < game.rounds.length; b++)
+      game.rounds[b].setPrevRound(game.rounds[b - 1]);
+    
+    game.init();
+    game.requestFocus();
+    game.invalidate();
+    game.validate();
+    
+    window.validate();
+    window.pack();
+    window.setSize(800, 600);
+    game.start();
+    game.startGame(1, false);
+  }
 
   Gamepad gamepad = new Gamepad();
   
@@ -100,8 +157,6 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
   
   boolean spcFlag = false;
   
-  Game3D parent;
-  
   boolean isFocus = true;
   
   boolean isFocus2 = true;
@@ -151,7 +206,7 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
       this.spcFlag = paramBoolean; 
     if (!paramBoolean)
       return; 
-    if(paramInt == VK_F) this.parent.toggleFullScreen();
+    if(paramInt == VK_F) this.toggleFullScreen();
     if(paramInt == VK_ESCAPE) System.exit(0);
     if (paramInt == VK_G)
       System.gc(); 
@@ -334,7 +389,7 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
       this.recorder.startRound = this.round;
       this.recorder.startScore = this.score;
     } 
-    this.parent.lblContinue.setText("" + (this.contNum * 1000));
+    this.lblContinue.setText("" + (this.contNum * 1000));
   }
   
   void prt() {
@@ -343,7 +398,7 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
     if (this.gameMode == PLAY_MODE) {
       this.score += 20;
       if (this.scFlag)
-        this.parent.scoreWin.setNum(this.score); 
+        this.scoreWin.setNum(this.score); 
     } 
     this.scFlag = !this.scFlag;
     this.ground.color = this.rounds[this.round].getGroundColor();
@@ -387,28 +442,10 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
       this.isFocus2 = true;
       return;
     } 
-    if (this.isInPage && this.gameMode == TITLE_MODE)
-      /* DAVE
-      try {
-        // DAVE this.parent.getAppletContext().showDocument(new URL("http://www.kdn.gr.jp/~shii/"));
-        return;
-      } catch (MalformedURLException malformedURLException) {
-        return;
-      } 
-      */
-    startGame(PLAY_MODE, false);
+    if (this.isInPage && this.gameMode == TITLE_MODE) startGame(PLAY_MODE, false);
   }
   
   public void mouseDragged(MouseEvent paramMouseEvent) {}
-  
-  public MainGame(Game3D paramGame3D) {
-    this.parent = paramGame3D;
-    this.parent.addKeyListener(this);
-    this.parent.addMouseListener(this);
-    this.parent.addMouseMotionListener(this);
-    for (byte b = 1; b < this.rounds.length; b++)
-      this.rounds[b].setPrevRound(this.rounds[b - 1]); 
-  }
   
   public void mouseMoved(MouseEvent paramMouseEvent) {
     this.mouseX = paramMouseEvent.getX();
@@ -457,7 +494,7 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
   }
   
   private Image loadImage(String paramString) {
-    Image image = this.parent.getToolkit().getImage(ClassLoader.getSystemResource(paramString));
+    Image image = this.getToolkit().getImage(ClassLoader.getSystemResource(paramString));
     this.tracker.addImage(image, 0);
     return image;
   }
@@ -481,7 +518,7 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
   }
   
   public void run() {
-    this.thisGra = this.parent.getGraphics();
+    this.thisGra = this.getGraphics();
     this.obstacles.removeAll();
     for (byte b = 0; b < this.rounds.length; b++)
       this.rounds[b].init(); 
@@ -505,7 +542,7 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
       if(gamepad.right_shoulder) gamepad_right = true;
       if(gamepad.left_trigger > 0) gamepad_left = true;
       if(gamepad.right_trigger > 0) gamepad_right = true;
-      if(gamepad.select && gamepad.n_select) this.parent.toggleFullScreen();
+      if(gamepad.select && gamepad.n_select) this.toggleFullScreen();
       if(this.gameMode != PLAY_MODE && ((gamepad.start && gamepad.n_start) || (gamepad.south_maybe && gamepad.n_south_maybe) || (gamepad.north_maybe && gamepad.n_north_maybe) || (gamepad.west_maybe && gamepad.n_west_maybe) || (gamepad.east_maybe && gamepad.n_east_maybe))) startGame(PLAY_MODE, false);
     
       if (this.rounds[this.round].isNextRound(this.score))
@@ -524,12 +561,12 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
         this.thisGra.drawString("Wait a moment!!", this.centerX - 32, this.centerY + 8);
       } else {
         // letterbox scaling (i.e. respects aspect ratio)
-        int b_w = this.parent.getWidth(); int b_h = this.parent.getHeight(); int s_w = this.width; int s_h = this.height;
+        int b_w = this.getWidth(); int b_h = this.getHeight(); int s_w = this.width; int s_h = this.height;
         double scale; if ((b_w / (double)b_h) > (s_w / (double)s_h)) scale = b_h / (double)s_h; else scale = b_w / (double)s_w;
         int x = (int)((b_w - s_w * scale) / 2); int y = (int)((b_h - s_h * scale) / 2);
         this.thisGra.drawImage(this.img,x,y,(int)(s_w*scale), (int)(s_h*scale), Color.WHITE, null);
       }
-      this.parent.getToolkit().sync();
+      this.getToolkit().sync();
       if (!this.spcFlag)
         this.timer.wait1step(); 
     } 
@@ -551,7 +588,7 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
     centerY = height / 2;
     DrawEnv.width = width;
     DrawEnv.height = height;
-    img = this.parent.createImage(width, height);
+    img = this.createImage(width, height);
     this.gra = img.getGraphics();
     this.gra.setColor(new Color(0,128,128));
     this.gra.fillRect(0, 0, width, height);
@@ -575,14 +612,14 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
   }
   
   void endGame() {
-    this.parent.scoreWin.setNum(this.score);
+    this.scoreWin.setNum(this.score);
     if (this.gameMode == PLAY_MODE)
       this.prevScore = this.score; 
     if (this.score - this.contNum * 1000 > this.hiscore && this.gameMode == PLAY_MODE) {
       this.hiscore = this.score - this.contNum * 1000;
       this.hiscoreRec = this.recorder;
     } 
-    this.parent.hiScoreLabel.setText("Your Hi-score:" + this.hiscore);
+    this.hiScoreLabel.setText("Your Hi-score:" + this.hiscore);
     this.gameMode = TITLE_MODE;
   }
 }
