@@ -91,6 +91,7 @@ public class Game3D extends Panel /* DAVE Applet*/ implements ActionListener, Te
   }
   
   public static void main(String[] paramArrayOfString) {
+    // java.util.logging.LogManager.getLogManager().reset(); // disables the prints from the jinput library for good
     isLocal = true;
     Game3D game3D = new Game3D();
     AppFrame appFrame = new AppFrame(/* DAVE game3D,*/ "Jet slalom");

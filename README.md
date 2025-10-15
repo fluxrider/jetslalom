@@ -20,7 +20,6 @@ I stripped the applet part. Now it's just a AWT window. I even removed the canva
 
 - Gamepad
   - Organise project such that it can be built without gamepad support, and therefore without external libraries.
-  - Quiet maven logs from this library -Dorg.slf4j.simpleLogger.defaultLogLevel=WARN
   - Allow to configure the gamepad trigger range. Right now I play it safe.
 - Fix the title
 - Remove unused code
@@ -37,7 +36,7 @@ java Game3D
 The way I do it (desktop scaling, and a different folder for the binaries):
 ```
 rm -Rf java_out && javac -cp .:jinput-2.0.10.jar Game3D.java -d java_out
-java -Dsun.java2d.uiScale.enabled=true -Dsun.java2d.uiScale=2 -Djava.awt.headless=false -cp java_out:jinput-2.0.10.jar -Djava.library.path=jinput-2.0.10-natives-all --enable-native-access=ALL-UNNAMED Game3D
+java -Dsun.java2d.uiScale.enabled=true -Dsun.java2d.uiScale=2 -Djava.awt.headless=false -cp java_out:jinput-2.0.10.jar -Djava.library.path=jinput-2.0.10-natives-all --enable-native-access=ALL-UNNAMED  -Djava.util.logging.config.file=logging.properties Game3D
 ```
 
 This obviously assumes you got a Java JDK installed and know how to use the command line.
