@@ -6,7 +6,7 @@ public class TimerNotifier extends Thread {
   public TimerNotifier(int paramInt) {
     this.interval = paramInt;
     setName("TimerNotifier");
-    System.out.println(10);
+    //System.out.println(10);
     setPriority(10);
     start();
   }
