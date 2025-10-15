@@ -30,18 +30,23 @@ This is an attempt at getting it working.
 
 ## How to run
 
-I wish it was simpler. Java sucks for this.
+I assume you got a Java JDK installed and know how to use the command line for your OS. I'm using a posix system (i.e. Linux). Yet I wish it was simpler. Java sucks for this.
 
-Simple way (no gamepad support):
+Simplest way I can think of:
+- no gamepad support
+- no desktop scaling
+- yet it still needs an ugly classpath hack
 ```
 javac -cp .:gamepad_none Game3D.java
 java -cp .:gamepad_none Game3D
 ```
 
-The way I do it (desktop scaling, and a different folder for the binaries):
+The ridiculous way:
+- gamepad support
+- desktop scaling
+- an output folder for the binaries
+- an ironwill to run all that on the command line
 ```
 rm -Rf java_out && javac -cp .:gamepad_jinput:gamepad_jinput/jinput-2.0.10.jar Game3D.java -d java_out
 java -Dsun.java2d.uiScale.enabled=true -Dsun.java2d.uiScale=2 -Djava.awt.headless=false -cp java_out:gamepad_jinput/jinput-2.0.10.jar -Djava.library.path=gamepad_jinput/jinput-2.0.10-natives-all --enable-native-access=ALL-UNNAMED -Djava.util.logging.config.file=gamepad_jinput/logging.properties Game3D
 ```
-
-This obviously assumes you got a Java JDK installed and know how to use the command line.
