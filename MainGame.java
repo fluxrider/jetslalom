@@ -166,13 +166,13 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
     if (paramInt == VK_G)
       System.gc(); 
     if (this.gameMode != PLAY_MODE && (paramInt == VK_SPACE || paramInt == VK_C))
-      startGame(0, !(paramInt != VK_C)); 
+      startGame(PLAY_MODE, !(paramInt != VK_C)); 
     if (this.gameMode == TITLE_MODE && paramInt == VK_D && this.hiscoreRec != null)
-      startGame(2, false); 
+      startGame(DEMO_MODE, false); 
     if (this.gameMode != PLAY_MODE && paramInt == VK_T) {
       this.prevScore = 110000;
       this.contNum = 100;
-      startGame(0, true);
+      startGame(PLAY_MODE, true);
     } 
   }
   
@@ -406,7 +406,7 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
         return;
       } 
       */
-    startGame(0, false);
+    startGame(PLAY_MODE, false);
   }
   
   public void mouseDragged(MouseEvent paramMouseEvent) {}
@@ -521,12 +521,20 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
         Component right_button = controller.getComponent(Component.Identifier.Button.RIGHT_THUMB);
         Component left_trigger = controller.getComponent(Component.Identifier.Axis.Z);
         Component right_trigger = controller.getComponent(Component.Identifier.Axis.RZ);
-        //Component start = controller.getComponent(Component.Identifier.Button.START);
-        //Component button_a_south_maybe = controller.getComponent(Component.Identifier.Button.A);
-        //Component button_y_north_maybe = controller.getComponent(Component.Identifier.Button.Y);
-        //Component button_x_west_maybe = controller.getComponent(Component.Identifier.Button.X);
-        //Component button_b_east_maybe = controller.getComponent(Component.Identifier.Button.B);
-        
+        Component start = controller.getComponent(Component.Identifier.Button.START);
+        Component button_a_south_maybe = controller.getComponent(Component.Identifier.Button.A);
+        Component button_y_north_maybe = controller.getComponent(Component.Identifier.Button.Y);
+        Component button_x_west_maybe = controller.getComponent(Component.Identifier.Button.X);
+        Component button_b_east_maybe = controller.getComponent(Component.Identifier.Button.B);
+        if(this.gameMode != PLAY_MODE) {
+          if((start != null && start.getPollData() > 0) ||
+          (button_a_south_maybe != null && button_a_south_maybe.getPollData() > 0) ||
+          (button_y_north_maybe != null && button_y_north_maybe.getPollData() > 0) ||
+          (button_x_west_maybe != null && button_x_west_maybe.getPollData() > 0) ||
+          (button_b_east_maybe != null && button_b_east_maybe.getPollData() > 0)
+          ) startGame(PLAY_MODE, false);
+        }
+
         double dead_zone = .05;
         if(left_stick_x != null) {
           if(left_stick_x.getPollData() < -dead_zone) gamepad_left = true;

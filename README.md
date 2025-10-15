@@ -21,6 +21,7 @@ I stripped the applet part. Now it's just a AWT window. I even removed the canva
 - Gamepad
   - Organise project such that it can be built without gamepad support, and therefore without external libraries.
   - Quiet maven logs from this library -Dorg.slf4j.simpleLogger.defaultLogLevel=WARN
+  - Allow to configure the gamepad trigger range. Right now I play it safe.
 - Fix the title
 - Remove unused code
 - Fix the turn strenght, because I'm pretty sure it's way too hard right now.
