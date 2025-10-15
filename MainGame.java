@@ -510,18 +510,18 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
       moveObstacle();
       prt();
       putExtra();
-      //this.thisGra.drawImage(this.img, 0, 0, null);
-      
       if (this.registMode) {
         this.thisGra.setColor(Color.lightGray);
         this.thisGra.fill3DRect(0, 0, this.width, this.height, true);
         this.thisGra.setColor(Color.black);
         this.thisGra.drawString("Wait a moment!!", this.centerX - 32, this.centerY + 8);
       } else {
-        //this.thisGra.drawImage(this.img, 0, 0, this); 
-        this.thisGra.drawImage(this.img,0,0,this.parent.getWidth(), this.parent.getHeight(), Color.WHITE, null);
+        // letterbox scaling (i.e. respects aspect ratio)
+        int b_w = this.parent.getWidth(); int b_h = this.parent.getHeight(); int s_w = this.width; int s_h = this.height;
+        double scale; if ((b_w / (double)b_h) > (s_w / (double)s_h)) scale = b_h / (double)s_h; else scale = b_w / (double)s_w;
+        int x = (int)((b_w - s_w * scale) / 2); int y = (int)((b_h - s_h * scale) / 2);
+        this.thisGra.drawImage(this.img,x,y,(int)(s_w*scale), (int)(s_h*scale), Color.WHITE, null);
       }
-      
       this.parent.getToolkit().sync();
       if (!this.spcFlag)
         this.timer.wait1step(); 
