@@ -164,6 +164,7 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
       this.spcFlag = paramBoolean; 
     if (!paramBoolean)
       return; 
+    if(paramInt == VK_F) this.parent.appFrame.toggleFullScreen();
     if (paramInt == VK_G)
       System.gc(); 
     if (this.gameMode != PLAY_MODE && (paramInt == VK_SPACE || paramInt == VK_C))
@@ -509,7 +510,6 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
     while (this.gameThread != null) {
 
       // gamepad: note that the external library I found does not seem to support plug and play at least in my Linux environment (i.e. the gamepad must be plugged before the game starts)
-      if(this.gameMode != PLAY_MODE && (gamepad.start || gamepad.south_maybe || gamepad.north_maybe || gamepad.west_maybe || gamepad.east_maybe)) startGame(PLAY_MODE, false);
       boolean gamepad_left = false, gamepad_right = false; double dead_zone = .05;
       gamepad.poll();
       if(gamepad.lx < -dead_zone) gamepad_left = true;
@@ -522,6 +522,8 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
       if(gamepad.right_shoulder) gamepad_right = true;
       if(gamepad.left_trigger > 0) gamepad_left = true;
       if(gamepad.right_trigger > 0) gamepad_right = true;
+      if(gamepad.select) this.parent.appFrame.toggleFullScreen();
+      if(this.gameMode != PLAY_MODE && (gamepad.start || gamepad.south_maybe || gamepad.north_maybe || gamepad.west_maybe || gamepad.east_maybe)) startGame(PLAY_MODE, false);
     
       if (this.rounds[this.round].isNextRound(this.score))
         this.round++; 

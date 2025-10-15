@@ -1,7 +1,6 @@
 // DAVE import java.applet.Applet;
-import java.awt.Frame;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.*;
+import java.awt.event.*;
 
 public class AppFrame extends Frame implements WindowListener {
   // DAVE Applet applet;
@@ -28,6 +27,11 @@ public class AppFrame extends Frame implements WindowListener {
   public void windowActivated(WindowEvent paramWindowEvent) {}
   
   public void windowIconified(WindowEvent paramWindowEvent) {}
+  
+  public void toggleFullScreen() {
+    GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+    if(gd.isFullScreenSupported()) gd.setFullScreenWindow(gd.getFullScreenWindow() == this? null : this);
+  }  
 }
 
 

@@ -5,6 +5,7 @@ class Gamepad {
   public boolean param_dpad_diag_count = true;
 
   public boolean start;
+  public boolean select;
   public boolean south_maybe;
   public boolean north_maybe;
   public boolean west_maybe;

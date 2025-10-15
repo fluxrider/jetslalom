@@ -90,24 +90,26 @@ public class Game3D extends Panel /* DAVE Applet*/ implements ActionListener, Te
     */
   }
   
+  public AppFrame appFrame;
+  
   public static void main(String[] paramArrayOfString) {
     // java.util.logging.LogManager.getLogManager().reset(); // disables the prints from the jinput library for good
     isLocal = true;
     Game3D game3D = new Game3D();
-    AppFrame appFrame = new AppFrame(/* DAVE game3D,*/ "Jet slalom");
+    game3D.appFrame = new AppFrame(/* DAVE game3D,*/ "Jet slalom");
     // DAVE appFrame.show();
-    appFrame.setVisible(true); // DAVE
+    game3D.appFrame.setVisible(true); // DAVE
     // DAVE appFrame.setLayout(new AbsoluteLayout());
-    appFrame.setLayout(new BorderLayout()); // DAVE
+    game3D.appFrame.setLayout(new BorderLayout()); // DAVE
     
 // DAVE	layout.setWidth("800px");
 // DAVE	layout.setHeight("600px");
     game3D.setSize(800, 600); // DAVE
-    appFrame.add(game3D, BorderLayout.CENTER);
+    game3D.appFrame.add(game3D, BorderLayout.CENTER);
     game3D.init();
-    appFrame.validate();
-    appFrame.pack();
-    appFrame.setSize(800, 600); // DAVE
+    game3D.appFrame.validate();
+    game3D.appFrame.pack();
+    game3D.appFrame.setSize(800, 600); // DAVE
     game3D.start();
   }
   

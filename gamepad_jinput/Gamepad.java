@@ -5,6 +5,7 @@ class Gamepad {
   public boolean param_dpad_diag_count = true;
 
   public boolean start;
+  public boolean select;
   public boolean south_maybe;
   public boolean north_maybe;
   public boolean west_maybe;
@@ -31,6 +32,7 @@ class Gamepad {
       { Component c = controller.getComponent(Component.Identifier.Button.LEFT_THUMB); this.left_shoulder = c != null && c.getPollData() > 0; }
       { Component c = controller.getComponent(Component.Identifier.Button.RIGHT_THUMB); this.right_shoulder = c != null && c.getPollData() > 0; }
       { Component c = controller.getComponent(Component.Identifier.Button.START); this.start = c != null && c.getPollData() > 0; }
+      { Component c = controller.getComponent(Component.Identifier.Button.SELECT); this.select = c != null && c.getPollData() > 0; }
       { Component c = controller.getComponent(Component.Identifier.Axis.X); this.lx = c == null? 0 : c.getPollData(); }
       { Component c = controller.getComponent(Component.Identifier.Axis.Y); this.ly = c == null? 0 : c.getPollData(); }
       { Component c = controller.getComponent(Component.Identifier.Axis.RX); this.rx = c == null? 0 : c.getPollData(); }
