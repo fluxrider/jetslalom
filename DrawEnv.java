@@ -19,17 +19,7 @@ public class DrawEnv {
     double d4 = (points[2]).y - (points[0]).y;
     float f = (float)(Math.abs(d1 * d4 - d2 * d3) / face.maxZ);
     g.setColor(new Color(face.red * f, face.green * f, face.blue * f));
-    double d5 = width / 320.0;
-    double d6 = height / 200.0;
-    for (byte b = 0; b < face.numPoints; b++) {
-      DPoint3 point = points[b];
-      double d7 = 120.0 / (1.0 + 0.6 * point.z);
-      double d8 = nowCos * point.x + nowSin * (point.y - 2.0);
-      double d9 = -nowSin * point.x + nowCos * (point.y - 2.0) + 2.0;
-      buffer_polyX[b] = (int)(d8 * d5 * d7) + width / 2;
-      buffer_polyY[b] = (int)(d9 * d6 * d7) + height / 2;
-    }
-    g.fillPolygon(buffer_polyX, buffer_polyY, face.numPoints);
+    drawPolygon(g, points);
   }
   
   synchronized static void drawPolygon(Graphics g, DPoint3[] points) {

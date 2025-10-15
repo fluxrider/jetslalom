@@ -33,9 +33,7 @@ public class Obstacle extends DrawObject {
   
   Obstacle() {
     (this.faces[0]).points = new DPoint3[] { this.points[3], this.points[0], this.points[1] };
-    (this.faces[0]).numPoints = 3;
     (this.faces[1]).points = new DPoint3[] { this.points[3], this.points[2], this.points[1] };
-    (this.faces[1]).numPoints = 3;
   }
   
   static {

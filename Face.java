@@ -3,8 +3,6 @@ import java.awt.*;
 public class Face {
   DPoint3[] points;
   
-  int numPoints;
-  
   double maxZ;
   
   float red;
