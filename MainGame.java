@@ -16,7 +16,8 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 import java.io.*;
 
-class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionListener, KeyListener {
+class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListener {
+  
   static double[] si = new double[128];
   
   static double[] co = new double[128];
@@ -410,9 +411,9 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
   
   public MainGame(Game3D paramGame3D) {
     this.parent = paramGame3D;
-    addKeyListener(this);
-    addMouseListener(this);
-    addMouseMotionListener(this);
+    this.parent.addKeyListener(this);
+    this.parent.addMouseListener(this);
+    this.parent.addMouseMotionListener(this);
     for (byte b = 1; b < this.rounds.length; b++)
       this.rounds[b].setPrevRound(this.rounds[b - 1]); 
   }
@@ -424,18 +425,7 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
   
   public void keyTyped(KeyEvent paramKeyEvent) {}
   
-  public void paint(Graphics paramGraphics) {
-    if (this.registMode) {
-      paramGraphics.setColor(Color.lightGray);
-      paramGraphics.fill3DRect(0, 0, this.width, this.height, true);
-      paramGraphics.setColor(Color.black);
-      paramGraphics.drawString("Wait a moment!!", this.centerX - 32, this.centerY + 8);
-      return;
-    } 
-    if (this.img != null)
-      paramGraphics.drawImage(this.img, 0, 0, this); 
-  }
-  
+ 
   public synchronized void setHiScoreInfo(String[] paramArrayOfString) {
     this.strHiScoreInfo_ = paramArrayOfString;
   }
@@ -477,7 +467,7 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
   private Image loadImage(String paramString) {
     Image image;
     //if (Game3D.isLocal) {
-      image = getToolkit().getImage(ClassLoader.getSystemResource(paramString));
+      image = this.parent.getToolkit().getImage(ClassLoader.getSystemResource(paramString));
     //} else {
       // DAVE image = this.parent.getImage(this.parent.getCodeBase(), paramString);
     //} 
@@ -504,7 +494,7 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
   }
   
   public void run() {
-    this.thisGra = getGraphics();
+    this.thisGra = this.parent.getGraphics();
     this.obstacles.removeAll();
     for (byte b = 0; b < this.rounds.length; b++)
       this.rounds[b].init(); 
@@ -520,8 +510,19 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
       moveObstacle();
       prt();
       putExtra();
-      this.thisGra.drawImage(this.img, 0, 0, null);
-      getToolkit().sync();
+      //this.thisGra.drawImage(this.img, 0, 0, null);
+      
+      if (this.registMode) {
+        this.thisGra.setColor(Color.lightGray);
+        this.thisGra.fill3DRect(0, 0, this.width, this.height, true);
+        this.thisGra.setColor(Color.black);
+        this.thisGra.drawString("Wait a moment!!", this.centerX - 32, this.centerY + 8);
+      } else {
+        //this.thisGra.drawImage(this.img, 0, 0, this); 
+        this.thisGra.drawImage(this.img,0,0,this.parent.getWidth(), this.parent.getHeight(), Color.WHITE, null);
+      }
+      
+      this.parent.getToolkit().sync();
       if (!this.spcFlag)
         this.timer.wait1step(); 
     } 
@@ -543,7 +544,7 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
     centerY = height / 2;
     env.width = width;
     env.height = height;
-    img = createImage(width, height);
+    img = this.parent.createImage(width, height);
     this.gra = img.getGraphics();
     this.gra.setColor(new Color(0,128,128));
     this.gra.fillRect(0, 0, width, height);

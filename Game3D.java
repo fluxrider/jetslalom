@@ -15,6 +15,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Calendar;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 
 public class Game3D extends Panel /* DAVE Applet*/ implements ActionListener, TextListener {
   static final boolean isFreeware = true;
@@ -110,7 +112,7 @@ public class Game3D extends Panel /* DAVE Applet*/ implements ActionListener, Te
   
   public void actionPerformed(ActionEvent paramActionEvent) {
     sendScore(this.game.getHiScore(), this.txtName.getText());
-    this.game.requestFocus();
+    this.requestFocus();
   }
   
   public void start() {
@@ -138,9 +140,9 @@ public class Game3D extends Panel /* DAVE Applet*/ implements ActionListener, Te
     this.hiScoreLabel = new Label("Your Hi-score:0         ");
     add("South", this.hiScoreLabel);
     this.game = new MainGame(this);
-    add("Center", this.game);
+    //add("Center", this.game);
     this.game.init();
-    this.game.requestFocus();
+    this.requestFocus();
     invalidate();
     validate();
   }
