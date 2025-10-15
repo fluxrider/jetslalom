@@ -1,5 +1,7 @@
 # Jet Slalom Restoration Project
 
+![AI Generated Cover](slalom.jpg?raw=true)
+
 I played Jet Slalom as an online applet when I was a young adult back in 1999.
 I wrote a WebGL crappy homage test around 2010.
 Some random guy on the internet emailed me about it in 2025, praising my controls but pooping on my inexistant levels design.
