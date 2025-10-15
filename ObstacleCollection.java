@@ -13,9 +13,9 @@ public class ObstacleCollection {
     } 
   }
   
-  synchronized void draw(Graphics paramGraphics, DrawEnv paramDrawEnv) {
+  synchronized void draw(Graphics g) {
     for (Obstacle obstacle = this.head.next; obstacle != this.tail; obstacle = obstacle.next)
-      obstacle.draw(paramGraphics, paramDrawEnv); 
+      obstacle.draw(g);
   }
   
   ObstacleCollection() {

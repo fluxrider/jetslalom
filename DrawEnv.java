@@ -1,60 +1,50 @@
 import java.awt.*;
 
 public class DrawEnv {
-  static final double T = 0.6D;
+  // preallocate buffers
+  private static int[] buffer_polyX = new int[8];  
+  private static int[] buffer_polyY = new int[8];
   
-  private int[] polyX = new int[8];
+  public static double nowSin;
+  public static double nowCos;
   
-  private int[] polyY = new int[8];
+  public static int width;
+  public static int height;
   
-  private DPoint3[] dp3 = new DPoint3[3];
-  
-  double nowSin;
-  
-  double nowCos;
-  
-  int width;
-  
-  int height;
-  
-  synchronized void drawPolygon(Graphics paramGraphics, Face paramFace) {
-    int i = paramFace.numPoints;
-    DPoint3[] arrayOfDPoint3 = paramFace.points;
-    double d1 = (arrayOfDPoint3[1]).x - (arrayOfDPoint3[0]).x;
-    double d2 = (arrayOfDPoint3[1]).y - (arrayOfDPoint3[0]).y;
-    // DAVE arrayOfDPoint3[1];
-    // DAVE arrayOfDPoint3[0];
-    double d3 = (arrayOfDPoint3[2]).x - (arrayOfDPoint3[0]).x;
-    double d4 = (arrayOfDPoint3[2]).y - (arrayOfDPoint3[0]).y;
-    // DAVE arrayOfDPoint3[2];
-    // DAVE arrayOfDPoint3[0];
-    float f = (float)(Math.abs(d1 * d4 - d2 * d3) / paramFace.maxZ);
-    paramGraphics.setColor(new Color(paramFace.red * f, paramFace.green * f, paramFace.blue * f));
-    double d5 = this.width / 320.0D;
-    double d6 = this.height / 200.0D;
+  synchronized static void drawPolygon(Graphics g, Face face) {
+    int i = face.numPoints;
+    DPoint3[] points = face.points;
+    double d1 = (points[1]).x - (points[0]).x;
+    double d2 = (points[1]).y - (points[0]).y;
+    double d3 = (points[2]).x - (points[0]).x;
+    double d4 = (points[2]).y - (points[0]).y;
+    float f = (float)(Math.abs(d1 * d4 - d2 * d3) / face.maxZ);
+    g.setColor(new Color(face.red * f, face.green * f, face.blue * f));
+    double d5 = width / 320.0;
+    double d6 = height / 200.0;
     for (byte b = 0; b < i; b++) {
-      DPoint3 dPoint3 = arrayOfDPoint3[b];
-      double d7 = 120.0D / (1.0D + 0.6D * dPoint3.z);
-      double d8 = this.nowCos * dPoint3.x + this.nowSin * (dPoint3.y - 2.0D);
-      double d9 = -this.nowSin * dPoint3.x + this.nowCos * (dPoint3.y - 2.0D) + 2.0D;
-      this.polyX[b] = (int)(d8 * d5 * d7) + this.width / 2;
-      this.polyY[b] = (int)(d9 * d6 * d7) + this.height / 2;
-    } 
-    paramGraphics.fillPolygon(this.polyX, this.polyY, i);
+      DPoint3 point = points[b];
+      double d7 = 120.0 / (1.0 + 0.6 * point.z);
+      double d8 = nowCos * point.x + nowSin * (point.y - 2.0);
+      double d9 = -nowSin * point.x + nowCos * (point.y - 2.0) + 2.0;
+      buffer_polyX[b] = (int)(d8 * d5 * d7) + width / 2;
+      buffer_polyY[b] = (int)(d9 * d6 * d7) + height / 2;
+    }
+    g.fillPolygon(buffer_polyX, buffer_polyY, i);
   }
   
-  synchronized void drawPolygon(Graphics paramGraphics, DPoint3[] paramArrayOfDPoint3) {
-    int i = paramArrayOfDPoint3.length;
-    double d1 = this.width / 320.0D;
-    double d2 = this.height / 200.0D;
+  synchronized static void drawPolygon(Graphics g, DPoint3[] points) {
+    int i = points.length;
+    double d1 = width / 320.0;
+    double d2 = height / 200.0;
     for (byte b = 0; b < i; b++) {
-      DPoint3 dPoint3 = paramArrayOfDPoint3[b];
-      double d3 = 120.0D / (1.0D + 0.6D * dPoint3.z);
-      double d4 = this.nowCos * dPoint3.x + this.nowSin * (dPoint3.y - 2.0D);
-      double d5 = -this.nowSin * dPoint3.x + this.nowCos * (dPoint3.y - 2.0D) + 2.0D;
-      this.polyX[b] = (int)(d4 * d1 * d3) + this.width / 2;
-      this.polyY[b] = (int)(d5 * d2 * d3) + this.height / 2;
-    } 
-    paramGraphics.fillPolygon(this.polyX, this.polyY, i);
+      DPoint3 point = points[b];
+      double d3 = 120.0 / (1.0 + 0.6 * point.z);
+      double d4 = nowCos * point.x + nowSin * (point.y - 2.0);
+      double d5 = -nowSin * point.x + nowCos * (point.y - 2.0) + 2.0;
+      buffer_polyX[b] = (int)(d4 * d1 * d3) + width / 2;
+      buffer_polyY[b] = (int)(d5 * d2 * d3) + height / 2;
+    }
+    g.fillPolygon(buffer_polyX, buffer_polyY, i);
   }
 }

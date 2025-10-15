@@ -26,9 +26,9 @@ public class Obstacle extends DrawObject {
     releaseObstacle(this);
   }
   
-  void draw(Graphics paramGraphics, DrawEnv paramDrawEnv) {
-    paramDrawEnv.drawPolygon(paramGraphics, this.faces[0]);
-    paramDrawEnv.drawPolygon(paramGraphics, this.faces[1]);
+  void draw(Graphics g) {
+    DrawEnv.drawPolygon(g, this.faces[0]);
+    DrawEnv.drawPolygon(g, this.faces[1]);
   }
   
   Obstacle() {

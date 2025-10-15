@@ -5,8 +5,8 @@ public class Ground extends DrawObject {
   
   Color color;
   
-  void draw(Graphics paramGraphics, DrawEnv paramDrawEnv) {
-    paramGraphics.setColor(this.color);
-    paramDrawEnv.drawPolygon(paramGraphics, this.points);
+  void draw(Graphics g) {
+    g.setColor(this.color);
+    DrawEnv.drawPolygon(g, this.points);
   }
 }

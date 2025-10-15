@@ -16,8 +16,6 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
   
   static double[] co = new double[128];
   
-  DrawEnv env = new DrawEnv();
-  
   Ground ground = new Ground();
   
   TimerNotifier timer;
@@ -221,16 +219,16 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
     if (this.gameMode == DEMO_MODE)
       gameRecorder = this.hiscoreRec; 
     int i = (int)(Math.abs(this.vx) * 100.0D);
-    this.env.nowSin = si[i];
-    this.env.nowCos = co[i];
+    DrawEnv.nowSin = si[i];
+    DrawEnv.nowCos = co[i];
     if (this.vx > 0.0D)
-      this.env.nowSin = -this.env.nowSin; 
+      DrawEnv.nowSin = -DrawEnv.nowSin; 
     for (Obstacle obstacle = this.obstacles.head.next; obstacle != this.obstacles.tail;) {
       Obstacle obstacle1 = obstacle.next;
       obstacle.move(this.vx, 0.0D, -1.0D);
       DPoint3[] arrayOfDPoint3 = obstacle.points;
       if ((arrayOfDPoint3[0]).z <= 1.1D) {
-        double d = this.mywidth * this.env.nowCos;
+        double d = this.mywidth * DrawEnv.nowCos;
         if (-d < (arrayOfDPoint3[2]).x && (arrayOfDPoint3[0]).x < d)
           this.damaged++; 
         obstacle.release();
@@ -349,8 +347,8 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
     } 
     this.scFlag = !this.scFlag;
     this.ground.color = this.rounds[this.round].getGroundColor();
-    this.ground.draw(this.gra, this.env);
-    this.obstacles.draw(this.gra, this.env);
+    this.ground.draw(this.gra);
+    this.obstacles.draw(this.gra);
     this.shipCounter++;
     if (this.gameMode != TITLE_MODE) {
       int i = 24 * this.height / 200;
@@ -556,8 +554,8 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
     height = 200;
     centerX = width / 2;
     centerY = height / 2;
-    env.width = width;
-    env.height = height;
+    DrawEnv.width = width;
+    DrawEnv.height = height;
     img = this.parent.createImage(width, height);
     this.gra = img.getGraphics();
     this.gra.setColor(new Color(0,128,128));
