@@ -12,16 +12,16 @@ This is an attempt at getting it working.
 
 ## State
 
-I got it to compile and render the obstacles and ship. It looks like you can play one game. I bypass the title screen because it's broken. It shows up when you die.
+I got it to compile and render the obstacles and ship. It looks like you can play one game. I bypass the title screen because it's broken. It shows up when you die. Spacebar starts a new game.
 
-I stripped the applet part. Now it's just a AWT window.
+I stripped the applet part. Now it's just a AWT window. I even removed the canvas object and simply paint scaled to the panel so it fits the window.
 
 ### Future Work
 
-- Fullscreen
 - Gamepad
 - Fix the title
 - Remove unused code
+- Fix the turn strenght, because I'm pretty sure it's way too hard right now.
 
 ## How to run
 
