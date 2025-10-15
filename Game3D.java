@@ -5,8 +5,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-public class Game3D extends Panel implements ActionListener, TextListener, WindowListener {
-  static final boolean isFreeware = true;
+public class Game3D extends Panel implements TextListener, WindowListener {
   
   MainGame game;
   
@@ -57,26 +56,6 @@ public class Game3D extends Panel implements ActionListener, TextListener, Windo
     return stringBuffer.toString();
   }
   
-  private synchronized void sendScore(int paramInt, String paramString) {
-    /*
-    if (this.sentScore_ >= paramInt && !this.isModified_)
-      return; 
-    try {
-      int i = paramInt % 8191 + paramInt % 237;
-      System.out.println("...");
-      String str1 = "regist.cgi?" + paramInt + "+" + i + "+" + encodeString(paramString) + "+" + this.strSessionId_;
-      InputStream inputStream = (new URL(getCodeBase(), str1)).openStream();
-      BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-      String str2 = bufferedReader.readLine();
-      System.out.println(str2);
-      this.sentScore_ = paramInt;
-    } catch (Exception exception) {
-      System.out.println(exception);
-    } 
-    loadRanking();
-    */
-  }
-  
   public Frame window;
   public void windowDeactivated(WindowEvent paramWindowEvent) {}
   public void windowClosing(WindowEvent paramWindowEvent) { System.exit(0); }
@@ -104,11 +83,6 @@ public class Game3D extends Panel implements ActionListener, TextListener, Windo
     frame.pack();
     frame.setSize(800, 600);
     game3D.start();
-  }
-  
-  public void actionPerformed(ActionEvent paramActionEvent) {
-    sendScore(this.game.getHiScore(), this.txtName.getText());
-    this.requestFocus();
   }
   
   public void start() {
@@ -147,122 +121,6 @@ public class Game3D extends Panel implements ActionListener, TextListener, Windo
     this.isModified_ = true;
   }
   
-  private synchronized void loadRanking() {
-    // Byte code:
-    //   0: bipush #20
-    //   2: anewarray java/lang/String
-    //   5: astore_1
-    //   6: iconst_0
-    //   7: istore_2
-    //   8: aload_1
-    //   9: iload_2
-    //   10: ldc_w ''
-    //   13: aastore
-    //   14: iinc #2, 1
-    //   17: iload_2
-    //   18: bipush #20
-    //   20: if_icmplt -> 8
-    //   23: new java/net/URL
-    //   26: dup
-    //   27: aload_0
-    //   28: invokevirtual getCodeBase : ()Ljava/net/URL;
-    //   31: ldc_w 'rank.dat'
-    //   34: invokespecial <init> : (Ljava/net/URL;Ljava/lang/String;)V
-    //   37: invokevirtual openStream : ()Ljava/io/InputStream;
-    //   40: astore_3
-    //   41: new java/io/BufferedReader
-    //   44: dup
-    //   45: new java/io/InputStreamReader
-    //   48: dup
-    //   49: aload_3
-    //   50: invokespecial <init> : (Ljava/io/InputStream;)V
-    //   53: invokespecial <init> : (Ljava/io/Reader;)V
-    //   56: astore #4
-    //   58: iconst_0
-    //   59: istore_2
-    //   60: aload #4
-    //   62: invokevirtual readLine : ()Ljava/lang/String;
-    //   65: astore #5
-    //   67: aload #5
-    //   69: ifnull -> 208
-    //   72: new java/util/StringTokenizer
-    //   75: dup
-    //   76: aload #5
-    //   78: ldc_w ','
-    //   81: invokespecial <init> : (Ljava/lang/String;Ljava/lang/String;)V
-    //   84: astore #6
-    //   86: ldc_w '000000 : ???'
-    //   89: astore #7
-    //   91: aload #6
-    //   93: invokevirtual hasMoreTokens : ()Z
-    //   96: ifeq -> 194
-    //   99: aload #6
-    //   101: invokevirtual nextToken : ()Ljava/lang/String;
-    //   104: invokestatic parseInt : (Ljava/lang/String;)I
-    //   107: istore #8
-    //   109: aload #6
-    //   111: invokevirtual hasMoreTokens : ()Z
-    //   114: ifeq -> 194
-    //   117: aload_0
-    //   118: aload #6
-    //   120: invokevirtual nextToken : ()Ljava/lang/String;
-    //   123: invokespecial decodeString : (Ljava/lang/String;)Ljava/lang/String;
-    //   126: astore #9
-    //   128: new java/lang/StringBuffer
-    //   131: dup
-    //   132: invokespecial <init> : ()V
-    //   135: ldc_w '000000'
-    //   138: invokevirtual append : (Ljava/lang/String;)Ljava/lang/StringBuffer;
-    //   141: iload #8
-    //   143: invokevirtual append : (I)Ljava/lang/StringBuffer;
-    //   146: invokevirtual toString : ()Ljava/lang/String;
-    //   149: astore #10
-    //   151: aload #10
-    //   153: aload #10
-    //   155: invokevirtual length : ()I
-    //   158: bipush #6
-    //   160: isub
-    //   161: invokevirtual substring : (I)Ljava/lang/String;
-    //   164: astore #10
-    //   166: new java/lang/StringBuffer
-    //   169: dup
-    //   170: invokespecial <init> : ()V
-    //   173: aload #10
-    //   175: invokevirtual append : (Ljava/lang/String;)Ljava/lang/StringBuffer;
-    //   178: ldc_w ' : '
-    //   181: invokevirtual append : (Ljava/lang/String;)Ljava/lang/StringBuffer;
-    //   184: aload #9
-    //   186: invokevirtual append : (Ljava/lang/String;)Ljava/lang/StringBuffer;
-    //   189: invokevirtual toString : ()Ljava/lang/String;
-    //   192: astore #7
-    //   194: aload_1
-    //   195: iload_2
-    //   196: aload #7
-    //   198: aastore
-    //   199: iinc #2, 1
-    //   202: iload_2
-    //   203: bipush #20
-    //   205: if_icmplt -> 60
-    //   208: aload_0
-    //   209: getfield game : LMainGame;
-    //   212: aload_1
-    //   213: invokevirtual setHiScoreInfo : ([Ljava/lang/String;)V
-    //   216: getstatic java/lang/System.out : Ljava/io/PrintStream;
-    //   219: ldc_w 'Success to load hi-score list.'
-    //   222: invokevirtual println : (Ljava/lang/String;)V
-    //   225: return
-    //   226: astore_3
-    //   227: getstatic java/lang/System.out : Ljava/io/PrintStream;
-    //   230: ldc_w 'Fail to load hi-score list.'
-    //   233: invokevirtual println : (Ljava/lang/String;)V
-    //   236: aload_3
-    //   237: invokevirtual printStackTrace : ()V
-    //   240: return
-    // Exception table:
-    //   from	to	target	type
-    //   23	225	226	java/lang/Exception
-  }
-  
   private String encodeString(String paramString) {
     StringBuffer stringBuffer = new StringBuffer("Z");
     for (byte b = 0; b < paramString.length(); b++) {
@@ -274,7 +132,4 @@ public class Game3D extends Panel implements ActionListener, TextListener, Windo
     return stringBuffer.toString();
   }
   
-  public synchronized void endGame() {
-    sendScore(this.game.getHiScore(), this.txtName.getText());
-  }
 }

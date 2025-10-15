@@ -457,12 +457,7 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
   }
   
   private Image loadImage(String paramString) {
-    Image image;
-    //if (Game3D.isLocal) {
-      image = this.parent.getToolkit().getImage(ClassLoader.getSystemResource(paramString));
-    //} else {
-      // DAVE image = this.parent.getImage(this.parent.getCodeBase(), paramString);
-    //} 
+    Image image = this.parent.getToolkit().getImage(ClassLoader.getSystemResource(paramString));
     this.tracker.addImage(image, 0);
     return image;
   }
@@ -589,6 +584,5 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
     } 
     this.parent.hiScoreLabel.setText("Your Hi-score:" + this.hiscore);
     this.gameMode = TITLE_MODE;
-    this.parent.endGame();
   }
 }
