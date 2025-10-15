@@ -5,7 +5,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-public class Game3D extends Panel /* DAVE Applet*/ implements ActionListener, TextListener {
+public class Game3D extends Panel implements ActionListener, TextListener, WindowListener {
   static final boolean isFreeware = true;
   
   MainGame game;
@@ -77,26 +77,32 @@ public class Game3D extends Panel /* DAVE Applet*/ implements ActionListener, Te
     */
   }
   
-  public AppFrame appFrame;
+  public Frame window;
+  public void windowDeactivated(WindowEvent paramWindowEvent) {}
+  public void windowClosing(WindowEvent paramWindowEvent) { System.exit(0); }
+  public void windowOpened(WindowEvent paramWindowEvent) {}
+  public void windowClosed(WindowEvent paramWindowEvent) {}
+  public void windowDeiconified(WindowEvent paramWindowEvent) {}
+  public void windowActivated(WindowEvent paramWindowEvent) {}
+  public void windowIconified(WindowEvent paramWindowEvent) {}
+  public void toggleFullScreen() {
+    GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+    if(gd.isFullScreenSupported()) gd.setFullScreenWindow(gd.getFullScreenWindow() == this.window? null : this.window);
+  }  
   
   public static void main(String[] paramArrayOfString) {
-    // java.util.logging.LogManager.getLogManager().reset(); // disables the prints from the jinput library for good
     isLocal = true;
     Game3D game3D = new Game3D();
-    game3D.appFrame = new AppFrame(/* DAVE game3D,*/ "Jet slalom");
-    // DAVE appFrame.show();
-    game3D.appFrame.setVisible(true); // DAVE
-    // DAVE appFrame.setLayout(new AbsoluteLayout());
-    game3D.appFrame.setLayout(new BorderLayout()); // DAVE
-    
-// DAVE	layout.setWidth("800px");
-// DAVE	layout.setHeight("600px");
-    game3D.setSize(800, 600); // DAVE
-    game3D.appFrame.add(game3D, BorderLayout.CENTER);
+    Frame frame = game3D.window = new Frame("Jet Slalom Resurrected");
+    frame.addWindowListener(game3D);
+    frame.setVisible(true);
+    frame.setLayout(new BorderLayout());
+    game3D.setSize(800, 600);
+    frame.add(game3D, BorderLayout.CENTER);
     game3D.init();
-    game3D.appFrame.validate();
-    game3D.appFrame.pack();
-    game3D.appFrame.setSize(800, 600); // DAVE
+    frame.validate();
+    frame.pack();
+    frame.setSize(800, 600);
     game3D.start();
   }
   
