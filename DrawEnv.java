@@ -5,11 +5,11 @@ public class DrawEnv {
   private static int[] buffer_polyX = new int[8];  
   private static int[] buffer_polyY = new int[8];
   
-  public static double nowSin;
-  public static double nowCos;
+  static double nowSin;
+  static double nowCos;
   
-  public static int width;
-  public static int height;
+  static int width;
+  static int height;
   
   synchronized static void drawPolygon(Graphics g, Face face) {
     DPoint3[] points = face.points;
