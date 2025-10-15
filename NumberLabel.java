@@ -1,7 +1,4 @@
-import java.awt.Canvas;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
+import java.awt.*;
 
 public class NumberLabel extends Canvas {
   char[] data = new char[6];
@@ -49,9 +46,3 @@ public class NumberLabel extends Canvas {
     return new Dimension(this.width, this.height);
   }
 }
-
-
-/* Location:              C:\a\!\NumberLabel.class
- * Java compiler version: 1 (45.3)
- * JD-Core Version:       1.1.3
- */

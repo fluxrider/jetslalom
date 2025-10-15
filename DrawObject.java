@@ -1,11 +1,5 @@
-import java.awt.Graphics;
+import java.awt.*;
 
 public class DrawObject {
   void draw(Graphics paramGraphics, DrawEnv paramDrawEnv) {}
 }
-
-
-/* Location:              C:\a\!\DrawObject.class
- * Java compiler version: 1 (45.3)
- * JD-Core Version:       1.1.3
- */

@@ -1,20 +1,16 @@
-// DAVE import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
 
 public class AppFrame extends Frame implements WindowListener {
-  // DAVE Applet applet;
   
-  public AppFrame(/* DAVE Applet paramApplet, */String paramString) {
+  public AppFrame(String paramString) {
     super(paramString);
     addWindowListener(this);
-    // DAVE this.applet = paramApplet;
   }
   
   public void windowDeactivated(WindowEvent paramWindowEvent) {}
   
   public void windowClosing(WindowEvent paramWindowEvent) {
-    // DAVE this.applet.stop();
     System.exit(0);
   }
   
@@ -33,9 +29,3 @@ public class AppFrame extends Frame implements WindowListener {
     if(gd.isFullScreenSupported()) gd.setFullScreenWindow(gd.getFullScreenWindow() == this? null : this);
   }  
 }
-
-
-/* Location:              C:\a\!\AppFrame.class
- * Java compiler version: 1 (45.3)
- * JD-Core Version:       1.1.3
- */

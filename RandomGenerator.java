@@ -14,9 +14,3 @@ public class RandomGenerator {
     return this.seed >>> 16;
   }
 }
-
-
-/* Location:              C:\a\!\RandomGenerator.class
- * Java compiler version: 1 (45.3)
- * JD-Core Version:       1.1.3
- */

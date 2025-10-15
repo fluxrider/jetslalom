@@ -1,8 +1,4 @@
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 public class GameRecorder {
   public static final int LEFT = 1;
@@ -69,9 +65,3 @@ public class GameRecorder {
     this.random.setSeed(this.seed);
   }
 }
-
-
-/* Location:              C:\a\!\GameRecorder.class
- * Java compiler version: 1 (45.3)
- * JD-Core Version:       1.1.3
- */

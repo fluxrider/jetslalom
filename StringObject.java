@@ -1,7 +1,4 @@
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
+import java.awt.*;
 
 class StringObject extends DrawObject {
   private Graphics currentGra = null;
@@ -85,9 +82,3 @@ class StringObject extends DrawObject {
     this.strWidth = -1;
   }
 }
-
-
-/* Location:              C:\a\!\StringObject.class
- * Java compiler version: 1 (45.3)
- * JD-Core Version:       1.1.3
- */

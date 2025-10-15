@@ -1,4 +1,4 @@
-import java.awt.Color;
+import java.awt.*;
 
 public class Face {
   DPoint3[] points;
@@ -33,9 +33,3 @@ public class Face {
     return paramDouble * paramDouble;
   }
 }
-
-
-/* Location:              C:\a\!\Face.class
- * Java compiler version: 1 (45.3)
- * JD-Core Version:       1.1.3
- */

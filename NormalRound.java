@@ -1,4 +1,4 @@
-import java.awt.Color;
+import java.awt.*;
 
 public class NormalRound extends RoundManager {
   private int interval;
@@ -27,9 +27,3 @@ public class NormalRound extends RoundManager {
     this.gameTime = 0;
   }
 }
-
-
-/* Location:              C:\a\!\NormalRound.class
- * Java compiler version: 1 (45.3)
- * JD-Core Version:       1.1.3
- */

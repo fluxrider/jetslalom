@@ -1,20 +1,9 @@
-import java.awt.Canvas;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.MediaTracker;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.net.MalformedURLException;
-import java.net.URL;
-import javax.imageio.ImageIO;
-import java.io.*;
+import java.awt.*;
+import java.awt.event.*;
 import static java.awt.event.KeyEvent.*;
+import java.io.*;
+import java.net.*;
+import javax.imageio.*;
 import javax.sound.sampled.*;
 
 class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListener {
@@ -605,9 +594,3 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
     this.parent.endGame();
   }
 }
-
-
-/* Location:              C:\a\!\MainGame.class
- * Java compiler version: 1 (45.3)
- * JD-Core Version:       1.1.3
- */

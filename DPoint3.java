@@ -19,9 +19,3 @@ public class DPoint3 {
     this.z = paramDouble3;
   }
 }
-
-
-/* Location:              C:\a\!\DPoint3.class
- * Java compiler version: 1 (45.3)
- * JD-Core Version:       1.1.3
- */

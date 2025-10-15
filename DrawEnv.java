@@ -1,5 +1,4 @@
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.*;
 
 public class DrawEnv {
   static final double T = 0.6D;
@@ -59,9 +58,3 @@ public class DrawEnv {
     paramGraphics.fillPolygon(this.polyX, this.polyY, i);
   }
 }
-
-
-/* Location:              C:\a\!\DrawEnv.class
- * Java compiler version: 1 (45.3)
- * JD-Core Version:       1.1.3
- */

@@ -1,4 +1,4 @@
-import java.awt.Color;
+import java.awt.*;
 
 public class RoadRound extends RoundManager {
   private double OX1;
@@ -89,9 +89,3 @@ public class RoadRound extends RoundManager {
     this.OX2 += paramDouble;
   }
 }
-
-
-/* Location:              C:\a\!\RoadRound.class
- * Java compiler version: 1 (45.3)
- * JD-Core Version:       1.1.3
- */

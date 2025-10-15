@@ -1,4 +1,4 @@
-import java.awt.Color;
+import java.awt.*;
 
 public abstract class RoundManager {
   private RoundManager prevRound;
@@ -64,9 +64,3 @@ public abstract class RoundManager {
   
   public void move(double paramDouble) {}
 }
-
-
-/* Location:              C:\a\!\RoundManager.class
- * Java compiler version: 1 (45.3)
- * JD-Core Version:       1.1.3
- */

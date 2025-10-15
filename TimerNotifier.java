@@ -37,9 +37,3 @@ public class TimerNotifier extends Thread {
     } 
   }
 }
-
-
-/* Location:              C:\a\!\TimerNotifier.class
- * Java compiler version: 1 (45.3)
- * JD-Core Version:       1.1.3
- */

@@ -1,5 +1,4 @@
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.*;
 
 public class Obstacle extends DrawObject {
   DPoint3[] points = new DPoint3[] { new DPoint3(), new DPoint3(), new DPoint3(), new DPoint3() };
@@ -76,9 +75,3 @@ public class Obstacle extends DrawObject {
     } while (++b < 4);
   }
 }
-
-
-/* Location:              C:\a\!\Obstacle.class
- * Java compiler version: 1 (45.3)
- * JD-Core Version:       1.1.3
- */

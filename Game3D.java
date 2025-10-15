@@ -1,22 +1,9 @@
-// DAVE import java.applet.Applet;
-import java.awt.BorderLayout;
-import java.awt.Button;
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.Label;
-import java.awt.Panel;
-import java.awt.TextField;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.TextEvent;
-import java.awt.event.TextListener;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.Calendar;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.*;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 public class Game3D extends Panel /* DAVE Applet*/ implements ActionListener, TextListener {
   static final boolean isFreeware = true;
@@ -285,9 +272,3 @@ public class Game3D extends Panel /* DAVE Applet*/ implements ActionListener, Te
     sendScore(this.game.getHiScore(), this.txtName.getText());
   }
 }
-
-
-/* Location:              C:\a\!\Game3D.class
- * Java compiler version: 1 (45.3)
- * JD-Core Version:       1.1.3
- */
