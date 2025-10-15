@@ -15,18 +15,6 @@ public class Game3D extends Panel implements TextListener, WindowListener {
   
   NumberLabel scoreWin;
   
-  static boolean isLocal = false;
-  
-  int lang = 0;
-  
-  String[] bt1 = new String[] { "Regist your Hi-score", "自分のハイスコアの登録" };
-  
-  String[] contMsg = new String[] { "Push [C] key to start from this stage!!", "途中から始める場合は [C]key を押して下さい!!" };
-  
-  String[] toStartMsg = new String[] { "Click this game screen or push [space] key!!", "クリックするか、[space]keyを押して下さい" };
-  
-  String[] clickMsg = new String[] { "Click!!", "クリックして下さい" };
-  
   private String strSessionId_;
   
   private int sentScore_ = 0;
@@ -70,7 +58,6 @@ public class Game3D extends Panel implements TextListener, WindowListener {
   }  
   
   public static void main(String[] paramArrayOfString) {
-    isLocal = true;
     Game3D game3D = new Game3D();
     Frame frame = game3D.window = new Frame("Jet Slalom Resurrected");
     frame.addWindowListener(game3D);
@@ -91,11 +78,6 @@ public class Game3D extends Panel implements TextListener, WindowListener {
   }
   
   public void init() {
-    if (!isLocal) {
-      String str = "JP"; // DAVE getParameter("LANG");
-      if (!isLocal && str != null && str.equals("JP"))
-        this.lang = 1; 
-    } 
     setLayout(new BorderLayout());
     setBackground(new Color(160, 208, 176));
     this.scoreWin = new NumberLabel(64, 12);
