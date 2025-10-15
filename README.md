@@ -24,7 +24,6 @@ This is an attempt at getting it working.
 - Fix the title screen.
 - Remove unused code (e.g. I have no plan on supporting online high scores).
 - Clean the code (it came to me in a decompiled state, where constants are hardcoded as value and whatnot).
-- Explosion sound.
 
 ### Known Issue
 
