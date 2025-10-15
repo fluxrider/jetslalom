@@ -97,12 +97,12 @@ public class Game3D extends Panel /* DAVE Applet*/ implements ActionListener, Te
     // DAVE appFrame.show();
     appFrame.setVisible(true); // DAVE
     // DAVE appFrame.setLayout(new AbsoluteLayout());
-    appFrame.setLayout(null); // DAVE
+    appFrame.setLayout(new BorderLayout()); // DAVE
     
 // DAVE	layout.setWidth("800px");
 // DAVE	layout.setHeight("600px");
     game3D.setSize(800, 600); // DAVE
-    appFrame.add("Center", game3D);
+    appFrame.add(game3D, BorderLayout.CENTER);
     game3D.init();
     appFrame.validate();
     appFrame.pack();
@@ -136,9 +136,9 @@ public class Game3D extends Panel /* DAVE Applet*/ implements ActionListener, Te
     panel.add(this.scoreWin);
     panel.add(new Label("Continue penalty:"));
     panel.add(this.lblContinue);
-    add("North", panel);
+    add(panel, BorderLayout.NORTH);
     this.hiScoreLabel = new Label("Your Hi-score:0         ");
-    add("South", this.hiScoreLabel);
+    add(this.hiScoreLabel, BorderLayout.SOUTH);
     this.game = new MainGame(this);
     //add("Center", this.game);
     this.game.init();
