@@ -16,6 +16,7 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 import java.io.*;
 import net.java.games.input.*;
+import static java.awt.event.KeyEvent.*;
 
 class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListener {
   
@@ -154,21 +155,21 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
   }
   
   void keyEvent(int paramInt, boolean paramBoolean) {
-    if (paramInt == 39 || paramInt == 76)
+    if (paramInt == VK_RIGHT || paramInt == VK_L)
       this.rFlag = paramBoolean; 
-    if (paramInt == 37 || paramInt == 74)
+    if (paramInt == VK_LEFT || paramInt == VK_J)
       this.lFlag = paramBoolean; 
-    if (paramInt == 65)
+    if (paramInt == VK_A)
       this.spcFlag = paramBoolean; 
     if (!paramBoolean)
       return; 
-    if (paramInt == 71)
+    if (paramInt == VK_G)
       System.gc(); 
-    if (this.gameMode != PLAY_MODE && (paramInt == 32 || paramInt == 67))
-      startGame(0, !(paramInt != 67)); 
-    if (this.gameMode == TITLE_MODE && paramInt == 68 && this.hiscoreRec != null)
+    if (this.gameMode != PLAY_MODE && (paramInt == VK_SPACE || paramInt == VK_C))
+      startGame(0, !(paramInt != VK_C)); 
+    if (this.gameMode == TITLE_MODE && paramInt == VK_D && this.hiscoreRec != null)
       startGame(2, false); 
-    if (this.gameMode != PLAY_MODE && paramInt == 84) {
+    if (this.gameMode != PLAY_MODE && paramInt == VK_T) {
       this.prevScore = 110000;
       this.contNum = 100;
       startGame(0, true);
@@ -520,8 +521,8 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
       Component button_b_east_maybe = controller.getComponent(Component.Identifier.Button.B);
       Component left_button = controller.getComponent(Component.Identifier.Button.LEFT_THUMB);
       Component right_button = controller.getComponent(Component.Identifier.Button.RIGHT_THUMB);
-      Component left_trigger = controller.getComponent(Component.Identifier.Axis.z);
-      Component right_trigger = controller.getComponent(Component.Identifier.Axis.rz);
+      Component left_trigger = controller.getComponent(Component.Identifier.Axis.Z);
+      Component right_trigger = controller.getComponent(Component.Identifier.Axis.RZ);
       
       //if(left_stick_x != null) { System.out.println(left_stick_x + " " + left_stick_x.getPollData()); }
       //if(right_stick_x != null) { System.out.println(right_stick_x + " " + right_stick_x.getPollData()); }
