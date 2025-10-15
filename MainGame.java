@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import javax.imageio.ImageIO;
 import java.io.*;
+import net.java.games.input.*;
 
 class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListener {
   
@@ -504,6 +505,32 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
     this.vx = 0.0D;
     this.gameMode = PLAY_MODE; // DAVE PLAY_MODE, TITLE_MODE, DEMO_MODE
     while (this.gameThread != null) {
+    
+    // gamepad: note that the external library I found does not seem to support hotplug at least in my Linux environment (i.e. the gamepad must be plugged before the game starts)
+    for(Controller controller : ControllerEnvironment.getDefaultEnvironment().getControllers()) {
+      if(controller.getType() != Controller.Type.GAMEPAD) continue;
+      controller.poll();
+      Component left_stick_x = controller.getComponent(Component.Identifier.Axis.X);
+      Component right_stick_x = controller.getComponent(Component.Identifier.Axis.RX);
+      Component dpad = controller.getComponent(Component.Identifier.Axis.POV);
+      Component start = controller.getComponent(Component.Identifier.Button.START);
+      Component button_a_south_maybe = controller.getComponent(Component.Identifier.Button.A);
+      Component button_y_north_maybe = controller.getComponent(Component.Identifier.Button.Y);
+      Component button_x_west_maybe = controller.getComponent(Component.Identifier.Button.X);
+      Component button_b_east_maybe = controller.getComponent(Component.Identifier.Button.B);
+      Component left_button = controller.getComponent(Component.Identifier.Button.LEFT_THUMB);
+      Component right_button = controller.getComponent(Component.Identifier.Button.RIGHT_THUMB);
+      Component left_trigger = controller.getComponent(Component.Identifier.Axis.z);
+      Component right_trigger = controller.getComponent(Component.Identifier.Axis.rz);
+      
+      //if(left_stick_x != null) { System.out.println(left_stick_x + " " + left_stick_x.getPollData()); }
+      //if(right_stick_x != null) { System.out.println(right_stick_x + " " + right_stick_x.getPollData()); }
+      //if(start != null) { System.out.println(start + " " + start.getPollData()); }
+      //if(dpad != null) { System.out.println(dpad + " " + dpad.getPollData() + " right: " + (dpad.getPollData() == Component.POV.RIGHT)); } // DOWN_RIGHT, UP_RIGHT
+      
+      // EventQueue queue = controller.getEventQueue(); Event event = new Event(); while(queue.getNextEvent(event)) { System.out.println(event); }
+    }
+    
       if (this.rounds[this.round].isNextRound(this.score))
         this.round++; 
       keyOperate();
