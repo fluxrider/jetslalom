@@ -6,15 +6,13 @@ public class Face {
   double maxZ;
   
   float red;
-  
   float green;
-  
   float blue;
   
-  void setColor(Color paramColor) {
-    this.red = paramColor.getRed() / 255.0F;
-    this.green = paramColor.getGreen() / 255.0F;
-    this.blue = paramColor.getBlue() / 255.0F;
+  void setColor(Color c) {
+    this.red = c.getRed() / 255.0F;
+    this.green = c.getGreen() / 255.0F;
+    this.blue = c.getBlue() / 255.0F;
   }
   
   void calcMaxZ() {
