@@ -13,9 +13,10 @@ This is an attempt at getting it working.
 ## State
 
 - It compiles and seems playable on JDK 25.0.1
-- The title screen is broken so I bypass it on launch. When you die, press the spacebar (or gamepad A/B/X/Y).
+- The title screen is broken so I bypass it on launch. When you die, press 'spacebar' (or 'A/B/X/Y' on the gamepad).
 - I've added gamepad support.
 - I stripped the applet and canvas code. Now it's just a AWT window and the drawing scales respecting aspect ratio.
+- Fullscreen support (using 'F' or 'Select').
 
 ### Future Work
 
