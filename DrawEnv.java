@@ -12,7 +12,6 @@ public class DrawEnv {
   public static int height;
   
   synchronized static void drawPolygon(Graphics g, Face face) {
-    int i = face.numPoints;
     DPoint3[] points = face.points;
     double d1 = (points[1]).x - (points[0]).x;
     double d2 = (points[1]).y - (points[0]).y;
@@ -22,7 +21,7 @@ public class DrawEnv {
     g.setColor(new Color(face.red * f, face.green * f, face.blue * f));
     double d5 = width / 320.0;
     double d6 = height / 200.0;
-    for (byte b = 0; b < i; b++) {
+    for (byte b = 0; b < face.numPoints; b++) {
       DPoint3 point = points[b];
       double d7 = 120.0 / (1.0 + 0.6 * point.z);
       double d8 = nowCos * point.x + nowSin * (point.y - 2.0);
@@ -30,14 +29,13 @@ public class DrawEnv {
       buffer_polyX[b] = (int)(d8 * d5 * d7) + width / 2;
       buffer_polyY[b] = (int)(d9 * d6 * d7) + height / 2;
     }
-    g.fillPolygon(buffer_polyX, buffer_polyY, i);
+    g.fillPolygon(buffer_polyX, buffer_polyY, face.numPoints);
   }
   
   synchronized static void drawPolygon(Graphics g, DPoint3[] points) {
-    int i = points.length;
     double d1 = width / 320.0;
     double d2 = height / 200.0;
-    for (byte b = 0; b < i; b++) {
+    for (byte b = 0; b < points.length; b++) {
       DPoint3 point = points[b];
       double d3 = 120.0 / (1.0 + 0.6 * point.z);
       double d4 = nowCos * point.x + nowSin * (point.y - 2.0);
@@ -45,6 +43,6 @@ public class DrawEnv {
       buffer_polyX[b] = (int)(d4 * d1 * d3) + width / 2;
       buffer_polyY[b] = (int)(d5 * d2 * d3) + height / 2;
     }
-    g.fillPolygon(buffer_polyX, buffer_polyY, i);
+    g.fillPolygon(buffer_polyX, buffer_polyY, points.length);
   }
 }
