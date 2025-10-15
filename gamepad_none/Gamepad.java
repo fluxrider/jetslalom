@@ -20,6 +20,13 @@ class Gamepad {
   public double right_trigger;
   public double lx, ly, rx, ry;
 
+  public boolean n_start;
+  public boolean n_select;
+  public boolean n_south_maybe;
+  public boolean n_north_maybe;
+  public boolean n_west_maybe;
+  public boolean n_east_maybe;
+  
   public void poll() { }
 
 }

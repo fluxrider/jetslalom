@@ -165,6 +165,7 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
     if (!paramBoolean)
       return; 
     if(paramInt == VK_F) this.parent.appFrame.toggleFullScreen();
+    if(paramInt == VK_ESCAPE) System.exit(0);
     if (paramInt == VK_G)
       System.gc(); 
     if (this.gameMode != PLAY_MODE && (paramInt == VK_SPACE || paramInt == VK_C))
@@ -522,8 +523,8 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
       if(gamepad.right_shoulder) gamepad_right = true;
       if(gamepad.left_trigger > 0) gamepad_left = true;
       if(gamepad.right_trigger > 0) gamepad_right = true;
-      if(gamepad.select) this.parent.appFrame.toggleFullScreen();
-      if(this.gameMode != PLAY_MODE && (gamepad.start || gamepad.south_maybe || gamepad.north_maybe || gamepad.west_maybe || gamepad.east_maybe)) startGame(PLAY_MODE, false);
+      if(gamepad.select && gamepad.n_select) this.parent.appFrame.toggleFullScreen();
+      if(this.gameMode != PLAY_MODE && ((gamepad.start && gamepad.n_start) || (gamepad.south_maybe && gamepad.n_south_maybe) || (gamepad.north_maybe && gamepad.n_north_maybe) || (gamepad.west_maybe && gamepad.n_west_maybe) || (gamepad.east_maybe && gamepad.n_east_maybe))) startGame(PLAY_MODE, false);
     
       if (this.rounds[this.round].isNextRound(this.score))
         this.round++; 

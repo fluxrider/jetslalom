@@ -4,6 +4,7 @@ class Gamepad {
 
   public boolean param_dpad_diag_count = true;
 
+  // held state
   public boolean start;
   public boolean select;
   public boolean south_maybe;
@@ -20,7 +21,23 @@ class Gamepad {
   public double right_trigger;
   public double lx, ly, rx, ry;
 
+  // pressed/release state is a bit of a hack, because a low polling rate can miss events, but whatever. I don't care that much.
+  // usage: if(start && n_start) just_pressed
+  //        if(!start && n_start) just released
+  public boolean n_start;
+  public boolean n_select;
+  public boolean n_south_maybe;
+  public boolean n_north_maybe;
+  public boolean n_west_maybe;
+  public boolean n_east_maybe;
+
   public void poll() {
+    this.n_start = this.start;
+    this.n_select = this.select;
+    this.n_south_maybe = this.south_maybe;
+    this.n_north_maybe = this.north_maybe;
+    this.n_west_maybe = this.west_maybe;
+    this.n_east_maybe = this.east_maybe;
     for(Controller controller : ControllerEnvironment.getDefaultEnvironment().getControllers()) {
       if(controller.getType() != Controller.Type.GAMEPAD) continue;
       controller.poll();
@@ -60,6 +77,12 @@ class Gamepad {
         this.right_trigger = value;
       }}
     }
+    this.n_start = this.start != this.n_start;
+    this.n_select = this.select != this.n_select;
+    this.n_south_maybe = this.south_maybe != this.n_south_maybe;
+    this.n_north_maybe = this.north_maybe != this.n_north_maybe;
+    this.n_west_maybe = this.west_maybe != this.n_west_maybe;
+    this.n_east_maybe = this.east_maybe != this.n_east_maybe;
   }
 
   private boolean _saw_a_negative_trigger;
