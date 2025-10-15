@@ -1,0 +1,12 @@
+slalom.jpg was generated using an AI model and modified clumsily with The Gimp because the text had bad spelling.
+
+VAE: ae.safetensors (319.8 MiB)
+Model: flux1-dev-Q5_K_S.gguf (7.7 GiB)
+Clip: t5-v1_1-xxl-encoder-Q5_K_S.gguf (3.1 GiB), clip_l.safetensors (234.7 MiB)
+LoRA: strenght 1.0 for Wizard's Vintage Comic Book Cover - UNDERGROUND Comics FLUX - Oct 14, 2025 - by WizardWhitebeard - https://civitai.com/models/210095/wizards-vintage-comic-book-cover - (219.2 MiB)
+Prompt: vintage comic book cover, the title reads "Jet Slalom Resurrected" in a bold font. Featuring a futuristic blue hovercraft with the japanese flags on each wing hovering close to the ground through a landcape of retro style 3D sharp pyramids of various bright colors. The sky is orange.
+Guidance: 3.5
+Size: 832x1216
+Sampling: 30 steps, cfg 1, sampler euler, scheduler sgm_uniform
+
+I forgot to grab the seed, I'm not a frequent AI user.
