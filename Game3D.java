@@ -5,32 +5,16 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-public class Game3D extends Panel implements TextListener, WindowListener {
+public class Game3D extends Panel implements WindowListener {
   
   MainGame game;
   
   Label hiScoreLabel;
-  
   Label lblContinue;
-  
   NumberLabel scoreWin;
-  
-  private String strSessionId_;
-  
-  private int sentScore_ = 0;
-  
-  private TextField txtName = new TextField("No name", 16);
-  
-  private Button btnInput = new Button("Ok");
-  
-  private boolean isModified_ = false;
   
   public void stop() {
     this.game.stop();
-  }
-  
-  private void rankInit() {
-    this.strSessionId_ = Long.toString(Calendar.getInstance().getTime().getTime());
   }
   
   private String decodeString(String paramString) {
@@ -97,10 +81,6 @@ public class Game3D extends Panel implements TextListener, WindowListener {
     this.requestFocus();
     invalidate();
     validate();
-  }
-  
-  public void textValueChanged(TextEvent paramTextEvent) {
-    this.isModified_ = true;
   }
   
   private String encodeString(String paramString) {
