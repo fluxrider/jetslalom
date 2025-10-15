@@ -34,8 +34,8 @@ I wish it was simpler. Java sucks for this.
 
 Simple way (no gamepad support):
 ```
-javac Game3D.java
-java Game3D
+javac -cp .:gamepad_none Game3D.java
+java -cp .:gamepad_none Game3D
 ```
 
 The way I do it (desktop scaling, and a different folder for the binaries):
