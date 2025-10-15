@@ -1,4 +1,3 @@
-// DAVE import java.applet.AudioClip;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -16,10 +15,13 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 import java.io.*;
 import static java.awt.event.KeyEvent.*;
+import javax.sound.sampled.*;
 
 class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListener {
 
   Gamepad gamepad = new Gamepad();
+  
+  Clip explosion;
   
   static double[] si = new double[128];
   
@@ -98,8 +100,6 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
   Graphics thisGra;
   
   MediaTracker tracker;
-  
-  // DAVE AudioClip auBomb = null;
   
   boolean isLoaded = false;
   
@@ -461,7 +461,7 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
       endGame();
       return;
     } 
-    // DAVE if (this.damaged == 1 && this.auBomb != null) this.auBomb.play(); 
+    if (this.damaged == 1 && this.explosion != null) { this.explosion.stop(); this.explosion.setFramePosition(0); this.explosion.start(); }
     this.gra.setColor(new Color(255, 255 - this.damaged * 12, 240 - this.damaged * 12));
     int i = this.damaged * 8 * this.width / 320;
     int j = this.damaged * 4 * this.height / 200;
@@ -580,11 +580,12 @@ class MainGame implements Runnable, MouseListener, MouseMotionListener, KeyListe
       co[i] = Math.cos(Math.PI * (i / (double)si.length));
     }
     this.mywidth2 = (int)(this.width * this.mywidth * 120 / 1.6 / 320);
-    // DAVE load the bomb audio
     try {
-      myImg = ImageIO.read(new File("jiki.gif"));
-      myImg2 = ImageIO.read(new File("jiki2.gif"));
-    } catch(IOException e) {
+      myImg = ImageIO.read(new File("res/jiki.gif"));
+      myImg2 = ImageIO.read(new File("res/jiki2.gif"));
+      explosion = AudioSystem.getClip();
+      explosion.open(AudioSystem.getAudioInputStream(new File("res/explosion.wav")));
+    } catch(Exception e) {
       e.printStackTrace();
     }
     myRealImg = myImg.getScaledInstance(mywidth2 * 2, mywidth2 / 4, Image.SCALE_FAST);
