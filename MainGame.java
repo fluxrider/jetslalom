@@ -147,7 +147,7 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
     // DAVE if (this.gameThread != null) this.gameThread.stop(); 
     this.gameThread = null;
     this.registMode = false;
-    this.gameMode = 1;
+    this.gameMode = TITLE_MODE;
     this.timer.interrupt();
   }
   
@@ -162,11 +162,11 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
       return; 
     if (paramInt == 71)
       System.gc(); 
-    if (this.gameMode != 0 && (paramInt == 32 || paramInt == 67))
+    if (this.gameMode != PLAY_MODE && (paramInt == 32 || paramInt == 67))
       startGame(0, !(paramInt != 67)); 
-    if (this.gameMode == 1 && paramInt == 68 && this.hiscoreRec != null)
+    if (this.gameMode == TITLE_MODE && paramInt == 68 && this.hiscoreRec != null)
       startGame(2, false); 
-    if (this.gameMode != 0 && paramInt == 84) {
+    if (this.gameMode != PLAY_MODE && paramInt == 84) {
       this.prevScore = 110000;
       this.contNum = 100;
       startGame(0, true);
@@ -176,19 +176,19 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
   void keyOperate() {
     boolean bool1 = this.rFlag;
     boolean bool2 = this.lFlag;
-    if (this.gameMode == 0) {
+    if (this.gameMode == PLAY_MODE) {
       int i = 0;
       if (bool1)
         i |= 0x2; 
       if (bool2)
         i |= 0x1; 
       this.recorder.writeStatus(i);
-    } else if (this.gameMode == 2) {
+    } else if (this.gameMode == DEMO_MODE) {
       int i = this.hiscoreRec.readStatus();
       bool1 = !((i & 0x2) == 0);
       bool2 = !((i & 0x1) == 0);
     } 
-    if (this.damaged == 0 && (this.gameMode == 0 || this.gameMode == 2)) {
+    if (this.damaged == 0 && (this.gameMode == PLAY_MODE || this.gameMode == DEMO_MODE)) {
       if (bool1)
         this.vx -= 0.1D; 
       if (bool2)
@@ -223,7 +223,7 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
   
   void moveObstacle() {
     GameRecorder gameRecorder = this.recorder;
-    if (this.gameMode == 2)
+    if (this.gameMode == DEMO_MODE)
       gameRecorder = this.hiscoreRec; 
     int i = (int)(Math.abs(this.vx) * 100.0D);
     this.env.nowSin = si[i];
@@ -302,20 +302,20 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
   }
   
   public void startGame(int paramInt, boolean paramBoolean) {
-    if (this.gameMode == 0)
+    if (this.gameMode == PLAY_MODE)
       return; 
     this.vx = 0.0D;
-    if (paramInt == 0 || paramInt == 2) {
-      if (paramInt == 2 && this.hiscoreRec == null)
+    if (paramInt == PLAY_MODE || paramInt == DEMO_MODE) {
+      if (paramInt == DEMO_MODE && this.hiscoreRec == null)
         return; 
       this.gameMode = paramInt;
-      if (paramInt == 0) {
+      if (paramInt == PLAY_MODE) {
         this.recorder = new GameRecorder();
       } else {
         this.hiscoreRec.toStart();
       } 
     } else {
-      this.gameMode = 1;
+      this.gameMode = TITLE_MODE;
     } 
     this.obstacles.removeAll();
     for (byte b = 0; b < this.rounds.length; b++)
@@ -347,7 +347,7 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
   void prt() {
     this.gra.setColor(this.rounds[this.round].getSkyColor());
     this.gra.fillRect(0, 0, this.width, this.height);
-    if (this.gameMode == 0) {
+    if (this.gameMode == PLAY_MODE) {
       this.score += 20;
       if (this.scFlag)
         this.parent.scoreWin.setNum(this.score); 
@@ -357,7 +357,7 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
     this.ground.draw(this.gra, this.env);
     this.obstacles.draw(this.gra, this.env);
     this.shipCounter++;
-    if (this.gameMode != 1) {
+    if (this.gameMode != TITLE_MODE) {
       int i = 24 * this.height / 200;
       Image image = this.myRealImg;
       if (this.shipCounter % 4 > 1)
@@ -370,7 +370,7 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
       if (this.damaged > 0)
         putbomb(); 
     } 
-    if (this.gameMode == 1) {
+    if (this.gameMode == TITLE_MODE) {
       showTitle();
       return;
     } 
@@ -388,13 +388,13 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
       this.rFlag = false;
       this.lFlag = true;
     } 
-    if (this.gameMode == 0)
+    if (this.gameMode == PLAY_MODE)
       return; 
     if (!this.isFocus2) {
       this.isFocus2 = true;
       return;
     } 
-    if (this.isInPage && this.gameMode == 1)
+    if (this.isInPage && this.gameMode == TITLE_MODE)
       /* DAVE
       try {
         // DAVE this.parent.getAppletContext().showDocument(new URL("http://www.kdn.gr.jp/~shii/"));
@@ -567,14 +567,14 @@ class MainGame extends Canvas implements Runnable, MouseListener, MouseMotionLis
   
   void endGame() {
     this.parent.scoreWin.setNum(this.score);
-    if (this.gameMode == 0)
+    if (this.gameMode == PLAY_MODE)
       this.prevScore = this.score; 
-    if (this.score - this.contNum * 1000 > this.hiscore && this.gameMode == 0) {
+    if (this.score - this.contNum * 1000 > this.hiscore && this.gameMode == PLAY_MODE) {
       this.hiscore = this.score - this.contNum * 1000;
       this.hiscoreRec = this.recorder;
     } 
     this.parent.hiScoreLabel.setText("Your Hi-score:" + this.hiscore);
-    this.gameMode = 1;
+    this.gameMode = TITLE_MODE;
     this.parent.endGame();
   }
 }
