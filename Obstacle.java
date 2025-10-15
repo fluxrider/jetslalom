@@ -1,6 +1,6 @@
 import java.awt.*;
 
-public class Obstacle extends DrawObject {
+public class Obstacle {
   DPoint3[] points = new DPoint3[] { new DPoint3(), new DPoint3(), new DPoint3(), new DPoint3() };
   
   Face[] faces = new Face[] { new Face(), new Face(), new Face() };

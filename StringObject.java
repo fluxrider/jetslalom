@@ -1,6 +1,6 @@
 import java.awt.*;
 
-class StringObject extends DrawObject {
+class StringObject {
   private Graphics currentGra = null;
   
   private Font font;
