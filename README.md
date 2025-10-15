@@ -12,23 +12,27 @@ This is an attempt at getting it working.
 
 ## State
 
-I got it to compile and render the obstacles and ship. It looks like you can play one game. I bypass the title screen because it's broken. It shows up when you die. Spacebar starts a new game.
-
-I stripped the applet part. Now it's just a AWT window. I even removed the canvas object and simply paint scaled to the panel so it fits the window.
+- It compiles and seems playable on JDK 25.0.1
+- The title screen is broken so I bypass it on launch. When you die, press the spacebar (or gamepad A/B/X/Y).
+- I've added gamepad support.
+- I stripped the applet and canvas code. Now it's just a AWT window and the drawing scales respecting aspect ratio.
 
 ### Future Work
 
-- Gamepad
- - Organise project such that it can be built without gamepad support, and therefore without external libraries.
- - Allow to configure the gamepad trigger range. Right now I play it safe.
- - Plug and Play would be nice in 2025 (right now jinput, at least on Linux, requires the gamepad to be plugged before app is launched).
-- Fix the title
-- Remove unused code
-- Fix the turn strenght, because I'm pretty sure it's way too hard right now.
+- Fix the turn strength, I'm pretty sure it's way too hard right now.
+- Fix the title screen.
+- Remove unused code (e.g. I have no plan on supporting online high scores).
+- Clean the code (it came to me in a decompiled state, where constants are hardcoded as value and whatnot).
+
+### Known Issue
+
+- JInput, the external library I use for gamepad support, requires the gamepad to be plugged before the game launched. I've only tested on Linux.
 
 ## How to run
 
-Simple way:
+I wish it was simpler. Java sucks for this.
+
+Simple way (no gamepad support):
 ```
 javac Game3D.java
 java Game3D
@@ -36,8 +40,8 @@ java Game3D
 
 The way I do it (desktop scaling, and a different folder for the binaries):
 ```
-rm -Rf java_out && javac -cp .:jinput-2.0.10.jar Game3D.java -d java_out
-java -Dsun.java2d.uiScale.enabled=true -Dsun.java2d.uiScale=2 -Djava.awt.headless=false -cp java_out:jinput-2.0.10.jar -Djava.library.path=jinput-2.0.10-natives-all --enable-native-access=ALL-UNNAMED  -Djava.util.logging.config.file=logging.properties Game3D
+rm -Rf java_out && javac -cp .:gamepad_jinput:gamepad_jinput/jinput-2.0.10.jar Game3D.java -d java_out
+java -Dsun.java2d.uiScale.enabled=true -Dsun.java2d.uiScale=2 -Djava.awt.headless=false -cp java_out:gamepad_jinput/jinput-2.0.10.jar -Djava.library.path=gamepad_jinput/jinput-2.0.10-natives-all --enable-native-access=ALL-UNNAMED -Djava.util.logging.config.file=gamepad_jinput/logging.properties Game3D
 ```
 
 This obviously assumes you got a Java JDK installed and know how to use the command line.
