@@ -28,6 +28,10 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   // sin/cos lookup tables
   private double[] si = new double[128];
   private double[] co = new double[128];
+
+  private int gameMode;
+  private static final int PLAY_MODE = 0;
+  private static final int TITLE_MODE = 1;
   
   private Frame window;
   private Label hiScoreLabel;
@@ -40,7 +44,11 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
   private RoundManager[] rounds = new RoundManager[] { new NormalRound(8000, new Color(0, 160, 255), new Color(0, 200, 64), 4), new NormalRound(12000, new Color(240, 160, 160), new Color(64, 180, 64), 3), new NormalRound(25000, Color.black, new Color(0, 128, 64), 2), new RoadRound(40000, new Color(0, 180, 240), new Color(0, 200, 64), false), new RoadRound(100000, Color.lightGray, new Color(64, 180, 64), true), new NormalRound(1000000, Color.black, new Color(0, 128, 64), 1) };
   private DPoint3[] ground_points = new DPoint3[] { new DPoint3(-100.0, 2.0, 28.0), new DPoint3(-100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 28.0) };
+  private LinkedList<Obstacle> obstacles = new LinkedList<>();
 
+  private Image scene_img;
+  private Graphics scene_g;
+  
   public static void main(String[] args) { new Main(); } public Main() {
     Color bg = new Color(160, 208, 176);
     for (byte b = 1; b < this.rounds.length; b++) this.rounds[b].setPrevRound(this.rounds[b - 1]);
@@ -88,7 +96,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   }
   
 
-  private LinkedList<Obstacle> obstacles = new LinkedList<>();
 
   private double vx = 0.0D;
 
@@ -106,10 +113,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
   private int contNum;
 
-  private int gameMode;
-  private static final int PLAY_MODE = 0;
-  private static final int TITLE_MODE = 1;
-
   private boolean isContinue = false;
 
   private boolean registMode = false;
@@ -121,12 +124,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private boolean isInPage = false;
 
   private Thread gameThread;
-
-
-  private Image scene_img;
-  private Graphics scene_g;
-
-  private Graphics thisGra;
 
   private boolean isLoaded = false;
 
@@ -383,7 +380,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   }
 
   public void run() {
-    this.thisGra = this.getGraphics();
     obstacles.clear();
     for (byte b = 0; b < this.rounds.length; b++) this.rounds[b].init();
     this.damaged = 0;
@@ -419,17 +415,18 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       moveObstacle();
       prt();
       putExtra();
+      Graphics g = this.getGraphics();
       if (this.registMode) {
-        this.thisGra.setColor(Color.lightGray);
-        this.thisGra.fill3DRect(0, 0, this.width, this.height, true);
-        this.thisGra.setColor(Color.black);
-        this.thisGra.drawString("Wait a moment!!", (width / 2) - 32, (height / 2) + 8);
+        g.setColor(Color.lightGray);
+        g.fill3DRect(0, 0, this.width, this.height, true);
+        g.setColor(Color.black);
+        g.drawString("Wait a moment!!", (width / 2) - 32, (height / 2) + 8);
       } else {
         // letterbox scaling (i.e. respects aspect ratio)
         int b_w = this.getWidth(); int b_h = this.getHeight(); int s_w = this.width; int s_h = this.height;
         double scale; if ((b_w / (double)b_h) > (s_w / (double)s_h)) scale = b_h / (double)s_h; else scale = b_w / (double)s_w;
         int x = (int)((b_w - s_w * scale) / 2); int y = (int)((b_h - s_h * scale) / 2);
-        this.thisGra.drawImage(this.scene_img,x,y,(int)(s_w*scale), (int)(s_h*scale), Color.WHITE, null);
+        g.drawImage(this.scene_img,x,y,(int)(s_w*scale), (int)(s_h*scale), Color.WHITE, null);
       }
       this.getToolkit().sync();
       try { Thread.sleep(55); } catch (InterruptedException e) { e.printStackTrace(); }
