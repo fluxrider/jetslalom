@@ -22,7 +22,7 @@ public class RoadRound extends RoundManager {
     this.isBrokenRoad = paramBoolean;
   }
 
-  public void generateObstacle(ObstacleCollection paramObstacleCollection) {
+  public Obstacle generateObstacle() {
     double d2;
     this.gameTime++;
     this.roadCounter--;
@@ -71,8 +71,7 @@ public class RoadRound extends RoundManager {
       this.OX1 += this.OVX;
       this.OX2 += this.OVX;
     }
-    Obstacle obstacle = createObstacle(d2, d1);
-    paramObstacleCollection.add(obstacle);
+    return createObstacle(d2, d1);
   }
 
   public void init() {

@@ -82,7 +82,7 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
 
   TimerNotifier timer;
 
-  ObstacleCollection obstacles = new ObstacleCollection();
+  private LinkedList<Obstacle> obstacles = new LinkedList<>();
 
   double vx = 0.0D;
 
@@ -251,25 +251,21 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
   }
 
   void moveObstacle() {
-    int i = (int)(Math.abs(this.vx) * 100.0D);
+    int i = (int)(Math.abs(this.vx) * 100.0);
     DrawEnv.nowSin = si[i];
     DrawEnv.nowCos = co[i];
-    if (this.vx > 0.0D)
-      DrawEnv.nowSin = -DrawEnv.nowSin;
-    for (Obstacle obstacle = this.obstacles.head.next; obstacle != this.obstacles.tail;) {
-      Obstacle obstacle1 = obstacle.next;
-      obstacle.move(this.vx, 0.0D, -1.0D);
-      DPoint3[] arrayOfDPoint3 = obstacle.points;
-      if ((arrayOfDPoint3[0]).z <= 1.1D) {
+    if (this.vx > 0.0) DrawEnv.nowSin = -DrawEnv.nowSin;
+    ListIterator<Obstacle> iter = this.obstacles.listIterator(); while(iter.hasNext()) { Obstacle obstacle = iter.next();
+      obstacle.move(this.vx, 0.0, -1.0);
+      DPoint3[] points = obstacle.points;
+      if ((points[0]).z <= 1.1) {
         double d = this.mywidth * DrawEnv.nowCos;
-        if (-d < (arrayOfDPoint3[2]).x && (arrayOfDPoint3[0]).x < d)
-          this.damaged++;
-        obstacle.release();
+        if (-d < (points[2]).x && (points[0]).x < d) this.damaged++;
+        iter.remove();
       }
-      obstacle = obstacle1;
     }
     this.rounds[this.round].move(this.vx);
-    this.rounds[this.round].generateObstacle(this.obstacles);
+    { Obstacle obstacle = this.rounds[this.round].generateObstacle(); if(obstacle != null) this.obstacles.addFirst(obstacle); }
   }
 
   private void updateHiScoreInfoObj(int paramInt) {
@@ -336,7 +332,7 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     } else {
       this.gameMode = TITLE_MODE;
     }
-    this.obstacles.removeAll();
+    obstacles.clear();
     for (byte b = 0; b < this.rounds.length; b++)
       this.rounds[b].init();
     this.damaged = 0;
@@ -367,7 +363,7 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     this.scFlag = !this.scFlag;
     this.ground_color = this.rounds[this.round].getGroundColor();
     this.gra.setColor(this.ground_color); DrawEnv.drawPolygon(this.gra, this.ground_points);
-    this.obstacles.draw(this.gra);
+    for(Obstacle obstacle : obstacles) obstacle.draw(this.gra);
     this.shipCounter++;
     if (this.gameMode != TITLE_MODE) {
       int i = 24 * this.height / 200;
@@ -483,9 +479,8 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
 
   public void run() {
     this.thisGra = this.getGraphics();
-    this.obstacles.removeAll();
-    for (byte b = 0; b < this.rounds.length; b++)
-      this.rounds[b].init();
+    obstacles.clear();
+    for (byte b = 0; b < this.rounds.length; b++) this.rounds[b].init();
     this.damaged = 0;
     this.round = 0;
     this.score = 0;

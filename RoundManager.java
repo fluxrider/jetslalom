@@ -14,7 +14,7 @@ public abstract class RoundManager {
   protected int gameTime;
 
   protected final Obstacle createObstacle(double paramDouble1, double paramDouble2) {
-    Obstacle obstacle = Obstacle.newObstacle();
+    Obstacle obstacle = new Obstacle();
     DPoint3[] arrayOfDPoint3 = obstacle.points;
     arrayOfDPoint3[0].setXYZ(paramDouble1 - paramDouble2, 2.0D, 25.5D);
     arrayOfDPoint3[1].setXYZ(paramDouble1, -1.4D, 25.0D);
@@ -30,7 +30,7 @@ public abstract class RoundManager {
     return createObstacle(d, 0.6D);
   }
 
-  public abstract void generateObstacle(ObstacleCollection paramObstacleCollection);
+  public abstract Obstacle generateObstacle();
 
   public boolean isNextRound(int paramInt) {
     return !(paramInt < this.nextRoundScore);
