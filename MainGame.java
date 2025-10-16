@@ -80,8 +80,6 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
   DPoint3[] ground_points = new DPoint3[] { new DPoint3(-100.0, 2.0, 28.0), new DPoint3(-100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 28.0) };
   Color ground_color;
 
-  TimerNotifier timer;
-
   private LinkedList<Obstacle> obstacles = new LinkedList<>();
 
   double vx = 0.0D;
@@ -188,7 +186,6 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     this.gameThread = null;
     this.registMode = false;
     this.gameMode = TITLE_MODE;
-    this.timer.interrupt();
   }
 
   void keyEvent(int keycode, boolean held) {
@@ -282,7 +279,6 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
   public void mouseExited(MouseEvent paramMouseEvent) {}
 
   public void start() {
-    this.timer = new TimerNotifier(55);
     this.gameThread = new Thread(this);
     this.gameThread.start();
   }
@@ -526,7 +522,7 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
         this.thisGra.drawImage(this.img,x,y,(int)(s_w*scale), (int)(s_h*scale), Color.WHITE, null);
       }
       this.getToolkit().sync();
-      this.timer.wait1step();
+      try { Thread.sleep(55); } catch (InterruptedException e) { e.printStackTrace(); }
     }
   }
 
