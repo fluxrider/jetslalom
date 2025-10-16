@@ -119,13 +119,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
   private int mouseY = 0;
 
-  private boolean isInPage = false;
-
-
-  private boolean isLoaded = false;
-
   private int round;
-
 
   private boolean rFlag = false;
 
@@ -300,9 +294,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       this.rFlag = false;
       this.lFlag = true;
     }
-    if (this.gameMode == PLAY_MODE)
-      return;
-    if (this.isInPage && this.gameMode == TITLE_MODE) startGame(PLAY_MODE, false);
   }
 
   public void mouseDragged(MouseEvent paramMouseEvent) {}
