@@ -20,6 +20,7 @@ public class NumberLabel extends Canvas {
     this.width = width;
     this.height = height;
     setSize(width, height);
+    setFocusable(false);
   }
 
   public void paint(Graphics g) {

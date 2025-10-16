@@ -46,13 +46,11 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     window.add(this, BorderLayout.CENTER);
     window.add(this.hiScoreLabel, BorderLayout.SOUTH);
     window.add(npanel, BorderLayout.NORTH);
+    window.setSize(800, 600);
     window.setVisible(true);
-
-    this.init();
     this.requestFocus();
 
-    window.setSize(800, 600);
-
+    this.init();
     this.start();
     this.startGame(1, false);
   }
