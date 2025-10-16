@@ -35,7 +35,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private Label hiScoreLabel;
   private Label lblContinue;
   private NumberLabel scoreWin;
-  private Gamepad gamepad = new Gamepad();
 
   private Image ship[] = new Image[2];
   private Clip explosion;
@@ -43,12 +42,17 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private RoundManager[] rounds = new RoundManager[] { new NormalRound(8000, new Color(0, 160, 255), new Color(0, 200, 64), 4), new NormalRound(12000, new Color(240, 160, 160), new Color(64, 180, 64), 3), new NormalRound(25000, Color.black, new Color(0, 128, 64), 2), new RoadRound(40000, new Color(0, 180, 240), new Color(0, 200, 64), false), new RoadRound(100000, Color.lightGray, new Color(64, 180, 64), true), new NormalRound(1000000, Color.black, new Color(0, 128, 64), 1) };
   private DPoint3[] ground_points = new DPoint3[] { new DPoint3(-100.0, 2.0, 28.0), new DPoint3(-100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 28.0) };
   private LinkedList<Obstacle> obstacles = new LinkedList<>();
-  private double vx = 0.0; // ship's left/right movement
+  private double vx; // ship's left/right movement
 
   private Image scene_img;
   private Graphics scene_g;
   private Thread gameThread;
-  
+
+  private Gamepad gamepad = new Gamepad();
+  private boolean key_held[] = new boolean[256]; // stores held state of KeyEvent for the VK range I care about
+  private boolean mouse_left_button_held, mouse_right_button_held;
+  private int mouse_x, mouse_y;
+
   public static void main(String[] args) { new Main(); } public Main() {
     Color bg = new Color(160, 208, 176);
     for (byte b = 1; b < this.rounds.length; b++) this.rounds[b].setPrevRound(this.rounds[b - 1]);
@@ -96,7 +100,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     this.gameThread.start();
   }
 
-
   private int score;
 
   private int prevScore;
@@ -109,54 +112,55 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
   private boolean isContinue = false;
 
-  private int mouseX = 0;
-
-  private int mouseY = 0;
-
   private int round;
-
-  private boolean rFlag = false;
-
-  private boolean lFlag = false;
 
   private int damaged;
 
-  void keyEvent(int keycode, boolean held) {
-    if (keycode == VK_RIGHT || keycode == VK_L || keycode == VK_D) this.rFlag = held;
-    if (keycode == VK_LEFT || keycode == VK_J || keycode == VK_A) this.lFlag = held;
-    if (!held) return;
-    if(keycode == VK_F) this.toggleFullScreen();
+  public void keyPressed(KeyEvent e) {
+    int keycode = e.getKeyCode();
+    if(keycode >= 0 && keycode < key_held.length) key_held[keycode] = true;
     if(keycode == VK_ESCAPE) System.exit(0);
-    if (keycode == VK_G) System.gc();
-    if (this.title_mode && (keycode == VK_SPACE || keycode == VK_ENTER || keycode == VK_W || keycode == VK_UP || keycode == VK_C)) startGame(true, !(keycode != VK_C));
-    // TODO is this some sort of cheat?
-    if (this.title_mode && keycode == VK_T) {
-      this.prevScore = 110000;
-      this.contNum = 100;
-      startGame(true, true);
-    }
+    if(this.title_mode && (keycode == VK_SPACE || keycode == VK_ENTER || keycode == VK_W || keycode == VK_UP || keycode == VK_C)) startGame(true, !(keycode != VK_C));
+    if(this.title_mode && keycode == VK_T) { this.prevScore = 110000; this.contNum = 100; startGame(true, true); } // is this some sort of cheat?
   }
+  public void keyReleased(KeyEvent e) {
+    int keycode = e.getKeyCode();
+    if(keycode >= 0 && keycode < key_held.length) key_held[keycode] = false;
+    if(keycode == VK_F) this.toggleFullScreen();
+  }
+  public void keyTyped(KeyEvent paramKeyEvent) { }
 
-  void keyOperate() {
+  public void mousePressed(MouseEvent e) {
+    int mod = e.getModifiersEx();
+    this.mouse_left_button_held = (mod & BUTTON1_DOWN_MASK) == BUTTON1_DOWN_MASK;
+    this.mouse_right_button_held = (mod & BUTTON3_DOWN_MASK) == BUTTON3_DOWN_MASK;
+    if(this.title_mode) startGame(true, false);
+  }
+  public void mouseReleased(MouseEvent e) {
+    int mod = e.getModifiersEx();
+    this.mouse_left_button_held = (mod & BUTTON1_DOWN_MASK) == BUTTON1_DOWN_MASK;
+    this.mouse_right_button_held = (mod & BUTTON3_DOWN_MASK) == BUTTON3_DOWN_MASK;
+  }
+  public void mouseMoved(MouseEvent e) {
+    this.mouse_x = e.getX();
+    this.mouse_y = e.getY();
+  }
+  public void mouseEntered(MouseEvent e) { }
+  public void mouseExited(MouseEvent e) { }
+  public void mouseClicked(MouseEvent e) { }
+  public void mouseDragged(MouseEvent e) { }
+  
+  void ship_input(boolean left, boolean right) {
     // turn
     if(this.damaged == 0 && !this.title_mode) {
-      if(rFlag) this.vx = Math.max(this.vx - 0.1, -.6);
-      if(lFlag) this.vx = Math.min(this.vx + 0.1, .6);
+      if(right) this.vx = Math.max(this.vx - 0.1, -.6);
+      if(left) this.vx = Math.min(this.vx + 0.1, .6);
     }
     // stabilize back
-    if(!lFlag && !rFlag) {
+    if(!left && !right) {
       if(this.vx < 0.0) this.vx = Math.min(this.vx + .025, 0);
       if(this.vx > 0.0) this.vx = Math.max(this.vx - .025, 0);
     }
-  }
-
-  public void mouseReleased(MouseEvent paramMouseEvent) {
-    this.rFlag = false;
-    this.lFlag = false;
-  }
-
-  public void keyPressed(KeyEvent paramKeyEvent) {
-    keyEvent(paramKeyEvent.getKeyCode(), true);
   }
 
   void moveObstacle() {
@@ -176,10 +180,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     this.rounds[this.round].move(this.vx);
     { Obstacle obstacle = this.rounds[this.round].generateObstacle(); if(obstacle != null) this.obstacles.addFirst(obstacle); }
   }
-
-  public void mouseEntered(MouseEvent paramMouseEvent) {}
-
-  public void mouseExited(MouseEvent paramMouseEvent) {}
 
   private Font titleFont = new Font("Courier", Font.PLAIN, 14);
   private void showTitle() {
@@ -247,28 +247,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     }
   }
 
-  public void mouseClicked(MouseEvent paramMouseEvent) {}
-
-  public void mousePressed(MouseEvent paramMouseEvent) {
-    int i = paramMouseEvent.getModifiersEx(); // DAVE deprecated warning, but since the constants aren't used here, this probably breaks things BUTTON3_MASK VS BUTTON3_DOWN_MASK
-    if ((i & 0x4) != 0) {
-      this.rFlag = true;
-      this.lFlag = false;
-    } else if ((i & 0x10) != 0) {
-      this.rFlag = false;
-      this.lFlag = true;
-    }
-  }
-
-  public void mouseDragged(MouseEvent paramMouseEvent) {}
-
-  public void mouseMoved(MouseEvent paramMouseEvent) {
-    this.mouseX = paramMouseEvent.getX();
-    this.mouseY = paramMouseEvent.getY();
-  }
-
-  public void keyTyped(KeyEvent paramKeyEvent) {}
-
   public int getHiScore() {
     return this.hiscore;
   }
@@ -288,10 +266,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     this.damaged++;
   }
 
-  public void keyReleased(KeyEvent paramKeyEvent) {
-    keyEvent(paramKeyEvent.getKeyCode(), false);
-  }
-
   public Dimension getPreferredSize() {
     return new Dimension(this.width, this.height);
   }
@@ -305,7 +279,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     this.vx = 0.0;
     this.title_mode = true;
     while (this.gameThread == Thread.currentThread()) {
-      //if(!this.hasFocus()) this.requestFocus();
+      if(this.rounds[this.round].isNextRound(this.score)) this.round++;
 
       // gamepad: note that the external library I found does not seem to support plug and play at least in my Linux environment (i.e. the gamepad must be plugged before the game starts)
       boolean gamepad_left = false, gamepad_right = false; double dead_zone = .05;
@@ -323,12 +297,10 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       if(gamepad.select && gamepad.n_select) this.toggleFullScreen();
       if(this.title_mode && ((gamepad.start && gamepad.n_start) || (gamepad.south_maybe && gamepad.n_south_maybe) || (gamepad.north_maybe && gamepad.n_north_maybe) || (gamepad.west_maybe && gamepad.n_west_maybe) || (gamepad.east_maybe && gamepad.n_east_maybe))) startGame(true, false);
 
-      if (this.rounds[this.round].isNextRound(this.score))
-        this.round++;
-      boolean lFlag_stored = this.lFlag; this.lFlag |= gamepad_left;
-      boolean rFlag_stored = this.rFlag; this.rFlag |= gamepad_right;
-      keyOperate();
-      this.lFlag = lFlag_stored; this.rFlag = rFlag_stored;
+      boolean keyboard_left = key_held[VK_LEFT] || key_held[VK_J] || key_held[VK_A];
+      boolean keyboard_right = key_held[VK_RIGHT] || key_held[VK_L] || key_held[VK_D];
+
+      ship_input(gamepad_left | mouse_left_button_held | keyboard_left, gamepad_right | mouse_right_button_held | keyboard_right);
       moveObstacle();
       prt();
       putExtra();
