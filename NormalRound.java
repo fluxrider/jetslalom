@@ -2,24 +2,22 @@ import java.awt.*;
 
 public class NormalRound extends RoundManager {
   private int interval;
-  
   private int counter;
   
-  public NormalRound(int paramInt1, Color paramColor1, Color paramColor2, int paramInt2) {
-    this.nextRoundScore = paramInt1;
-    this.skyColor = paramColor1;
-    this.groundColor = paramColor2;
-    this.interval = paramInt2;
+  public NormalRound(int round_score, Color sky_color, Color ground_color, int interval) {
+    this.nextRoundScore = round_score;
+    this.skyColor = sky_color;
+    this.groundColor = ground_color;
+    this.interval = interval;
   }
   
-  public void generateObstacle(ObstacleCollection paramObstacleCollection) {
+  public void generateObstacle(ObstacleCollection obstacles) {
     this.gameTime++;
     this.counter++;
-    if (this.counter < this.interval)
-      return; 
+    if (this.counter < this.interval) return; 
     this.counter = 0;
-    Obstacle obstacle = createObstacle(0.6D);
-    paramObstacleCollection.add(obstacle);
+    Obstacle obstacle = createObstacle(0.6);
+    obstacles.add(obstacle);
   }
   
   public void init() {
