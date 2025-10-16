@@ -3,6 +3,7 @@ import java.awt.event.*;
 import static java.awt.event.KeyEvent.*;
 import java.io.*;
 import java.net.*;
+import java.util.*;
 import javax.imageio.*;
 import javax.sound.sampled.*;
 
@@ -65,8 +66,8 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     game.startGame(1, false);
   }
   
-  private static RandomGenerator random = new RandomGenerator((int)System.currentTimeMillis());
-  public static int getRandom() { return random.nextInt() & Integer.MAX_VALUE; }
+  private static Random random = new Random();
+  public static int getRandom() { return random.nextInt(Integer.MAX_VALUE); }
 
   Gamepad gamepad = new Gamepad();
   
