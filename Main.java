@@ -110,8 +110,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
   private int contNum;
 
-  private boolean isContinue = false;
-
   private int round;
 
   private int damaged;
@@ -304,6 +302,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       moveObstacle();
       prt();
       putExtra();
+      
       // letterbox scaling (i.e. respects aspect ratio)
       Graphics g = this.getGraphics();
       int b_w = this.getWidth(); int b_h = this.getHeight(); int s_w = this.width; int s_h = this.height;
