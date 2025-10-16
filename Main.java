@@ -96,8 +96,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     this.gameThread = new Thread(this);
     this.gameThread.start();
   }
-  
-
 
   private double vx = 0.0D;
 
@@ -134,8 +132,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private boolean rFlag = false;
 
   private boolean lFlag = false;
-
-  private boolean scFlag = true;
 
   private int damaged;
 
@@ -271,10 +267,8 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     this.scene_g.fillRect(0, 0, this.width, this.height);
     if (this.gameMode == PLAY_MODE) {
       this.score += 20;
-      if (this.scFlag)
-        this.scoreWin.setNum(this.score);
+      this.scoreWin.setNum(this.score);
     }
-    this.scFlag = !this.scFlag;
     this.scene_g.setColor(this.rounds[this.round].getGroundColor()); DrawEnv.drawPolygon(this.scene_g, this.ground_points);
     for(Obstacle obstacle : obstacles) obstacle.draw(this.scene_g);
     this.shipCounter++;
