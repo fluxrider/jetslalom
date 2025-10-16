@@ -43,11 +43,10 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private DPoint3[] ground_points = new DPoint3[] { new DPoint3(-100.0, 2.0, 28.0), new DPoint3(-100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 28.0) };
   private LinkedList<Obstacle> obstacles = new LinkedList<>();
   private double vx; // ship's left/right movement
-  private int damaged;
-  private int score, prevScore, hiscore;
-  private int shipCounter;
-  private int contNum;
   private int round;
+  private int damaged;
+  private int score, prevScore, hiscore, contNum;
+  private int ship_animation;
 
   private Image scene_img;
   private Graphics scene_g;
@@ -216,11 +215,11 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     }
     this.scene_g.setColor(this.rounds[this.round].getGroundColor()); DrawEnv.drawPolygon(this.scene_g, this.ground_points);
     for(Obstacle obstacle : obstacles) obstacle.draw(this.scene_g);
-    this.shipCounter++;
+    this.ship_animation++;
     if (!this.title_mode) {
       int i = 24 * this.height / 200;
-      Image image = this.ship[this.shipCounter % 4 > 1? 1 : 0];
-      if (this.shipCounter % 12 > 6) i = 22 * this.height / 200;
+      Image image = this.ship[this.ship_animation % 4 > 1? 1 : 0];
+      if (this.ship_animation % 12 > 6) i = 22 * this.height / 200;
       if (this.score < 200) i = (12 + this.score / 20) * this.height / 200;
       if (this.damaged < 10) this.scene_g.drawImage(image, (width / 2) - image.getWidth(null)/2, this.height - i, null);
       if (this.damaged > 0) putbomb();
