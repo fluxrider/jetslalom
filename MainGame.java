@@ -9,7 +9,6 @@ import javax.sound.sampled.*;
 
 class MainGame extends Panel implements Runnable, MouseListener, MouseMotionListener, KeyListener, WindowListener {
 
-  private static Frame window;
   public void windowDeactivated(WindowEvent paramWindowEvent) {}
   public void windowClosing(WindowEvent paramWindowEvent) { System.exit(0); }
   public void windowOpened(WindowEvent paramWindowEvent) {}
@@ -19,51 +18,48 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
   public void windowIconified(WindowEvent paramWindowEvent) {}
   public void toggleFullScreen() {
     GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-    if(gd.isFullScreenSupported()) gd.setFullScreenWindow(gd.getFullScreenWindow() == window? null : window);
+    if(gd.isFullScreenSupported()) gd.setFullScreenWindow(gd.getFullScreenWindow() == this.window? null : this.window);
   }
 
+  private Frame window;
   private Label hiScoreLabel;
   private Label lblContinue;
   private NumberLabel scoreWin;
 
-  public static void main(String[] args) {
+  public static void main(String[] args) { new MainGame(); } public MainGame() {
+    for (byte b = 1; b < this.rounds.length; b++) this.rounds[b].setPrevRound(this.rounds[b - 1]);
+    
+    this.addKeyListener(this);
+    this.addMouseListener(this);
+    this.addMouseMotionListener(this);
+
+    this.setBackground(new Color(160, 208, 176));
+    this.setLayout(new BorderLayout());
+    this.hiScoreLabel = new Label("Your Hi-score:0         ");
+    this.lblContinue = new Label("            ");
+    this.scoreWin = new NumberLabel(64, 12);
+    Panel panel = new Panel();
+    panel.add(new Label("Score:")); panel.add(this.scoreWin);
+    panel.add(new Label("Continue penalty:")); panel.add(this.lblContinue);
+    this.add(panel, BorderLayout.NORTH);
+    this.add(this.hiScoreLabel, BorderLayout.SOUTH);
+    
     window = new Frame("Jet Slalom Resurrected");
-    MainGame game = new MainGame();
-    window.addWindowListener(game);
-    window.setLayout(new BorderLayout());
-    window.add(game, BorderLayout.CENTER);
+    window.addWindowListener(this);
+    window.add(this, BorderLayout.CENTER);
     window.setVisible(true);
 
-    game.setLayout(new BorderLayout());
-    game.setBackground(new Color(160, 208, 176));
-    game.scoreWin = new NumberLabel(64, 12);
-    game.lblContinue = new Label("            ");
-    Panel panel = new Panel(new FlowLayout(0, 5, 0));
-    panel.setLayout(new FlowLayout());
-    panel.add(new Label("Score:"));
-    panel.add(game.scoreWin);
-    panel.add(new Label("Continue penalty:"));
-    panel.add(game.lblContinue);
-    game.add(panel, BorderLayout.NORTH);
-    game.hiScoreLabel = new Label("Your Hi-score:0         ");
-    game.add(game.hiScoreLabel, BorderLayout.SOUTH);
-
-    game.addKeyListener(game);
-    game.addMouseListener(game);
-    game.addMouseMotionListener(game);
-    for (byte b = 1; b < game.rounds.length; b++)
-      game.rounds[b].setPrevRound(game.rounds[b - 1]);
-
-    game.init();
-    game.requestFocus();
-    game.invalidate();
-    game.validate();
+    this.init();
+    this.requestFocus();
+    this.invalidate();
+    this.validate();
 
     window.validate();
     window.pack();
     window.setSize(800, 600);
-    game.start();
-    game.startGame(1, false);
+
+    this.start();
+    this.startGame(1, false);
   }
 
   private static Random random = new Random();
