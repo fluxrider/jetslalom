@@ -1,4 +1,4 @@
-// This class is a stub for when you want to compile without gamepad support
+// This class is a mock stub for when you want to compile without gamepad support
 
 class Gamepad {
 

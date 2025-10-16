@@ -13,24 +13,24 @@ public abstract class RoundManager {
   
   protected int gameTime;
   
-  protected final Obstacle createObstacle(GameRecorder paramGameRecorder, double paramDouble1, double paramDouble2) {
+  protected final Obstacle createObstacle(double paramDouble1, double paramDouble2) {
     Obstacle obstacle = Obstacle.newObstacle();
     DPoint3[] arrayOfDPoint3 = obstacle.points;
     arrayOfDPoint3[0].setXYZ(paramDouble1 - paramDouble2, 2.0D, 25.5D);
     arrayOfDPoint3[1].setXYZ(paramDouble1, -1.4D, 25.0D);
     arrayOfDPoint3[2].setXYZ(paramDouble1 + paramDouble2, 2.0D, 25.5D);
     arrayOfDPoint3[3].setXYZ(paramDouble1, 2.0D, 24.5D);
-    obstacle.color = colors[paramGameRecorder.getRandom() % 4];
+    obstacle.color = colors[MainGame.getRandom() % 4];
     obstacle.prepareNewObstacle();
     return obstacle;
   }
   
-  protected final Obstacle createObstacle(GameRecorder paramGameRecorder, double paramDouble) {
-    double d = (paramGameRecorder.getRandom() % 256) / 8.0D - 16.0D;
-    return createObstacle(paramGameRecorder, d, 0.6D);
+  protected final Obstacle createObstacle(double paramDouble) {
+    double d = (MainGame.getRandom() % 256) / 8.0D - 16.0D;
+    return createObstacle(d, 0.6D);
   }
   
-  public abstract void generateObstacle(ObstacleCollection paramObstacleCollection, GameRecorder paramGameRecorder);
+  public abstract void generateObstacle(ObstacleCollection paramObstacleCollection);
   
   public boolean isNextRound(int paramInt) {
     return !(paramInt < this.nextRoundScore);

@@ -64,6 +64,9 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     game.start();
     game.startGame(1, false);
   }
+  
+  private static RandomGenerator random = new RandomGenerator((int)System.currentTimeMillis());
+  public static int getRandom() { return random.nextInt() & Integer.MAX_VALUE; }
 
   Gamepad gamepad = new Gamepad();
   
@@ -76,10 +79,6 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
   Ground ground = new Ground();
   
   TimerNotifier timer;
-  
-  GameRecorder recorder = new GameRecorder();
-  
-  GameRecorder hiscoreRec = null;
   
   ObstacleCollection obstacles = new ObstacleCollection();
   
@@ -212,8 +211,6 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
       System.gc(); 
     if (this.gameMode != PLAY_MODE && (paramInt == VK_SPACE || paramInt == VK_C))
       startGame(PLAY_MODE, !(paramInt != VK_C)); 
-    if (this.gameMode == TITLE_MODE && paramInt == VK_D && this.hiscoreRec != null)
-      startGame(DEMO_MODE, false); 
     if (this.gameMode != PLAY_MODE && paramInt == VK_T) {
       this.prevScore = 110000;
       this.contNum = 100;
@@ -230,9 +227,8 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
         i |= 0x2; 
       if (bool2)
         i |= 0x1; 
-      this.recorder.writeStatus(i);
     } else if (this.gameMode == DEMO_MODE) {
-      int i = this.hiscoreRec.readStatus();
+      int i = 0; // this.hiscoreRec.readStatus();
       bool1 = !((i & 0x2) == 0);
       bool2 = !((i & 0x1) == 0);
     } 
@@ -270,9 +266,6 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
   }
   
   void moveObstacle() {
-    GameRecorder gameRecorder = this.recorder;
-    if (this.gameMode == DEMO_MODE)
-      gameRecorder = this.hiscoreRec; 
     int i = (int)(Math.abs(this.vx) * 100.0D);
     DrawEnv.nowSin = si[i];
     DrawEnv.nowCos = co[i];
@@ -291,7 +284,7 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
       obstacle = obstacle1;
     } 
     this.rounds[this.round].move(this.vx);
-    this.rounds[this.round].generateObstacle(this.obstacles, gameRecorder);
+    this.rounds[this.round].generateObstacle(this.obstacles);
   }
   
   private void updateHiScoreInfoObj(int paramInt) {
@@ -354,14 +347,9 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
       return; 
     this.vx = 0.0D;
     if (paramInt == PLAY_MODE || paramInt == DEMO_MODE) {
-      if (paramInt == DEMO_MODE && this.hiscoreRec == null)
+      if (paramInt == DEMO_MODE)
         return; 
       this.gameMode = paramInt;
-      if (paramInt == PLAY_MODE) {
-        this.recorder = new GameRecorder();
-      } else {
-        this.hiscoreRec.toStart();
-      } 
     } else {
       this.gameMode = TITLE_MODE;
     } 
@@ -381,13 +369,6 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
       } 
     } else {
       this.contNum = 0;
-    } 
-    if (paramInt == 2) {
-      this.round = this.hiscoreRec.startRound;
-      this.score = this.hiscoreRec.startScore;
-    } else {
-      this.recorder.startRound = this.round;
-      this.recorder.startScore = this.score;
     } 
     this.lblContinue.setText("" + (this.contNum * 1000));
   }
@@ -617,7 +598,6 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
       this.prevScore = this.score; 
     if (this.score - this.contNum * 1000 > this.hiscore && this.gameMode == PLAY_MODE) {
       this.hiscore = this.score - this.contNum * 1000;
-      this.hiscoreRec = this.recorder;
     } 
     this.hiScoreLabel.setText("Your Hi-score:" + this.hiscore);
     this.gameMode = TITLE_MODE;

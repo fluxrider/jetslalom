@@ -22,17 +22,17 @@ public class RoadRound extends RoundManager {
     this.isBrokenRoad = paramBoolean;
   }
   
-  public void generateObstacle(ObstacleCollection paramObstacleCollection, GameRecorder paramGameRecorder) {
+  public void generateObstacle(ObstacleCollection paramObstacleCollection) {
     double d2;
     this.gameTime++;
     this.roadCounter--;
     double d1 = 1.1D;
     if (this.isBrokenRoad && this.roadCounter % 13 < 7) {
       d1 = 0.7D;
-      d2 = (paramGameRecorder.getRandom() % 256) / 8.0D - 16.0D;
+      d2 = (MainGame.getRandom() % 256) / 8.0D - 16.0D;
       if (d2 < this.OX2 && d2 > this.OX1) {
         d1 = 1.2D;
-        if (paramGameRecorder.getRandom() % 256 > 128) {
+        if (MainGame.getRandom() % 256 > 128) {
           d2 = this.OX1;
         } else {
           d2 = this.OX2;
@@ -57,7 +57,7 @@ public class RoadRound extends RoundManager {
     } else {
       if (this.roadCounter < 0) {
         this.direction = -this.direction;
-        this.roadCounter += 2 * (paramGameRecorder.getRandom() % 8 + 4);
+        this.roadCounter += 2 * (MainGame.getRandom() % 8 + 4);
       } 
       if (this.direction > 0) {
         this.OVX += 0.125D;
@@ -71,7 +71,7 @@ public class RoadRound extends RoundManager {
       this.OX1 += this.OVX;
       this.OX2 += this.OVX;
     } 
-    Obstacle obstacle = createObstacle(paramGameRecorder, d2, d1);
+    Obstacle obstacle = createObstacle(d2, d1);
     paramObstacleCollection.add(obstacle);
   }
   

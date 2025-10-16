@@ -12,13 +12,13 @@ public class NormalRound extends RoundManager {
     this.interval = paramInt2;
   }
   
-  public void generateObstacle(ObstacleCollection paramObstacleCollection, GameRecorder paramGameRecorder) {
+  public void generateObstacle(ObstacleCollection paramObstacleCollection) {
     this.gameTime++;
     this.counter++;
     if (this.counter < this.interval)
       return; 
     this.counter = 0;
-    Obstacle obstacle = createObstacle(paramGameRecorder, 0.6D);
+    Obstacle obstacle = createObstacle(0.6D);
     paramObstacleCollection.add(obstacle);
   }
   
