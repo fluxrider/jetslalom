@@ -4,12 +4,7 @@ public class NormalRound extends RoundManager {
   private int interval;
   private int counter;
 
-  public NormalRound(int round_score, Color sky_color, Color ground_color, int interval) {
-    this.nextRoundScore = round_score;
-    this.skyColor = sky_color;
-    this.groundColor = ground_color;
-    this.interval = interval;
-  }
+  public NormalRound(int round_score, Color sky_color, Color ground_color, int interval) { this.nextRoundScore = round_score; this.skyColor = sky_color; this.groundColor = ground_color; this.interval = interval; }
 
   public Obstacle generateObstacle() {
     this.gameTime++;
