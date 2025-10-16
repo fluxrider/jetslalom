@@ -58,88 +58,86 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
   private static Random random = new Random();
   public static int getRandom() { return random.nextInt(Integer.MAX_VALUE); }
 
-  Gamepad gamepad = new Gamepad();
+  private Gamepad gamepad = new Gamepad();
 
-  Clip explosion;
+  private Clip explosion;
 
-  static double[] si = new double[128];
+  private static double[] si = new double[128];
 
-  static double[] co = new double[128];
+  private static double[] co = new double[128];
 
-  DPoint3[] ground_points = new DPoint3[] { new DPoint3(-100.0, 2.0, 28.0), new DPoint3(-100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 28.0) };
-  Color ground_color;
+  private DPoint3[] ground_points = new DPoint3[] { new DPoint3(-100.0, 2.0, 28.0), new DPoint3(-100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 28.0) };
+  private Color ground_color;
 
   private LinkedList<Obstacle> obstacles = new LinkedList<>();
 
-  double vx = 0.0D;
+  private double vx = 0.0D;
 
-  double mywidth = 0.7D;
+  private double mywidth = 0.7D;
 
-  int mywidth2;
+  private int mywidth2;
 
-  int score;
+  private int score;
 
-  int prevScore;
+  private int prevScore;
 
-  int hiscore;
+  private int hiscore;
 
-  int shipCounter;
+  private int shipCounter;
 
-  int contNum;
+  private int contNum;
 
-  int gameMode;
-  static final int PLAY_MODE = 0;
-  static final int TITLE_MODE = 1;
+  private int gameMode;
+  private static final int PLAY_MODE = 0;
+  private static final int TITLE_MODE = 1;
 
-  boolean isContinue = false;
+  private boolean isContinue = false;
 
-  boolean registMode = false;
+  private boolean registMode = false;
 
-  int width;
+  private int width;
 
-  int height;
+  private int height;
 
-  int centerX;
+  private int centerX;
 
-  int centerY;
+  private int centerY;
 
-  int mouseX = 0;
+  private int mouseX = 0;
 
-  int mouseY = 0;
+  private int mouseY = 0;
 
-  boolean isInPage = false;
+  private boolean isInPage = false;
 
-  Thread gameThread;
+  private Thread gameThread;
 
-  Image img;
+  private Image img;
 
-  Image myImg;
+  private Image myImg;
 
-  Image myImg2;
+  private Image myImg2;
 
-  Image myRealImg;
+  private Image myRealImg;
 
-  Image myRealImg2;
+  private Image myRealImg2;
 
-  Graphics gra;
+  private Graphics gra;
 
-  Graphics thisGra;
+  private Graphics thisGra;
 
-  MediaTracker tracker;
+  private boolean isLoaded = false;
 
-  boolean isLoaded = false;
+  private int round;
 
-  int round;
+  private RoundManager[] rounds = new RoundManager[] { new NormalRound(8000, new Color(0, 160, 255), new Color(0, 200, 64), 4), new NormalRound(12000, new Color(240, 160, 160), new Color(64, 180, 64), 3), new NormalRound(25000, Color.black, new Color(0, 128, 64), 2), new RoadRound(40000, new Color(0, 180, 240), new Color(0, 200, 64), false), new RoadRound(100000, Color.lightGray, new Color(64, 180, 64), true), new NormalRound(1000000, Color.black, new Color(0, 128, 64), 1) };
 
-  RoundManager[] rounds = new RoundManager[] { new NormalRound(8000, new Color(0, 160, 255), new Color(0, 200, 64), 4), new NormalRound(12000, new Color(240, 160, 160), new Color(64, 180, 64), 3), new NormalRound(25000, Color.black, new Color(0, 128, 64), 2), new RoadRound(40000, new Color(0, 180, 240), new Color(0, 200, 64), false), new RoadRound(100000, Color.lightGray, new Color(64, 180, 64), true), new NormalRound(1000000, Color.black, new Color(0, 128, 64), 1) };
+  private boolean rFlag = false;
 
-  boolean rFlag = false;
+  private boolean lFlag = false;
 
-  boolean lFlag = false;
+  private boolean scFlag = true;
 
-  boolean scFlag = true;
-
-  int damaged;
+  private int damaged;
 
   private char[] memInfo = new char[8];
 
@@ -378,12 +376,6 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     int j = this.damaged * 4 * this.height / 200;
     this.gra.fillOval(this.centerX - i, 186 * this.height / 200 - j, i * 2, j * 2);
     this.damaged++;
-  }
-
-  private Image loadImage(String paramString) {
-    Image image = this.getToolkit().getImage(ClassLoader.getSystemResource(paramString));
-    this.tracker.addImage(image, 0);
-    return image;
   }
 
   public void keyReleased(KeyEvent paramKeyEvent) {
