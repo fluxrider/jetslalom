@@ -43,6 +43,11 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private DPoint3[] ground_points = new DPoint3[] { new DPoint3(-100.0, 2.0, 28.0), new DPoint3(-100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 28.0) };
   private LinkedList<Obstacle> obstacles = new LinkedList<>();
   private double vx; // ship's left/right movement
+  private int damaged;
+  private int score, prevScore, hiscore;
+  private int shipCounter;
+  private int contNum;
+  private int round;
 
   private Image scene_img;
   private Graphics scene_g;
@@ -99,20 +104,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     this.gameThread = new Thread(this);
     this.gameThread.start();
   }
-
-  private int score;
-
-  private int prevScore;
-
-  private int hiscore;
-
-  private int shipCounter;
-
-  private int contNum;
-
-  private int round;
-
-  private int damaged;
 
   public void keyPressed(KeyEvent e) {
     int keycode = e.getKeyCode();
@@ -245,27 +236,14 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     }
   }
 
-  public int getHiScore() {
-    return this.hiscore;
-  }
-
-  void putExtra() {}
-
   void putbomb() {
-    if (this.damaged > 20) {
-      endGame();
-      return;
-    }
+    if (this.damaged > 20) { endGame(); return; }
     if (this.damaged == 1 && this.explosion != null) { this.explosion.stop(); this.explosion.setFramePosition(0); this.explosion.start(); }
     this.scene_g.setColor(new Color(255, 255 - this.damaged * 12, 240 - this.damaged * 12));
     int i = this.damaged * 8 * this.width / 320;
     int j = this.damaged * 4 * this.height / 200;
     this.scene_g.fillOval((width / 2) - i, 186 * this.height / 200 - j, i * 2, j * 2);
     this.damaged++;
-  }
-
-  public Dimension getPreferredSize() {
-    return new Dimension(this.width, this.height);
   }
 
   public void run() {
@@ -301,7 +279,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       ship_input(gamepad_left | mouse_left_button_held | keyboard_left, gamepad_right | mouse_right_button_held | keyboard_right);
       moveObstacle();
       prt();
-      putExtra();
       
       // letterbox scaling (i.e. respects aspect ratio)
       Graphics g = this.getGraphics();
@@ -316,11 +293,8 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
   void endGame() {
     this.scoreWin.setNum(this.score);
-    if (!this.title_mode)
-      this.prevScore = this.score;
-    if (this.score - this.contNum * 1000 > this.hiscore && !this.title_mode) {
-      this.hiscore = this.score - this.contNum * 1000;
-    }
+    if (!this.title_mode) this.prevScore = this.score;
+    if (this.score - this.contNum * 1000 > this.hiscore && !this.title_mode) this.hiscore = this.score - this.contNum * 1000;
     this.hiScoreLabel.setText("Your Hi-score:" + this.hiscore);
     this.title_mode = true;
   }
