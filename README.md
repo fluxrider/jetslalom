@@ -37,8 +37,8 @@ Simple way:
 - no gamepad support
 - no desktop scaling
 ```
-javac MainGame.java
-java MainGame
+javac Main.java
+java Main
 ```
 
 The ridiculous way:
@@ -47,6 +47,6 @@ The ridiculous way:
 - an output folder for the binaries
 - an ironwill to run all that on the command line
 ```
-rm -Rf bin && javac -cp gamepad:.:gamepad/jinput-2.0.10.jar MainGame.java -d bin
-java -Dsun.java2d.uiScale.enabled=true -Dsun.java2d.uiScale=2 -Djava.awt.headless=false -cp bin:gamepad/jinput-2.0.10.jar -Djava.library.path=gamepad/jinput-2.0.10-natives-all --enable-native-access=ALL-UNNAMED -Djava.util.logging.config.file=gamepad/logging.properties MainGame
+rm -Rf bin && javac -cp gamepad:.:gamepad/jinput-2.0.10.jar Main.java -d bin
+java -Dsun.java2d.uiScale.enabled=true -Dsun.java2d.uiScale=2 -Djava.awt.headless=false -cp bin:gamepad/jinput-2.0.10.jar -Djava.library.path=gamepad/jinput-2.0.10-natives-all --enable-native-access=ALL-UNNAMED -Djava.util.logging.config.file=gamepad/logging.properties Main
 ```

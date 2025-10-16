@@ -7,7 +7,10 @@ import java.util.*;
 import javax.imageio.*;
 import javax.sound.sampled.*;
 
-class MainGame extends Panel implements Runnable, MouseListener, MouseMotionListener, KeyListener, WindowListener {
+class Main extends Panel implements Runnable, MouseListener, MouseMotionListener, KeyListener, WindowListener {
+
+  public static final int width = 320;
+  public static final int height = 200;
 
   public void windowDeactivated(WindowEvent paramWindowEvent) {}
   public void windowClosing(WindowEvent paramWindowEvent) { System.exit(0); }
@@ -26,7 +29,7 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
   private Label lblContinue;
   private NumberLabel scoreWin;
 
-  public static void main(String[] args) { new MainGame(); } public MainGame() {
+  public static void main(String[] args) { new Main(); } public Main() {
     Color bg = new Color(160, 208, 176);
     for (byte b = 1; b < this.rounds.length; b++) this.rounds[b].setPrevRound(this.rounds[b - 1]);
     
@@ -50,11 +53,32 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     window.setVisible(true);
     this.requestFocus();
 
-    this.init();
+    this.centerX = width / 2;
+    this.centerY = height / 2;
+    this.img = this.createImage(width, height);
+    this.gra = img.getGraphics();
+    this.gra.setColor(new Color(0,128,128));
+    this.gra.fillRect(0, 0, width, height);
+    for(int i = 0; i < si.length; i++) {
+      si[i] = Math.sin(Math.PI * (i / (double)si.length));
+      co[i] = Math.cos(Math.PI * (i / (double)si.length));
+    }
+    this.mywidth2 = (int)(this.width * this.mywidth * 120 / 1.6 / 320);
+    try {
+      this.myImg = ImageIO.read(new File("res/jiki.gif"));
+      this.myImg2 = ImageIO.read(new File("res/jiki2.gif"));
+      this.explosion = AudioSystem.getClip();
+      this.explosion.open(AudioSystem.getAudioInputStream(new File("res/explosion.wav")));
+    } catch(Exception e) {
+      e.printStackTrace();
+    }
+    this.myRealImg = this.myImg.getScaledInstance(mywidth2 * 2, mywidth2 / 4, Image.SCALE_FAST);
+    this.myRealImg2 = this.myImg2.getScaledInstance(mywidth2 * 2, mywidth2 / 4, Image.SCALE_FAST);
+    
     this.start();
     this.startGame(1, false);
   }
-
+  
   private static Random random = new Random();
   public static int getRandom() { return random.nextInt(Integer.MAX_VALUE); }
 
@@ -94,10 +118,6 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
   private boolean isContinue = false;
 
   private boolean registMode = false;
-
-  private int width;
-
-  private int height;
 
   private int centerX;
 
@@ -438,36 +458,6 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
       this.getToolkit().sync();
       try { Thread.sleep(55); } catch (InterruptedException e) { e.printStackTrace(); }
     }
-  }
-
-  public void init() {
-    width = 320;
-    height = 200;
-    centerX = width / 2;
-    centerY = height / 2;
-    DrawEnv.width = width;
-    DrawEnv.height = height;
-    img = this.createImage(width, height);
-    this.gra = img.getGraphics();
-    this.gra.setColor(new Color(0,128,128));
-    this.gra.fillRect(0, 0, width, height);
-    for(int i = 0; i < si.length; i++) {
-      //si[i] = Math.sin(Math.PI * 75 / 6);
-      //co[i] = Math.cos(Math.PI * 75 / 6);
-      si[i] = Math.sin(Math.PI * (i / (double)si.length));
-      co[i] = Math.cos(Math.PI * (i / (double)si.length));
-    }
-    this.mywidth2 = (int)(this.width * this.mywidth * 120 / 1.6 / 320);
-    try {
-      myImg = ImageIO.read(new File("res/jiki.gif"));
-      myImg2 = ImageIO.read(new File("res/jiki2.gif"));
-      explosion = AudioSystem.getClip();
-      explosion.open(AudioSystem.getAudioInputStream(new File("res/explosion.wav")));
-    } catch(Exception e) {
-      e.printStackTrace();
-    }
-    myRealImg = myImg.getScaledInstance(mywidth2 * 2, mywidth2 / 4, Image.SCALE_FAST);
-    myRealImg2 = myImg2.getScaledInstance(mywidth2 * 2, mywidth2 / 4, Image.SCALE_FAST);
   }
 
   void endGame() {

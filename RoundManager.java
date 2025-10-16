@@ -20,12 +20,12 @@ public abstract class RoundManager {
     arrayOfDPoint3[1].setXYZ(x1, -1.4, 25.0);
     arrayOfDPoint3[2].setXYZ(x1 + x2, 2.0, 25.5);
     arrayOfDPoint3[3].setXYZ(x1, 2.0, 24.5);
-    obstacle.color = colors[MainGame.getRandom() % 4];
+    obstacle.color = colors[Main.getRandom() % 4];
     obstacle.prepareNewObstacle();
     return obstacle;
   }
 
-  protected final Obstacle createObstacle(double paramDouble) { return createObstacle((MainGame.getRandom() % 256) / 8.0 - 16.0, 0.6); }
+  protected final Obstacle createObstacle(double paramDouble) { return createObstacle((Main.getRandom() % 256) / 8.0 - 16.0, 0.6); }
 
   public boolean isNextRound(int score) { return !(score < this.nextRoundScore); }
 

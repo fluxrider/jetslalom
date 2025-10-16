@@ -8,9 +8,6 @@ public class DrawEnv {
   static double nowSin;
   static double nowCos;
 
-  static int width;
-  static int height;
-
   synchronized static void drawPolygon(Graphics g, Face face) {
     DPoint3[] points = face.points;
     double d1 = (points[1]).x - (points[0]).x;
@@ -23,15 +20,15 @@ public class DrawEnv {
   }
 
   synchronized static void drawPolygon(Graphics g, DPoint3[] points) {
-    double d1 = width / 320.0;
-    double d2 = height / 200.0;
+    double d1 = Main.width / 320.0;
+    double d2 = Main.height / 200.0;
     for (byte b = 0; b < points.length; b++) {
       DPoint3 point = points[b];
       double d3 = 120.0 / (1.0 + 0.6 * point.z);
       double d4 = nowCos * point.x + nowSin * (point.y - 2.0);
       double d5 = -nowSin * point.x + nowCos * (point.y - 2.0) + 2.0;
-      buffer_polyX[b] = (int)(d4 * d1 * d3) + width / 2;
-      buffer_polyY[b] = (int)(d5 * d2 * d3) + height / 2;
+      buffer_polyX[b] = (int)(d4 * d1 * d3) + Main.width / 2;
+      buffer_polyY[b] = (int)(d5 * d2 * d3) + Main.height / 2;
     }
     g.fillPolygon(buffer_polyX, buffer_polyY, points.length);
   }
