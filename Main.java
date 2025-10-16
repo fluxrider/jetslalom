@@ -368,19 +368,12 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       moveObstacle();
       prt();
       putExtra();
+      // letterbox scaling (i.e. respects aspect ratio)
       Graphics g = this.getGraphics();
-      if (this.registMode) {
-        g.setColor(Color.lightGray);
-        g.fill3DRect(0, 0, this.width, this.height, true);
-        g.setColor(Color.black);
-        g.drawString("Wait a moment!!", (width / 2) - 32, (height / 2) + 8);
-      } else {
-        // letterbox scaling (i.e. respects aspect ratio)
-        int b_w = this.getWidth(); int b_h = this.getHeight(); int s_w = this.width; int s_h = this.height;
-        double scale; if ((b_w / (double)b_h) > (s_w / (double)s_h)) scale = b_h / (double)s_h; else scale = b_w / (double)s_w;
-        int x = (int)((b_w - s_w * scale) / 2); int y = (int)((b_h - s_h * scale) / 2);
-        g.drawImage(this.scene_img,x,y,(int)(s_w*scale), (int)(s_h*scale), Color.WHITE, null);
-      }
+      int b_w = this.getWidth(); int b_h = this.getHeight(); int s_w = this.width; int s_h = this.height;
+      double scale; if ((b_w / (double)b_h) > (s_w / (double)s_h)) scale = b_h / (double)s_h; else scale = b_w / (double)s_w;
+      int x = (int)((b_w - s_w * scale) / 2); int y = (int)((b_h - s_h * scale) / 2);
+      g.drawImage(this.scene_img,x,y,(int)(s_w*scale), (int)(s_h*scale), Color.WHITE, null);
       this.getToolkit().sync();
       try { Thread.sleep(55); } catch (InterruptedException e) { e.printStackTrace(); }
     }
