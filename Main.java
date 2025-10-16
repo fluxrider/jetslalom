@@ -83,7 +83,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     this.scene_g.setColor(new Color(0,128,128));
     this.scene_g.fillRect(0, 0, width, height);
     try {
-      int scale = (int)(this.width * this.mywidth * 120 / 1.6 / 320);
+      int scale = (int)(this.width * 0.7 * 120 / 1.6 / 320);
       this.ship[0] = ImageIO.read(new File("res/jiki.gif")).getScaledInstance(scale * 2, scale / 4, Image.SCALE_FAST);
       this.ship[1] = ImageIO.read(new File("res/jiki2.gif")).getScaledInstance(scale * 2, scale / 4, Image.SCALE_FAST);
       this.explosion = AudioSystem.getClip();
@@ -97,9 +97,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     this.gameThread.start();
   }
 
-  private double vx = 0.0D;
-
-  private double mywidth = 0.7D;
+  private double vx = 0.0;
 
   private int score;
 
@@ -112,8 +110,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private int contNum;
 
   private boolean isContinue = false;
-
-  private boolean registMode = false;
 
   private int mouseX = 0;
 
@@ -195,7 +191,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       obstacle.move(this.vx, 0.0, -1.0);
       DPoint3[] points = obstacle.points;
       if ((points[0]).z <= 1.1) {
-        double d = this.mywidth * DrawEnv.nowCos;
+        double d = 0.7 * DrawEnv.nowCos;
         if (-d < (points[2]).x && (points[0]).x < d) this.damaged++;
         iter.remove();
       }
