@@ -48,6 +48,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
   private Image scene_img;
   private Graphics scene_g;
+  private Thread gameThread;
   
   public static void main(String[] args) { new Main(); } public Main() {
     Color bg = new Color(160, 208, 176);
@@ -91,8 +92,9 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       e.printStackTrace();
     }
     
-    this.start();
     this.startGame(1, false);
+    this.gameThread = new Thread(this);
+    this.gameThread.start();
   }
   
 
@@ -123,7 +125,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
   private boolean isInPage = false;
 
-  private Thread gameThread;
 
   private boolean isLoaded = false;
 
@@ -137,8 +138,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private boolean scFlag = true;
 
   private int damaged;
-
-  private char[] memInfo = new char[8];
 
   public void stop() {
     this.gameThread = null;
@@ -226,11 +225,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   public void mouseEntered(MouseEvent paramMouseEvent) {}
 
   public void mouseExited(MouseEvent paramMouseEvent) {}
-
-  public void start() {
-    this.gameThread = new Thread(this);
-    this.gameThread.start();
-  }
 
   private Font titleFont = new Font("Courier", Font.PLAIN, 14);
   private void showTitle() {
@@ -369,7 +363,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     this.score = 0;
     this.vx = 0.0D;
     this.gameMode = TITLE_MODE;
-    while (this.gameThread != null) {
+    while (this.gameThread == Thread.currentThread()) {
       //if(!this.hasFocus()) this.requestFocus();
 
       // gamepad: note that the external library I found does not seem to support plug and play at least in my Linux environment (i.e. the gamepad must be plugged before the game starts)
