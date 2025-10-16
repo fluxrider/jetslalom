@@ -140,36 +140,15 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   }
 
   void keyOperate() {
-    boolean bool1 = this.rFlag;
-    boolean bool2 = this.lFlag;
-    if (this.gameMode == PLAY_MODE) {
-      int i = 0;
-      if (bool1)
-        i |= 0x2;
-      if (bool2)
-        i |= 0x1;
+    // turn
+    if(this.damaged == 0 && this.gameMode == PLAY_MODE) {
+      if(rFlag) this.vx = Math.max(this.vx - 0.1, -.6);
+      if(lFlag) this.vx = Math.min(this.vx + 0.1, .6);
     }
-    if (this.damaged == 0 && this.gameMode == PLAY_MODE) {
-      if (bool1)
-        this.vx -= 0.1D;
-      if (bool2)
-        this.vx += 0.1D;
-      if (this.vx < -0.6D)
-        this.vx = -0.6D;
-      if (this.vx > 0.6D)
-        this.vx = 0.6D;
-    }
-    if (!bool2 && !bool1) {
-      if (this.vx < 0.0D) {
-        this.vx += 0.025D;
-        if (this.vx > 0.0D)
-          this.vx = 0.0D;
-      }
-      if (this.vx > 0.0D) {
-        this.vx -= 0.025D;
-        if (this.vx < 0.0D)
-          this.vx = 0.0D;
-      }
+    // stabilize back
+    if(!lFlag && !rFlag) {
+      if(this.vx < 0.0) this.vx = Math.min(this.vx + .025, 0);
+      if(this.vx > 0.0) this.vx = Math.max(this.vx - .025, 0);
     }
   }
 
