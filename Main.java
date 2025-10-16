@@ -82,10 +82,10 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     this.scene_g = scene_img.getGraphics();
     this.scene_g.setColor(new Color(0,128,128));
     this.scene_g.fillRect(0, 0, width, height);
-    this.mywidth2 = (int)(this.width * this.mywidth * 120 / 1.6 / 320);
     try {
-      this.ship[0] = ImageIO.read(new File("res/jiki.gif")).getScaledInstance(mywidth2 * 2, mywidth2 / 4, Image.SCALE_FAST);
-      this.ship[1] = ImageIO.read(new File("res/jiki2.gif")).getScaledInstance(mywidth2 * 2, mywidth2 / 4, Image.SCALE_FAST);
+      int scale = (int)(this.width * this.mywidth * 120 / 1.6 / 320);
+      this.ship[0] = ImageIO.read(new File("res/jiki.gif")).getScaledInstance(scale * 2, scale / 4, Image.SCALE_FAST);
+      this.ship[1] = ImageIO.read(new File("res/jiki2.gif")).getScaledInstance(scale * 2, scale / 4, Image.SCALE_FAST);
       this.explosion = AudioSystem.getClip();
       this.explosion.open(AudioSystem.getAudioInputStream(new File("res/explosion.wav")));
     } catch(Exception e) {
@@ -100,8 +100,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private double vx = 0.0D;
 
   private double mywidth = 0.7D;
-
-  private int mywidth2;
 
   private int score;
 
@@ -230,7 +228,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     
     { String msg = "Jet Slalom Resurrected"; int line_w = fm.stringWidth(msg); this.scene_g.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
     { String msg = "by David Lareau in 2025"; int line_w = fm.stringWidth(msg); this.scene_g.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
-    { String msg = "Original 1999 version by MR-C"; int line_w = fm.stringWidth(msg); this.scene_g.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
+    { String msg = "Original 1997 version by MR-C"; int line_w = fm.stringWidth(msg); this.scene_g.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
   }
 
   public void startGame(int mode, boolean paramBoolean) {
@@ -277,7 +275,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       Image image = this.ship[this.shipCounter % 4 > 1? 1 : 0];
       if (this.shipCounter % 12 > 6) i = 22 * this.height / 200;
       if (this.score < 200) i = (12 + this.score / 20) * this.height / 200;
-      if (this.damaged < 10) this.scene_g.drawImage(image, (width / 2) - this.mywidth2, this.height - i, null);
+      if (this.damaged < 10) this.scene_g.drawImage(image, (width / 2) - image.getWidth(null)/2, this.height - i, null);
       if (this.damaged > 0) putbomb();
     }
     if (this.gameMode == TITLE_MODE) {
