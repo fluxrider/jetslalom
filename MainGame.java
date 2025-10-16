@@ -76,7 +76,8 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
   
   static double[] co = new double[128];
   
-  Ground ground = new Ground();
+  DPoint3[] ground_points = new DPoint3[] { new DPoint3(-100.0, 2.0, 28.0), new DPoint3(-100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 28.0) };
+  Color ground_color;
   
   TimerNotifier timer;
   
@@ -371,8 +372,8 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
         this.scoreWin.setNum(this.score); 
     } 
     this.scFlag = !this.scFlag;
-    this.ground.color = this.rounds[this.round].getGroundColor();
-    this.ground.draw(this.gra);
+    this.ground_color = this.rounds[this.round].getGroundColor();
+    this.gra.setColor(this.ground_color); DrawEnv.drawPolygon(this.gra, this.ground_points);
     this.obstacles.draw(this.gra);
     this.shipCounter++;
     if (this.gameMode != TITLE_MODE) {
