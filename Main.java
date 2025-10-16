@@ -65,15 +65,13 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     }
     this.mywidth2 = (int)(this.width * this.mywidth * 120 / 1.6 / 320);
     try {
-      this.myImg = ImageIO.read(new File("res/jiki.gif"));
-      this.myImg2 = ImageIO.read(new File("res/jiki2.gif"));
+      this.ship[0] = ImageIO.read(new File("res/jiki.gif")).getScaledInstance(mywidth2 * 2, mywidth2 / 4, Image.SCALE_FAST);
+      this.ship[1] = ImageIO.read(new File("res/jiki2.gif")).getScaledInstance(mywidth2 * 2, mywidth2 / 4, Image.SCALE_FAST);
       this.explosion = AudioSystem.getClip();
       this.explosion.open(AudioSystem.getAudioInputStream(new File("res/explosion.wav")));
     } catch(Exception e) {
       e.printStackTrace();
     }
-    this.myRealImg = this.myImg.getScaledInstance(mywidth2 * 2, mywidth2 / 4, Image.SCALE_FAST);
-    this.myRealImg2 = this.myImg2.getScaledInstance(mywidth2 * 2, mywidth2 / 4, Image.SCALE_FAST);
     
     this.start();
     this.startGame(1, false);
@@ -131,16 +129,9 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
   private Thread gameThread;
 
+  private Image ship[] = new Image[2];
+
   private Image img;
-
-  private Image myImg;
-
-  private Image myImg2;
-
-  private Image myRealImg;
-
-  private Image myRealImg2;
-
   private Graphics gra;
 
   private Graphics thisGra;
@@ -316,16 +307,11 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     this.shipCounter++;
     if (this.gameMode != TITLE_MODE) {
       int i = 24 * this.height / 200;
-      Image image = this.myRealImg;
-      if (this.shipCounter % 4 > 1)
-        image = this.myRealImg2;
-      if (this.shipCounter % 12 > 6)
-        i = 22 * this.height / 200;
-      if (this.score < 200)
-        i = (12 + this.score / 20) * this.height / 200;
-      this.gra.drawImage(image, this.centerX - this.mywidth2, this.height - i, null);
-      if (this.damaged > 0)
-        putbomb();
+      Image image = this.ship[this.shipCounter % 4 > 1? 1 : 0];
+      if (this.shipCounter % 12 > 6) i = 22 * this.height / 200;
+      if (this.score < 200) i = (12 + this.score / 20) * this.height / 200;
+      if (this.damaged < 10) this.gra.drawImage(image, this.centerX - this.mywidth2, this.height - i, null);
+      if (this.damaged > 0) putbomb();
     }
     if (this.gameMode == TITLE_MODE) {
       showTitle();
