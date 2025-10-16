@@ -99,14 +99,10 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
   int contNum;
   
   private String[] strHiScoreInfo_;
-  
-  int gameMode = 2;
-  
+
+  int gameMode;
   static final int PLAY_MODE = 0;
-  
   static final int TITLE_MODE = 1;
-  
-  static final int DEMO_MODE = 2;
   
   boolean isContinue = false;
   
@@ -189,7 +185,6 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
   private StringObject[] hiScoreInfoObj;
   
   public void stop() {
-    // DAVE if (this.gameThread != null) this.gameThread.stop(); 
     this.gameThread = null;
     this.registMode = false;
     this.gameMode = TITLE_MODE;
@@ -227,12 +222,8 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
         i |= 0x2; 
       if (bool2)
         i |= 0x1; 
-    } else if (this.gameMode == DEMO_MODE) {
-      int i = 0; // this.hiscoreRec.readStatus();
-      bool1 = !((i & 0x2) == 0);
-      bool2 = !((i & 0x1) == 0);
-    } 
-    if (this.damaged == 0 && (this.gameMode == PLAY_MODE || this.gameMode == DEMO_MODE)) {
+    }
+    if (this.damaged == 0 && this.gameMode == PLAY_MODE) {
       if (bool1)
         this.vx -= 0.1D; 
       if (bool2)
@@ -342,14 +333,12 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
       this.clickMsg.draw(this.gra, null); 
   }
   
-  public void startGame(int paramInt, boolean paramBoolean) {
+  public void startGame(int mode, boolean paramBoolean) {
     if (this.gameMode == PLAY_MODE)
       return; 
     this.vx = 0.0D;
-    if (paramInt == PLAY_MODE || paramInt == DEMO_MODE) {
-      if (paramInt == DEMO_MODE)
-        return; 
-      this.gameMode = paramInt;
+    if (mode == PLAY_MODE) {
+      this.gameMode = mode;
     } else {
       this.gameMode = TITLE_MODE;
     } 
@@ -507,7 +496,7 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     this.round = 0;
     this.score = 0;
     this.vx = 0.0D;
-    this.gameMode = PLAY_MODE; // DAVE PLAY_MODE, TITLE_MODE, DEMO_MODE
+    this.gameMode = PLAY_MODE; // TODO start in title
     while (this.gameThread != null) {
 
       // gamepad: note that the external library I found does not seem to support plug and play at least in my Linux environment (i.e. the gamepad must be plugged before the game starts)
