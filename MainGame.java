@@ -98,8 +98,6 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
 
   int contNum;
 
-  private String[] strHiScoreInfo_;
-
   int gameMode;
   static final int PLAY_MODE = 0;
   static final int TITLE_MODE = 1;
@@ -150,27 +148,11 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
 
   boolean lFlag = false;
 
-  boolean isFocus = true;
-
-  boolean isFocus2 = true;
-
   boolean scFlag = true;
 
   Font titleFont;
 
   Font normalFont;
-
-  StringObject title;
-
-  StringObject author;
-
-  StringObject startMsg;
-
-  StringObject contMsg;
-
-  StringObject clickMsg;
-
-  StringObject hpage;
 
   int damaged;
 
@@ -179,8 +161,6 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
   private Runtime runtime = Runtime.getRuntime();
 
   private int titleCounter_;
-
-  private StringObject[] hiScoreInfoObj;
 
   public void stop() {
     this.gameThread = null;
@@ -265,15 +245,6 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     { Obstacle obstacle = this.rounds[this.round].generateObstacle(); if(obstacle != null) this.obstacles.addFirst(obstacle); }
   }
 
-  private void updateHiScoreInfoObj(int paramInt) {
-    byte b = 0;
-    do {
-      String str = " " + (paramInt + b + 1);
-      str = str.substring(str.length() - 2);
-      this.hiScoreInfoObj[b + 1].setText(str + ".  " + this.strHiScoreInfo_[paramInt + b]);
-    } while (++b < 5);
-  }
-
   public void mouseEntered(MouseEvent paramMouseEvent) {}
 
   public void mouseExited(MouseEvent paramMouseEvent) {}
@@ -286,37 +257,24 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
   private void showTitle() {
     this.vx = 0.0D;
     byte b = 100;
-    if (this.titleCounter_ < b || this.strHiScoreInfo_ == null) {
-      this.title.draw(this.gra, null);
-      this.startMsg.draw(this.gra, null);
-      this.author.draw(this.gra, null);
-      if (this.hpage.hitTest(this.mouseX, this.mouseY)) {
-        this.hpage.setColor(Color.white);
-        this.isInPage = true;
-      } else {
-        this.isInPage = false;
-        this.hpage.setColor(Color.black);
-      }
-      this.hpage.draw(this.gra, null);
-      if (this.rounds[0].isNextRound(this.prevScore))
-        this.contMsg.draw(this.gra, null);
+    if (this.titleCounter_ < b) {
+      this.gra.setFont(new Font("Courier", Font.PLAIN, 12));
+      this.gra.setColor(Color.white);
+      this.gra.drawString("Jet Slalom Resurrected", 100, 80);
+      this.gra.drawString("by David Lareau", 100, 100);
+      this.gra.drawString("Original by MR-C 1999", 100, 120);
     } else {
-      int i = (this.titleCounter_ - b) / b * 5;
-      if (i > 15) {
-        i = 15;
+      int score = (this.titleCounter_ - b) / b * 5;
+      if (score > 15) {
+        score = 15;
         this.titleCounter_ = 0;
       }
-      if (this.hiScoreInfoObj == null)
-        initHiScoreInfoObj();
-      updateHiScoreInfoObj(i);
-      byte b1 = 0;
-      do {
-        this.hiScoreInfoObj[b1].draw(this.gra, null);
-      } while (++b1 < 6);
+      if(hiScoreInfoObj.size() == 5) { hiScoreInfoObj.removeLast(); } hiScoreInfoObj.addFirst(score);
+      for(int i = 0; i < hiScoreInfoObj.size(); i++) {
+        this.gra.drawString(hiScoreInfoObj.get(i).toString(), 100, 80 + 20 * i);
+      }
     }
     this.titleCounter_++;
-    if (!this.isFocus)
-      this.clickMsg.draw(this.gra, null);
   }
 
   public void startGame(int mode, boolean paramBoolean) {
@@ -394,10 +352,6 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     }
     if (this.gameMode == PLAY_MODE)
       return;
-    if (!this.isFocus2) {
-      this.isFocus2 = true;
-      return;
-    }
     if (this.isInPage && this.gameMode == TITLE_MODE) startGame(PLAY_MODE, false);
   }
 
@@ -410,10 +364,6 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
 
   public void keyTyped(KeyEvent paramKeyEvent) {}
 
-
-  public synchronized void setHiScoreInfo(String[] paramArrayOfString) {
-    this.strHiScoreInfo_ = paramArrayOfString;
-  }
 
   private void drawMemInfo(Graphics paramGraphics) {
     int i = (int)this.runtime.freeMemory();
@@ -463,16 +413,8 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     return new Dimension(this.width, this.height);
   }
 
-  private void initHiScoreInfoObj() {
-    this.hiScoreInfoObj = new StringObject[6];
-    this.hiScoreInfoObj[0] = new StringObject(this.normalFont, Color.white, "Ranking", this.width / 2, 24);
-    byte b = 1;
-    do {
-      this.hiScoreInfoObj[b] = new StringObject(this.normalFont, Color.white, "", this.width / 8, 24 + 24 * b);
-      this.hiScoreInfoObj[b].setAlign(1);
-    } while (++b < 6);
-  }
-
+  ArrayList<Integer> hiScoreInfoObj = new ArrayList<>(5);
+  
   public void run() {
     this.thisGra = this.getGraphics();
     obstacles.clear();
@@ -527,15 +469,6 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
   }
 
   public void init() {
-    // DAVE this semi inspired by the commented bytecode that was there
-    this.titleFont = new Font("Courier", Font.PLAIN, 12);
-    this.normalFont = new Font("Courier", Font.PLAIN, 12);
-    this.title = new StringObject(this.titleFont, Color.white, "Jet slalom", 100, 80); // width/2, centerY);
-    this.author = new StringObject(this.titleFont, Color.white, "Programed by MR-C", 100, 100);
-    this.startMsg = new StringObject(this.titleFont, Color.white, "startMsg", 100, 120);
-    this.contMsg = new StringObject(this.titleFont, Color.white, "contMsg", 100, 140);
-    this.clickMsg = new StringObject(this.titleFont, Color.white, "clickMsg", 100, 160);
-    this.hpage = new StringObject(this.titleFont, Color.white, "http://www.kdn.gr.jp/~shii/", 100, 180);
     width = 320;
     height = 200;
     centerX = width / 2;
