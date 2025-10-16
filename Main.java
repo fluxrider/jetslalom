@@ -29,9 +29,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private double[] si = new double[128];
   private double[] co = new double[128];
 
-  private int gameMode;
-  private static final int PLAY_MODE = 0;
-  private static final int TITLE_MODE = 1;
+  private boolean title_mode;
   
   private Frame window;
   private Label hiScoreLabel;
@@ -45,6 +43,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private RoundManager[] rounds = new RoundManager[] { new NormalRound(8000, new Color(0, 160, 255), new Color(0, 200, 64), 4), new NormalRound(12000, new Color(240, 160, 160), new Color(64, 180, 64), 3), new NormalRound(25000, Color.black, new Color(0, 128, 64), 2), new RoadRound(40000, new Color(0, 180, 240), new Color(0, 200, 64), false), new RoadRound(100000, Color.lightGray, new Color(64, 180, 64), true), new NormalRound(1000000, Color.black, new Color(0, 128, 64), 1) };
   private DPoint3[] ground_points = new DPoint3[] { new DPoint3(-100.0, 2.0, 28.0), new DPoint3(-100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 28.0) };
   private LinkedList<Obstacle> obstacles = new LinkedList<>();
+  private double vx = 0.0; // ship's left/right movement
 
   private Image scene_img;
   private Graphics scene_g;
@@ -92,12 +91,11 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       e.printStackTrace();
     }
     
-    this.startGame(1, false);
+    this.startGame(false, false);
     this.gameThread = new Thread(this);
     this.gameThread.start();
   }
 
-  private double vx = 0.0;
 
   private int score;
 
@@ -130,18 +128,18 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     if(keycode == VK_F) this.toggleFullScreen();
     if(keycode == VK_ESCAPE) System.exit(0);
     if (keycode == VK_G) System.gc();
-    if (this.gameMode != PLAY_MODE && (keycode == VK_SPACE || keycode == VK_ENTER || keycode == VK_W || keycode == VK_UP || keycode == VK_C)) startGame(PLAY_MODE, !(keycode != VK_C));
+    if (this.title_mode && (keycode == VK_SPACE || keycode == VK_ENTER || keycode == VK_W || keycode == VK_UP || keycode == VK_C)) startGame(true, !(keycode != VK_C));
     // TODO is this some sort of cheat?
-    if (this.gameMode != PLAY_MODE && keycode == VK_T) {
+    if (this.title_mode && keycode == VK_T) {
       this.prevScore = 110000;
       this.contNum = 100;
-      startGame(PLAY_MODE, true);
+      startGame(true, true);
     }
   }
 
   void keyOperate() {
     // turn
-    if(this.damaged == 0 && this.gameMode == PLAY_MODE) {
+    if(this.damaged == 0 && !this.title_mode) {
       if(rFlag) this.vx = Math.max(this.vx - 0.1, -.6);
       if(lFlag) this.vx = Math.min(this.vx + 0.1, .6);
     }
@@ -200,25 +198,16 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     { String msg = "Original 1997 version by MR-C"; int line_w = fm.stringWidth(msg); this.scene_g.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
   }
 
-  public void startGame(int mode, boolean paramBoolean) {
-    if (this.gameMode == PLAY_MODE)
-      return;
-    this.vx = 0.0D;
-    if (mode == PLAY_MODE) {
-      this.gameMode = mode;
-    } else {
-      this.gameMode = TITLE_MODE;
-    }
+  public void startGame(boolean play_mode, boolean resume) {
+    this.title_mode = !play_mode;
     obstacles.clear();
-    for (byte b = 0; b < this.rounds.length; b++)
-      this.rounds[b].init();
+    for (byte b = 0; b < this.rounds.length; b++) this.rounds[b].init();
     this.damaged = 0;
     this.round = 0;
     this.score = 0;
-    this.vx = 0.0D;
-    if (paramBoolean) {
-      while (this.prevScore >= this.rounds[this.round].getNextRoundScore())
-        this.round++;
+    this.vx = 0.0;
+    if (resume) {
+      while (this.prevScore >= this.rounds[this.round].getNextRoundScore()) this.round++;
       if (this.round > 0) {
         this.score = this.rounds[this.round - 1].getNextRoundScore();
         this.contNum++;
@@ -232,14 +221,14 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   void prt() {
     this.scene_g.setColor(this.rounds[this.round].getSkyColor());
     this.scene_g.fillRect(0, 0, this.width, this.height);
-    if (this.gameMode == PLAY_MODE) {
+    if (!this.title_mode) {
       this.score += 20;
       this.scoreWin.setNum(this.score);
     }
     this.scene_g.setColor(this.rounds[this.round].getGroundColor()); DrawEnv.drawPolygon(this.scene_g, this.ground_points);
     for(Obstacle obstacle : obstacles) obstacle.draw(this.scene_g);
     this.shipCounter++;
-    if (this.gameMode != TITLE_MODE) {
+    if (!this.title_mode) {
       int i = 24 * this.height / 200;
       Image image = this.ship[this.shipCounter % 4 > 1? 1 : 0];
       if (this.shipCounter % 12 > 6) i = 22 * this.height / 200;
@@ -247,7 +236,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       if (this.damaged < 10) this.scene_g.drawImage(image, (width / 2) - image.getWidth(null)/2, this.height - i, null);
       if (this.damaged > 0) putbomb();
     }
-    if (this.gameMode == TITLE_MODE) {
+    if (this.title_mode) {
       showTitle();
     }
     if(!this.hasFocus()) {
@@ -313,8 +302,8 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     this.damaged = 0;
     this.round = 0;
     this.score = 0;
-    this.vx = 0.0D;
-    this.gameMode = TITLE_MODE;
+    this.vx = 0.0;
+    this.title_mode = true;
     while (this.gameThread == Thread.currentThread()) {
       //if(!this.hasFocus()) this.requestFocus();
 
@@ -332,7 +321,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       if(gamepad.left_trigger > 0) gamepad_left = true;
       if(gamepad.right_trigger > 0) gamepad_right = true;
       if(gamepad.select && gamepad.n_select) this.toggleFullScreen();
-      if(this.gameMode != PLAY_MODE && ((gamepad.start && gamepad.n_start) || (gamepad.south_maybe && gamepad.n_south_maybe) || (gamepad.north_maybe && gamepad.n_north_maybe) || (gamepad.west_maybe && gamepad.n_west_maybe) || (gamepad.east_maybe && gamepad.n_east_maybe))) startGame(PLAY_MODE, false);
+      if(this.title_mode && ((gamepad.start && gamepad.n_start) || (gamepad.south_maybe && gamepad.n_south_maybe) || (gamepad.north_maybe && gamepad.n_north_maybe) || (gamepad.west_maybe && gamepad.n_west_maybe) || (gamepad.east_maybe && gamepad.n_east_maybe))) startGame(true, false);
 
       if (this.rounds[this.round].isNextRound(this.score))
         this.round++;
@@ -356,12 +345,12 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
   void endGame() {
     this.scoreWin.setNum(this.score);
-    if (this.gameMode == PLAY_MODE)
+    if (!this.title_mode)
       this.prevScore = this.score;
-    if (this.score - this.contNum * 1000 > this.hiscore && this.gameMode == PLAY_MODE) {
+    if (this.score - this.contNum * 1000 > this.hiscore && !this.title_mode) {
       this.hiscore = this.score - this.contNum * 1000;
     }
     this.hiScoreLabel.setText("Your Hi-score:" + this.hiscore);
-    this.gameMode = TITLE_MODE;
+    this.title_mode = true;
   }
 }
