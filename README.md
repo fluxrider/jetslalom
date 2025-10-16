@@ -6,28 +6,30 @@ I played Jet Slalom as an online applet when I was a young adult back in 1999.
 I wrote a WebGL crappy homage test around 2010.
 Some random guy on the internet emailed me about it in 2025, praising my controls but pooping on my inexistant levels design.
 
-The guy also sent me a half broken code base of what he could salvage on the internet of what may have been the original code.
+The guy also sent me a half broken code base of what he could salvage off the internet of what may have been a decompiled version of the original code.
 It didn't compile, and had commented bytecode sections.
 This is an attempt at getting it working.
 
 ## State
 
 - It compiles and seems playable on JDK 25.0.1
-- The title screen is broken so I bypass it on launch. When you die, press 'spacebar' (or 'A/B/X/Y' on the gamepad).
-- I've added gamepad support.
-- I stripped the applet and canvas code. Now it's just a AWT window and the drawing scales respecting aspect ratio.
-- Fullscreen support (using 'F' or 'Select').
+- I've added a few features.
+ - Gamepad Support.
+ - Fullscreen (using 'F' or 'Select').
+- I have removed features that I did not want to maintain.
+ - Applet.
+ - High Scores.
+ - Fast Forward Button (use to be 'A', now that's part of WASD controls).
+- Codewise, it's mess. I have removed a lot of unnecessary or archaic code and made it my own. Unfortunately for you, my coding style is offensive to most because I'm a disabled hermit, and the rest is decompiled Java.
 
 ### Future Work
 
 - Fix the turn strength, I'm pretty sure it's way too hard right now.
-- Fix the title screen.
-- Remove unused code (e.g. I have no plan on supporting online high scores).
-- Clean the code (it came to me in a decompiled state, where constants are hardcoded as value and whatnot).
+- Have a web browser version somehow.
 
 ### Known Issue
 
-- JInput, the external library I use for gamepad support, requires the gamepad to be plugged before the game launched. I've only tested on Linux.
+- JInput, the external library I use for gamepad support, requires the gamepad to be plugged before the app starts. I've only tested on Linux.
 
 ## How to run
 
