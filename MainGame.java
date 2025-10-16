@@ -151,8 +151,6 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
   
   boolean lFlag = false;
   
-  boolean spcFlag = false;
-  
   boolean isFocus = true;
   
   boolean isFocus2 = true;
@@ -192,26 +190,20 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     this.timer.interrupt();
   }
   
-  void keyEvent(int paramInt, boolean paramBoolean) {
-    if (paramInt == VK_RIGHT || paramInt == VK_L)
-      this.rFlag = paramBoolean; 
-    if (paramInt == VK_LEFT || paramInt == VK_J)
-      this.lFlag = paramBoolean; 
-    if (paramInt == VK_A)
-      this.spcFlag = paramBoolean; 
-    if (!paramBoolean)
-      return; 
-    if(paramInt == VK_F) this.toggleFullScreen();
-    if(paramInt == VK_ESCAPE) System.exit(0);
-    if (paramInt == VK_G)
-      System.gc(); 
-    if (this.gameMode != PLAY_MODE && (paramInt == VK_SPACE || paramInt == VK_C))
-      startGame(PLAY_MODE, !(paramInt != VK_C)); 
-    if (this.gameMode != PLAY_MODE && paramInt == VK_T) {
+  void keyEvent(int keycode, boolean held) {
+    if (keycode == VK_RIGHT || keycode == VK_L || keycode == VK_D) this.rFlag = held;
+    if (keycode == VK_LEFT || keycode == VK_J || keycode == VK_A) this.lFlag = held;
+    if (!held) return;
+    if(keycode == VK_F) this.toggleFullScreen();
+    if(keycode == VK_ESCAPE) System.exit(0);
+    if (keycode == VK_G) System.gc();
+    if (this.gameMode != PLAY_MODE && (keycode == VK_SPACE || keycode == VK_C)) startGame(PLAY_MODE, !(keycode != VK_C));
+    // TODO is this some sort of cheat?
+    if (this.gameMode != PLAY_MODE && keycode == VK_T) {
       this.prevScore = 110000;
       this.contNum = 100;
       startGame(PLAY_MODE, true);
-    } 
+    }
   }
   
   void keyOperate() {
@@ -538,8 +530,7 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
         this.thisGra.drawImage(this.img,x,y,(int)(s_w*scale), (int)(s_h*scale), Color.WHITE, null);
       }
       this.getToolkit().sync();
-      if (!this.spcFlag)
-        this.timer.wait1step(); 
+      this.timer.wait1step();
     } 
   }
   
