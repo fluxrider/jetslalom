@@ -1,23 +1,26 @@
 import java.awt.*;
 
 public class Obstacle {
-  DPoint3[] points = new DPoint3[] { new DPoint3(), new DPoint3(), new DPoint3(), new DPoint3() };
 
+  // pool of obstacles
+  private static Obstacle head = null; static { for(int i = 0; i < 16; i++) { Obstacle obstacle = new Obstacle(); obstacle.next = head; head = obstacle; } }
+  static synchronized void releaseObstacle(Obstacle obstacle) { if (obstacle != null) { obstacle.next = head; head = obstacle; } }
+  static synchronized Obstacle newObstacle() {
+    if(head == null) return new Obstacle();
+    Obstacle obstacle = head; head = head.next; obstacle.next = null; return obstacle;
+  }
+
+  DPoint3[] points = new DPoint3[] { new DPoint3(), new DPoint3(), new DPoint3(), new DPoint3() };
   Face[] faces = new Face[] { new Face(), new Face(), new Face() };
 
   Obstacle next = null;
-
   Obstacle prev = null;
 
   Color color;
 
-  private static Obstacle head = null;
-
-  static synchronized void releaseObstacle(Obstacle paramObstacle) {
-    if (paramObstacle == null)
-      return;
-    paramObstacle.next = head;
-    head = paramObstacle;
+  Obstacle() {
+    this.faces[0].points = new DPoint3[] { this.points[3], this.points[0], this.points[1] };
+    this.faces[1].points = new DPoint3[] { this.points[3], this.points[2], this.points[1] };
   }
 
   void release() {
@@ -31,31 +34,6 @@ public class Obstacle {
     DrawEnv.drawPolygon(g, this.faces[1]);
   }
 
-  Obstacle() {
-    (this.faces[0]).points = new DPoint3[] { this.points[3], this.points[0], this.points[1] };
-    (this.faces[1]).points = new DPoint3[] { this.points[3], this.points[2], this.points[1] };
-  }
-
-  static {
-    byte b = 0;
-    do {
-      Obstacle obstacle = new Obstacle();
-      obstacle.next = head;
-      head = obstacle;
-    } while (++b < 16);
-  }
-
-  static synchronized Obstacle newObstacle() {
-    Obstacle obstacle = head;
-    if (obstacle == null) {
-      obstacle = new Obstacle();
-    } else {
-      head = head.next;
-    }
-    obstacle.next = null;
-    return obstacle;
-  }
-
   void prepareNewObstacle() {
     this.faces[0].setColor(this.color.brighter());
     this.faces[0].calcMaxZ();
@@ -63,13 +41,12 @@ public class Obstacle {
     this.faces[1].calcMaxZ();
   }
 
-  void move(double paramDouble1, double paramDouble2, double paramDouble3) {
-    byte b = 0;
-    do {
-      DPoint3 dPoint3 = this.points[b];
-      dPoint3.x += paramDouble1;
-      dPoint3.y += paramDouble2;
-      dPoint3.z += paramDouble3;
-    } while (++b < 4);
+  void move(double x, double y, double z) {
+    for(int i = 0; i < 4; i++) {
+      DPoint3 dPoint3 = this.points[i];
+      dPoint3.x += x;
+      dPoint3.y += y;
+      dPoint3.z += z;
+    }
   }
 }
