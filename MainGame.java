@@ -22,9 +22,9 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     if(gd.isFullScreenSupported()) gd.setFullScreenWindow(gd.getFullScreenWindow() == window? null : window);
   }
 
-  Label hiScoreLabel;
-  Label lblContinue;
-  NumberLabel scoreWin;
+  private Label hiScoreLabel;
+  private Label lblContinue;
+  private NumberLabel scoreWin;
 
   public static void main(String[] args) {
     window = new Frame("Jet Slalom Resurrected");
