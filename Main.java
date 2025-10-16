@@ -139,12 +139,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
   private int damaged;
 
-  public void stop() {
-    this.gameThread = null;
-    this.registMode = false;
-    this.gameMode = TITLE_MODE;
-  }
-
   void keyEvent(int keycode, boolean held) {
     if (keycode == VK_RIGHT || keycode == VK_L || keycode == VK_D) this.rFlag = held;
     if (keycode == VK_LEFT || keycode == VK_J || keycode == VK_A) this.lFlag = held;
