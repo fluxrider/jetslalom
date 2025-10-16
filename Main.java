@@ -11,6 +11,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
   public static final int width = 320;
   public static final int height = 200;
+  public static int getRandom() { return random.nextInt(Integer.MAX_VALUE); } private static Random random = new Random();
 
   public void windowDeactivated(WindowEvent paramWindowEvent) {}
   public void windowClosing(WindowEvent paramWindowEvent) { System.exit(0); }
@@ -27,11 +28,18 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   // sin/cos lookup tables
   private double[] si = new double[128];
   private double[] co = new double[128];
-
+  
   private Frame window;
   private Label hiScoreLabel;
   private Label lblContinue;
   private NumberLabel scoreWin;
+  private Gamepad gamepad = new Gamepad();
+
+  private Image ship[] = new Image[2];
+  private Clip explosion;
+
+  private RoundManager[] rounds = new RoundManager[] { new NormalRound(8000, new Color(0, 160, 255), new Color(0, 200, 64), 4), new NormalRound(12000, new Color(240, 160, 160), new Color(64, 180, 64), 3), new NormalRound(25000, Color.black, new Color(0, 128, 64), 2), new RoadRound(40000, new Color(0, 180, 240), new Color(0, 200, 64), false), new RoadRound(100000, Color.lightGray, new Color(64, 180, 64), true), new NormalRound(1000000, Color.black, new Color(0, 128, 64), 1) };
+  private DPoint3[] ground_points = new DPoint3[] { new DPoint3(-100.0, 2.0, 28.0), new DPoint3(-100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 28.0) };
 
   public static void main(String[] args) { new Main(); } public Main() {
     Color bg = new Color(160, 208, 176);
@@ -61,10 +69,10 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     window.setVisible(true);
     this.requestFocus();
 
-    this.img = this.createImage(width, height);
-    this.gra = img.getGraphics();
-    this.gra.setColor(new Color(0,128,128));
-    this.gra.fillRect(0, 0, width, height);
+    this.scene_img = this.createImage(width, height);
+    this.scene_g = scene_img.getGraphics();
+    this.scene_g.setColor(new Color(0,128,128));
+    this.scene_g.fillRect(0, 0, width, height);
     this.mywidth2 = (int)(this.width * this.mywidth * 120 / 1.6 / 320);
     try {
       this.ship[0] = ImageIO.read(new File("res/jiki.gif")).getScaledInstance(mywidth2 * 2, mywidth2 / 4, Image.SCALE_FAST);
@@ -79,17 +87,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     this.startGame(1, false);
   }
   
-  private static Random random = new Random();
-  public static int getRandom() { return random.nextInt(Integer.MAX_VALUE); }
-
-  private Gamepad gamepad = new Gamepad();
-
-  private Clip explosion;
-
-  private RoundManager[] rounds = new RoundManager[] { new NormalRound(8000, new Color(0, 160, 255), new Color(0, 200, 64), 4), new NormalRound(12000, new Color(240, 160, 160), new Color(64, 180, 64), 3), new NormalRound(25000, Color.black, new Color(0, 128, 64), 2), new RoadRound(40000, new Color(0, 180, 240), new Color(0, 200, 64), false), new RoadRound(100000, Color.lightGray, new Color(64, 180, 64), true), new NormalRound(1000000, Color.black, new Color(0, 128, 64), 1) };
-  
-  private DPoint3[] ground_points = new DPoint3[] { new DPoint3(-100.0, 2.0, 28.0), new DPoint3(-100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 28.0) };
-  private Color ground_color;
 
   private LinkedList<Obstacle> obstacles = new LinkedList<>();
 
@@ -125,10 +122,9 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
   private Thread gameThread;
 
-  private Image ship[] = new Image[2];
 
-  private Image img;
-  private Graphics gra;
+  private Image scene_img;
+  private Graphics scene_g;
 
   private Graphics thisGra;
 
@@ -162,7 +158,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     if(keycode == VK_F) this.toggleFullScreen();
     if(keycode == VK_ESCAPE) System.exit(0);
     if (keycode == VK_G) System.gc();
-    if (this.gameMode != PLAY_MODE && (keycode == VK_SPACE || keycode == VK_C)) startGame(PLAY_MODE, !(keycode != VK_C));
+    if (this.gameMode != PLAY_MODE && (keycode == VK_SPACE || keycode == VK_ENTER || keycode == VK_W || keycode == VK_UP || keycode == VK_C)) startGame(PLAY_MODE, !(keycode != VK_C));
     // TODO is this some sort of cheat?
     if (this.gameMode != PLAY_MODE && keycode == VK_T) {
       this.prevScore = 110000;
@@ -244,18 +240,18 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private Font titleFont = new Font("Courier", Font.PLAIN, 14);
   private void showTitle() {
     this.vx = 0.0;
-    this.gra.setFont(this.titleFont);
-    this.gra.setColor(Color.white);
-    FontMetrics fm = this.gra.getFontMetrics();
+    this.scene_g.setFont(this.titleFont);
+    this.scene_g.setColor(Color.white);
+    FontMetrics fm = this.scene_g.getFontMetrics();
     int line_h = fm.getHeight();
     int spacing = 5;
     int n = 3;
     int h = (line_h + spacing) * n - spacing;
     int y = (this.height - h) / 2;
     
-    { String msg = "Jet Slalom Resurrected"; int line_w = fm.stringWidth(msg); this.gra.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
-    { String msg = "by David Lareau in 2025"; int line_w = fm.stringWidth(msg); this.gra.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
-    { String msg = "Original 1999 version by MR-C"; int line_w = fm.stringWidth(msg); this.gra.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
+    { String msg = "Jet Slalom Resurrected"; int line_w = fm.stringWidth(msg); this.scene_g.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
+    { String msg = "by David Lareau in 2025"; int line_w = fm.stringWidth(msg); this.scene_g.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
+    { String msg = "Original 1999 version by MR-C"; int line_w = fm.stringWidth(msg); this.scene_g.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
   }
 
   public void startGame(int mode, boolean paramBoolean) {
@@ -288,34 +284,33 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   }
 
   void prt() {
-    this.gra.setColor(this.rounds[this.round].getSkyColor());
-    this.gra.fillRect(0, 0, this.width, this.height);
+    this.scene_g.setColor(this.rounds[this.round].getSkyColor());
+    this.scene_g.fillRect(0, 0, this.width, this.height);
     if (this.gameMode == PLAY_MODE) {
       this.score += 20;
       if (this.scFlag)
         this.scoreWin.setNum(this.score);
     }
     this.scFlag = !this.scFlag;
-    this.ground_color = this.rounds[this.round].getGroundColor();
-    this.gra.setColor(this.ground_color); DrawEnv.drawPolygon(this.gra, this.ground_points);
-    for(Obstacle obstacle : obstacles) obstacle.draw(this.gra);
+    this.scene_g.setColor(this.rounds[this.round].getGroundColor()); DrawEnv.drawPolygon(this.scene_g, this.ground_points);
+    for(Obstacle obstacle : obstacles) obstacle.draw(this.scene_g);
     this.shipCounter++;
     if (this.gameMode != TITLE_MODE) {
       int i = 24 * this.height / 200;
       Image image = this.ship[this.shipCounter % 4 > 1? 1 : 0];
       if (this.shipCounter % 12 > 6) i = 22 * this.height / 200;
       if (this.score < 200) i = (12 + this.score / 20) * this.height / 200;
-      if (this.damaged < 10) this.gra.drawImage(image, (width / 2) - this.mywidth2, this.height - i, null);
+      if (this.damaged < 10) this.scene_g.drawImage(image, (width / 2) - this.mywidth2, this.height - i, null);
       if (this.damaged > 0) putbomb();
     }
     if (this.gameMode == TITLE_MODE) {
       showTitle();
     }
     if(!this.hasFocus()) {
-      this.gra.setFont(this.titleFont); this.gra.setColor(Color.red);
-      FontMetrics fm = this.gra.getFontMetrics();
+      this.scene_g.setFont(this.titleFont); this.scene_g.setColor(Color.red);
+      FontMetrics fm = this.scene_g.getFontMetrics();
       int y = (int)(this.height * (System.currentTimeMillis() % 10000) / 10000.0);
-      { String msg = "Lost Keyboard Input Focus"; int line_w = fm.stringWidth(msg); this.gra.drawString(msg, (this.width - line_w) / 2, y); }
+      { String msg = "Lost Keyboard Input Focus"; int line_w = fm.stringWidth(msg); this.scene_g.drawString(msg, (this.width - line_w) / 2, y); }
     }
   }
 
@@ -372,10 +367,10 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       return;
     }
     if (this.damaged == 1 && this.explosion != null) { this.explosion.stop(); this.explosion.setFramePosition(0); this.explosion.start(); }
-    this.gra.setColor(new Color(255, 255 - this.damaged * 12, 240 - this.damaged * 12));
+    this.scene_g.setColor(new Color(255, 255 - this.damaged * 12, 240 - this.damaged * 12));
     int i = this.damaged * 8 * this.width / 320;
     int j = this.damaged * 4 * this.height / 200;
-    this.gra.fillOval((width / 2) - i, 186 * this.height / 200 - j, i * 2, j * 2);
+    this.scene_g.fillOval((width / 2) - i, 186 * this.height / 200 - j, i * 2, j * 2);
     this.damaged++;
   }
 
@@ -434,7 +429,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
         int b_w = this.getWidth(); int b_h = this.getHeight(); int s_w = this.width; int s_h = this.height;
         double scale; if ((b_w / (double)b_h) > (s_w / (double)s_h)) scale = b_h / (double)s_h; else scale = b_w / (double)s_w;
         int x = (int)((b_w - s_w * scale) / 2); int y = (int)((b_h - s_h * scale) / 2);
-        this.thisGra.drawImage(this.img,x,y,(int)(s_w*scale), (int)(s_h*scale), Color.WHITE, null);
+        this.thisGra.drawImage(this.scene_img,x,y,(int)(s_w*scale), (int)(s_h*scale), Color.WHITE, null);
       }
       this.getToolkit().sync();
       try { Thread.sleep(55); } catch (InterruptedException e) { e.printStackTrace(); }
