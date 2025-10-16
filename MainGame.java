@@ -150,17 +150,11 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
 
   boolean scFlag = true;
 
-  Font titleFont;
-
-  Font normalFont;
-
   int damaged;
 
   private char[] memInfo = new char[8];
 
   private Runtime runtime = Runtime.getRuntime();
-
-  private int titleCounter_;
 
   public void stop() {
     this.gameThread = null;
@@ -254,27 +248,21 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     this.gameThread.start();
   }
 
+  private Font titleFont = new Font("Courier", Font.PLAIN, 14);
   private void showTitle() {
-    this.vx = 0.0D;
-    byte b = 100;
-    if (this.titleCounter_ < b) {
-      this.gra.setFont(new Font("Courier", Font.PLAIN, 12));
-      this.gra.setColor(Color.white);
-      this.gra.drawString("Jet Slalom Resurrected", 100, 80);
-      this.gra.drawString("by David Lareau", 100, 100);
-      this.gra.drawString("Original by MR-C 1999", 100, 120);
-    } else {
-      int score = (this.titleCounter_ - b) / b * 5;
-      if (score > 15) {
-        score = 15;
-        this.titleCounter_ = 0;
-      }
-      if(hiScoreInfoObj.size() == 5) { hiScoreInfoObj.removeLast(); } hiScoreInfoObj.addFirst(score);
-      for(int i = 0; i < hiScoreInfoObj.size(); i++) {
-        this.gra.drawString(hiScoreInfoObj.get(i).toString(), 100, 80 + 20 * i);
-      }
-    }
-    this.titleCounter_++;
+    this.vx = 0.0;
+    this.gra.setFont(this.titleFont);
+    this.gra.setColor(Color.white);
+    FontMetrics fm = this.gra.getFontMetrics();
+    int line_h = fm.getHeight();
+    int spacing = 5;
+    int n = 3;
+    int h = (line_h + spacing) * n - spacing;
+    int y = (this.height - h) / 2;
+    
+    { String msg = "Jet Slalom Resurrected"; int line_w = fm.stringWidth(msg); this.gra.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
+    { String msg = "by David Lareau in 2025"; int line_w = fm.stringWidth(msg); this.gra.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
+    { String msg = "Original 1999 version by MR-C"; int line_w = fm.stringWidth(msg); this.gra.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
   }
 
   public void startGame(int mode, boolean paramBoolean) {
@@ -336,7 +324,6 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
       showTitle();
       return;
     }
-    this.titleCounter_ = 0;
   }
 
   public void mouseClicked(MouseEvent paramMouseEvent) {}
@@ -413,8 +400,6 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     return new Dimension(this.width, this.height);
   }
 
-  ArrayList<Integer> hiScoreInfoObj = new ArrayList<>(5);
-  
   public void run() {
     this.thisGra = this.getGraphics();
     obstacles.clear();
@@ -423,7 +408,7 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     this.round = 0;
     this.score = 0;
     this.vx = 0.0D;
-    this.gameMode = PLAY_MODE; // TODO start in title
+    this.gameMode = TITLE_MODE;
     while (this.gameThread != null) {
 
       // gamepad: note that the external library I found does not seem to support plug and play at least in my Linux environment (i.e. the gamepad must be plugged before the game starts)
