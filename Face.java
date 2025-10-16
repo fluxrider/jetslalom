@@ -2,19 +2,19 @@ import java.awt.*;
 
 public class Face {
   DPoint3[] points;
-  
+
   double maxZ;
-  
+
   float red;
   float green;
   float blue;
-  
+
   void setColor(Color c) {
     this.red = c.getRed() / 255.0F;
     this.green = c.getGreen() / 255.0F;
     this.blue = c.getBlue() / 255.0F;
   }
-  
+
   void calcMaxZ() {
     double d1 = (this.points[1]).x - (this.points[0]).x;
     double d2 = (this.points[1]).y - (this.points[0]).y;
@@ -24,7 +24,7 @@ public class Face {
     double d6 = (this.points[2]).z - (this.points[0]).z;
     this.maxZ = Math.sqrt(two(d2 * d6 - d3 * d5) + two(d1 * d6 - d3 * d4) + two(d1 * d5 - d2 * d4));
   }
-  
+
   private final double two(double paramDouble) {
     return paramDouble * paramDouble;
   }

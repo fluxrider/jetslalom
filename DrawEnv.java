@@ -2,15 +2,15 @@ import java.awt.*;
 
 public class DrawEnv {
   // preallocate buffers
-  private static int[] buffer_polyX = new int[8];  
+  private static int[] buffer_polyX = new int[8];
   private static int[] buffer_polyY = new int[8];
-  
+
   static double nowSin;
   static double nowCos;
-  
+
   static int width;
   static int height;
-  
+
   synchronized static void drawPolygon(Graphics g, Face face) {
     DPoint3[] points = face.points;
     double d1 = (points[1]).x - (points[0]).x;
@@ -21,7 +21,7 @@ public class DrawEnv {
     g.setColor(new Color(face.red * f, face.green * f, face.blue * f));
     drawPolygon(g, points);
   }
-  
+
   synchronized static void drawPolygon(Graphics g, DPoint3[] points) {
     double d1 = width / 320.0;
     double d2 = height / 200.0;

@@ -26,7 +26,7 @@ class Gamepad {
   public boolean n_north_maybe;
   public boolean n_west_maybe;
   public boolean n_east_maybe;
-  
+
   public void poll() { }
 
 }

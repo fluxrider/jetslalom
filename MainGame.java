@@ -20,12 +20,12 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
   public void toggleFullScreen() {
     GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
     if(gd.isFullScreenSupported()) gd.setFullScreenWindow(gd.getFullScreenWindow() == window? null : window);
-  }  
+  }
 
   Label hiScoreLabel;
   Label lblContinue;
   NumberLabel scoreWin;
-  
+
   public static void main(String[] args) {
     window = new Frame("Jet Slalom Resurrected");
     MainGame game = new MainGame();
@@ -33,7 +33,7 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     window.setLayout(new BorderLayout());
     window.add(game, BorderLayout.CENTER);
     window.setVisible(true);
-    
+
     game.setLayout(new BorderLayout());
     game.setBackground(new Color(160, 208, 176));
     game.scoreWin = new NumberLabel(64, 12);
@@ -47,150 +47,150 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     game.add(panel, BorderLayout.NORTH);
     game.hiScoreLabel = new Label("Your Hi-score:0         ");
     game.add(game.hiScoreLabel, BorderLayout.SOUTH);
-    
+
     game.addKeyListener(game);
     game.addMouseListener(game);
     game.addMouseMotionListener(game);
     for (byte b = 1; b < game.rounds.length; b++)
       game.rounds[b].setPrevRound(game.rounds[b - 1]);
-    
+
     game.init();
     game.requestFocus();
     game.invalidate();
     game.validate();
-    
+
     window.validate();
     window.pack();
     window.setSize(800, 600);
     game.start();
     game.startGame(1, false);
   }
-  
+
   private static Random random = new Random();
   public static int getRandom() { return random.nextInt(Integer.MAX_VALUE); }
 
   Gamepad gamepad = new Gamepad();
-  
+
   Clip explosion;
-  
+
   static double[] si = new double[128];
-  
+
   static double[] co = new double[128];
-  
+
   DPoint3[] ground_points = new DPoint3[] { new DPoint3(-100.0, 2.0, 28.0), new DPoint3(-100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 28.0) };
   Color ground_color;
-  
+
   TimerNotifier timer;
-  
+
   ObstacleCollection obstacles = new ObstacleCollection();
-  
+
   double vx = 0.0D;
-  
+
   double mywidth = 0.7D;
-  
+
   int mywidth2;
-  
+
   int score;
-  
+
   int prevScore;
-  
+
   int hiscore;
-  
+
   int shipCounter;
-  
+
   int contNum;
-  
+
   private String[] strHiScoreInfo_;
 
   int gameMode;
   static final int PLAY_MODE = 0;
   static final int TITLE_MODE = 1;
-  
+
   boolean isContinue = false;
-  
+
   boolean registMode = false;
-  
+
   int width;
-  
+
   int height;
-  
+
   int centerX;
-  
+
   int centerY;
-  
+
   int mouseX = 0;
-  
+
   int mouseY = 0;
-  
+
   boolean isInPage = false;
-  
+
   Thread gameThread;
-  
+
   Image img;
-  
+
   Image myImg;
-  
+
   Image myImg2;
-  
+
   Image myRealImg;
-  
+
   Image myRealImg2;
-  
+
   Graphics gra;
-  
+
   Graphics thisGra;
-  
+
   MediaTracker tracker;
-  
+
   boolean isLoaded = false;
-  
+
   int round;
-  
+
   RoundManager[] rounds = new RoundManager[] { new NormalRound(8000, new Color(0, 160, 255), new Color(0, 200, 64), 4), new NormalRound(12000, new Color(240, 160, 160), new Color(64, 180, 64), 3), new NormalRound(25000, Color.black, new Color(0, 128, 64), 2), new RoadRound(40000, new Color(0, 180, 240), new Color(0, 200, 64), false), new RoadRound(100000, Color.lightGray, new Color(64, 180, 64), true), new NormalRound(1000000, Color.black, new Color(0, 128, 64), 1) };
-  
+
   boolean rFlag = false;
-  
+
   boolean lFlag = false;
-  
+
   boolean isFocus = true;
-  
+
   boolean isFocus2 = true;
-  
+
   boolean scFlag = true;
-  
+
   Font titleFont;
-  
+
   Font normalFont;
-  
+
   StringObject title;
-  
+
   StringObject author;
-  
+
   StringObject startMsg;
-  
+
   StringObject contMsg;
-  
+
   StringObject clickMsg;
-  
+
   StringObject hpage;
-  
+
   int damaged;
-  
+
   private char[] memInfo = new char[8];
-  
+
   private Runtime runtime = Runtime.getRuntime();
-  
+
   private int titleCounter_;
-  
+
   private StringObject[] hiScoreInfoObj;
-  
+
   public void stop() {
     this.gameThread = null;
     this.registMode = false;
     this.gameMode = TITLE_MODE;
     this.timer.interrupt();
   }
-  
+
   void keyEvent(int keycode, boolean held) {
     if (keycode == VK_RIGHT || keycode == VK_L || keycode == VK_D) this.rFlag = held;
     if (keycode == VK_LEFT || keycode == VK_J || keycode == VK_A) this.lFlag = held;
@@ -206,56 +206,56 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
       startGame(PLAY_MODE, true);
     }
   }
-  
+
   void keyOperate() {
     boolean bool1 = this.rFlag;
     boolean bool2 = this.lFlag;
     if (this.gameMode == PLAY_MODE) {
       int i = 0;
       if (bool1)
-        i |= 0x2; 
+        i |= 0x2;
       if (bool2)
-        i |= 0x1; 
+        i |= 0x1;
     }
     if (this.damaged == 0 && this.gameMode == PLAY_MODE) {
       if (bool1)
-        this.vx -= 0.1D; 
+        this.vx -= 0.1D;
       if (bool2)
-        this.vx += 0.1D; 
+        this.vx += 0.1D;
       if (this.vx < -0.6D)
-        this.vx = -0.6D; 
+        this.vx = -0.6D;
       if (this.vx > 0.6D)
-        this.vx = 0.6D; 
-    } 
+        this.vx = 0.6D;
+    }
     if (!bool2 && !bool1) {
       if (this.vx < 0.0D) {
         this.vx += 0.025D;
         if (this.vx > 0.0D)
-          this.vx = 0.0D; 
-      } 
+          this.vx = 0.0D;
+      }
       if (this.vx > 0.0D) {
         this.vx -= 0.025D;
         if (this.vx < 0.0D)
-          this.vx = 0.0D; 
-      } 
-    } 
+          this.vx = 0.0D;
+      }
+    }
   }
-  
+
   public void mouseReleased(MouseEvent paramMouseEvent) {
     this.rFlag = false;
     this.lFlag = false;
   }
-  
+
   public void keyPressed(KeyEvent paramKeyEvent) {
     keyEvent(paramKeyEvent.getKeyCode(), true);
   }
-  
+
   void moveObstacle() {
     int i = (int)(Math.abs(this.vx) * 100.0D);
     DrawEnv.nowSin = si[i];
     DrawEnv.nowCos = co[i];
     if (this.vx > 0.0D)
-      DrawEnv.nowSin = -DrawEnv.nowSin; 
+      DrawEnv.nowSin = -DrawEnv.nowSin;
     for (Obstacle obstacle = this.obstacles.head.next; obstacle != this.obstacles.tail;) {
       Obstacle obstacle1 = obstacle.next;
       obstacle.move(this.vx, 0.0D, -1.0D);
@@ -263,15 +263,15 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
       if ((arrayOfDPoint3[0]).z <= 1.1D) {
         double d = this.mywidth * DrawEnv.nowCos;
         if (-d < (arrayOfDPoint3[2]).x && (arrayOfDPoint3[0]).x < d)
-          this.damaged++; 
+          this.damaged++;
         obstacle.release();
       }
       obstacle = obstacle1;
-    } 
+    }
     this.rounds[this.round].move(this.vx);
     this.rounds[this.round].generateObstacle(this.obstacles);
   }
-  
+
   private void updateHiScoreInfoObj(int paramInt) {
     byte b = 0;
     do {
@@ -280,17 +280,17 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
       this.hiScoreInfoObj[b + 1].setText(str + ".  " + this.strHiScoreInfo_[paramInt + b]);
     } while (++b < 5);
   }
-  
+
   public void mouseEntered(MouseEvent paramMouseEvent) {}
-  
+
   public void mouseExited(MouseEvent paramMouseEvent) {}
-  
+
   public void start() {
     this.timer = new TimerNotifier(55);
     this.gameThread = new Thread(this);
     this.gameThread.start();
   }
-  
+
   private void showTitle() {
     this.vx = 0.0D;
     byte b = 100;
@@ -304,66 +304,66 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
       } else {
         this.isInPage = false;
         this.hpage.setColor(Color.black);
-      } 
+      }
       this.hpage.draw(this.gra, null);
       if (this.rounds[0].isNextRound(this.prevScore))
-        this.contMsg.draw(this.gra, null); 
+        this.contMsg.draw(this.gra, null);
     } else {
       int i = (this.titleCounter_ - b) / b * 5;
       if (i > 15) {
         i = 15;
         this.titleCounter_ = 0;
-      } 
+      }
       if (this.hiScoreInfoObj == null)
-        initHiScoreInfoObj(); 
+        initHiScoreInfoObj();
       updateHiScoreInfoObj(i);
       byte b1 = 0;
       do {
         this.hiScoreInfoObj[b1].draw(this.gra, null);
       } while (++b1 < 6);
-    } 
+    }
     this.titleCounter_++;
     if (!this.isFocus)
-      this.clickMsg.draw(this.gra, null); 
+      this.clickMsg.draw(this.gra, null);
   }
-  
+
   public void startGame(int mode, boolean paramBoolean) {
     if (this.gameMode == PLAY_MODE)
-      return; 
+      return;
     this.vx = 0.0D;
     if (mode == PLAY_MODE) {
       this.gameMode = mode;
     } else {
       this.gameMode = TITLE_MODE;
-    } 
+    }
     this.obstacles.removeAll();
     for (byte b = 0; b < this.rounds.length; b++)
-      this.rounds[b].init(); 
+      this.rounds[b].init();
     this.damaged = 0;
     this.round = 0;
     this.score = 0;
     this.vx = 0.0D;
     if (paramBoolean) {
       while (this.prevScore >= this.rounds[this.round].getNextRoundScore())
-        this.round++; 
+        this.round++;
       if (this.round > 0) {
         this.score = this.rounds[this.round - 1].getNextRoundScore();
         this.contNum++;
-      } 
+      }
     } else {
       this.contNum = 0;
-    } 
+    }
     this.lblContinue.setText("" + (this.contNum * 1000));
   }
-  
+
   void prt() {
     this.gra.setColor(this.rounds[this.round].getSkyColor());
     this.gra.fillRect(0, 0, this.width, this.height);
     if (this.gameMode == PLAY_MODE) {
       this.score += 20;
       if (this.scFlag)
-        this.scoreWin.setNum(this.score); 
-    } 
+        this.scoreWin.setNum(this.score);
+    }
     this.scFlag = !this.scFlag;
     this.ground_color = this.rounds[this.round].getGroundColor();
     this.gra.setColor(this.ground_color); DrawEnv.drawPolygon(this.gra, this.ground_points);
@@ -373,24 +373,24 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
       int i = 24 * this.height / 200;
       Image image = this.myRealImg;
       if (this.shipCounter % 4 > 1)
-        image = this.myRealImg2; 
+        image = this.myRealImg2;
       if (this.shipCounter % 12 > 6)
-        i = 22 * this.height / 200; 
+        i = 22 * this.height / 200;
       if (this.score < 200)
-        i = (12 + this.score / 20) * this.height / 200; 
+        i = (12 + this.score / 20) * this.height / 200;
       this.gra.drawImage(image, this.centerX - this.mywidth2, this.height - i, null);
       if (this.damaged > 0)
-        putbomb(); 
-    } 
+        putbomb();
+    }
     if (this.gameMode == TITLE_MODE) {
       showTitle();
       return;
-    } 
+    }
     this.titleCounter_ = 0;
   }
-  
+
   public void mouseClicked(MouseEvent paramMouseEvent) {}
-  
+
   public void mousePressed(MouseEvent paramMouseEvent) {
     int i = paramMouseEvent.getModifiersEx(); // DAVE deprecated warning, but since the constants aren't used here, this probably breaks things BUTTON3_MASK VS BUTTON3_DOWN_MASK
     if ((i & 0x4) != 0) {
@@ -399,30 +399,30 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     } else if ((i & 0x10) != 0) {
       this.rFlag = false;
       this.lFlag = true;
-    } 
+    }
     if (this.gameMode == PLAY_MODE)
-      return; 
+      return;
     if (!this.isFocus2) {
       this.isFocus2 = true;
       return;
-    } 
+    }
     if (this.isInPage && this.gameMode == TITLE_MODE) startGame(PLAY_MODE, false);
   }
-  
+
   public void mouseDragged(MouseEvent paramMouseEvent) {}
-  
+
   public void mouseMoved(MouseEvent paramMouseEvent) {
     this.mouseX = paramMouseEvent.getX();
     this.mouseY = paramMouseEvent.getY();
   }
-  
+
   public void keyTyped(KeyEvent paramKeyEvent) {}
-  
- 
+
+
   public synchronized void setHiScoreInfo(String[] paramArrayOfString) {
     this.strHiScoreInfo_ = paramArrayOfString;
   }
-  
+
   private void drawMemInfo(Graphics paramGraphics) {
     int i = (int)this.runtime.freeMemory();
     byte b = 7;
@@ -434,21 +434,21 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
         paramGraphics.setColor(Color.red);
         paramGraphics.drawChars(this.memInfo, 0, 8, 0, 32);
         return;
-      } 
-    } 
+      }
+    }
   }
-  
+
   public int getHiScore() {
     return this.hiscore;
   }
-  
+
   void putExtra() {}
-  
+
   void putbomb() {
     if (this.damaged > 20) {
       endGame();
       return;
-    } 
+    }
     if (this.damaged == 1 && this.explosion != null) { this.explosion.stop(); this.explosion.setFramePosition(0); this.explosion.start(); }
     this.gra.setColor(new Color(255, 255 - this.damaged * 12, 240 - this.damaged * 12));
     int i = this.damaged * 8 * this.width / 320;
@@ -456,21 +456,21 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     this.gra.fillOval(this.centerX - i, 186 * this.height / 200 - j, i * 2, j * 2);
     this.damaged++;
   }
-  
+
   private Image loadImage(String paramString) {
     Image image = this.getToolkit().getImage(ClassLoader.getSystemResource(paramString));
     this.tracker.addImage(image, 0);
     return image;
   }
-  
+
   public void keyReleased(KeyEvent paramKeyEvent) {
     keyEvent(paramKeyEvent.getKeyCode(), false);
   }
-  
+
   public Dimension getPreferredSize() {
     return new Dimension(this.width, this.height);
   }
-  
+
   private void initHiScoreInfoObj() {
     this.hiScoreInfoObj = new StringObject[6];
     this.hiScoreInfoObj[0] = new StringObject(this.normalFont, Color.white, "Ranking", this.width / 2, 24);
@@ -480,12 +480,12 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
       this.hiScoreInfoObj[b].setAlign(1);
     } while (++b < 6);
   }
-  
+
   public void run() {
     this.thisGra = this.getGraphics();
     this.obstacles.removeAll();
     for (byte b = 0; b < this.rounds.length; b++)
-      this.rounds[b].init(); 
+      this.rounds[b].init();
     this.damaged = 0;
     this.round = 0;
     this.score = 0;
@@ -508,9 +508,9 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
       if(gamepad.right_trigger > 0) gamepad_right = true;
       if(gamepad.select && gamepad.n_select) this.toggleFullScreen();
       if(this.gameMode != PLAY_MODE && ((gamepad.start && gamepad.n_start) || (gamepad.south_maybe && gamepad.n_south_maybe) || (gamepad.north_maybe && gamepad.n_north_maybe) || (gamepad.west_maybe && gamepad.n_west_maybe) || (gamepad.east_maybe && gamepad.n_east_maybe))) startGame(PLAY_MODE, false);
-    
+
       if (this.rounds[this.round].isNextRound(this.score))
-        this.round++; 
+        this.round++;
       boolean lFlag_stored = this.lFlag; this.lFlag |= gamepad_left;
       boolean rFlag_stored = this.rFlag; this.rFlag |= gamepad_right;
       keyOperate();
@@ -532,9 +532,9 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
       }
       this.getToolkit().sync();
       this.timer.wait1step();
-    } 
+    }
   }
-  
+
   public void init() {
     // DAVE this semi inspired by the commented bytecode that was there
     this.titleFont = new Font("Courier", Font.PLAIN, 12);
@@ -573,14 +573,14 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     myRealImg = myImg.getScaledInstance(mywidth2 * 2, mywidth2 / 4, Image.SCALE_FAST);
     myRealImg2 = myImg2.getScaledInstance(mywidth2 * 2, mywidth2 / 4, Image.SCALE_FAST);
   }
-  
+
   void endGame() {
     this.scoreWin.setNum(this.score);
     if (this.gameMode == PLAY_MODE)
-      this.prevScore = this.score; 
+      this.prevScore = this.score;
     if (this.score - this.contNum * 1000 > this.hiscore && this.gameMode == PLAY_MODE) {
       this.hiscore = this.score - this.contNum * 1000;
-    } 
+    }
     this.hiScoreLabel.setText("Your Hi-score:" + this.hiscore);
     this.gameMode = TITLE_MODE;
   }

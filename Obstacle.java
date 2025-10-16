@@ -2,40 +2,40 @@ import java.awt.*;
 
 public class Obstacle {
   DPoint3[] points = new DPoint3[] { new DPoint3(), new DPoint3(), new DPoint3(), new DPoint3() };
-  
+
   Face[] faces = new Face[] { new Face(), new Face(), new Face() };
-  
+
   Obstacle next = null;
-  
+
   Obstacle prev = null;
-  
+
   Color color;
-  
+
   private static Obstacle head = null;
-  
+
   static synchronized void releaseObstacle(Obstacle paramObstacle) {
     if (paramObstacle == null)
-      return; 
+      return;
     paramObstacle.next = head;
     head = paramObstacle;
   }
-  
+
   void release() {
     this.prev.next = this.next;
     this.next.prev = this.prev;
     releaseObstacle(this);
   }
-  
+
   void draw(Graphics g) {
     DrawEnv.drawPolygon(g, this.faces[0]);
     DrawEnv.drawPolygon(g, this.faces[1]);
   }
-  
+
   Obstacle() {
     (this.faces[0]).points = new DPoint3[] { this.points[3], this.points[0], this.points[1] };
     (this.faces[1]).points = new DPoint3[] { this.points[3], this.points[2], this.points[1] };
   }
-  
+
   static {
     byte b = 0;
     do {
@@ -44,25 +44,25 @@ public class Obstacle {
       head = obstacle;
     } while (++b < 16);
   }
-  
+
   static synchronized Obstacle newObstacle() {
     Obstacle obstacle = head;
     if (obstacle == null) {
       obstacle = new Obstacle();
     } else {
       head = head.next;
-    } 
+    }
     obstacle.next = null;
     return obstacle;
   }
-  
+
   void prepareNewObstacle() {
     this.faces[0].setColor(this.color.brighter());
     this.faces[0].calcMaxZ();
     this.faces[1].setColor(this.color);
     this.faces[1].calcMaxZ();
   }
-  
+
   void move(double paramDouble1, double paramDouble2, double paramDouble3) {
     byte b = 0;
     do {
