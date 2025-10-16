@@ -24,6 +24,10 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     if(gd.isFullScreenSupported()) gd.setFullScreenWindow(gd.getFullScreenWindow() == this.window? null : this.window);
   }
 
+  // sin/cos lookup tables
+  private double[] si = new double[128];
+  private double[] co = new double[128];
+
   private Frame window;
   private Label hiScoreLabel;
   private Label lblContinue;
@@ -32,6 +36,10 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   public static void main(String[] args) { new Main(); } public Main() {
     Color bg = new Color(160, 208, 176);
     for (byte b = 1; b < this.rounds.length; b++) this.rounds[b].setPrevRound(this.rounds[b - 1]);
+    for(int i = 0; i < si.length; i++) {
+      si[i] = Math.sin(Math.PI * (i / (double)si.length));
+      co[i] = Math.cos(Math.PI * (i / (double)si.length));
+    }
     
     this.addKeyListener(this);
     this.addMouseListener(this);
@@ -53,16 +61,10 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     window.setVisible(true);
     this.requestFocus();
 
-    this.centerX = width / 2;
-    this.centerY = height / 2;
     this.img = this.createImage(width, height);
     this.gra = img.getGraphics();
     this.gra.setColor(new Color(0,128,128));
     this.gra.fillRect(0, 0, width, height);
-    for(int i = 0; i < si.length; i++) {
-      si[i] = Math.sin(Math.PI * (i / (double)si.length));
-      co[i] = Math.cos(Math.PI * (i / (double)si.length));
-    }
     this.mywidth2 = (int)(this.width * this.mywidth * 120 / 1.6 / 320);
     try {
       this.ship[0] = ImageIO.read(new File("res/jiki.gif")).getScaledInstance(mywidth2 * 2, mywidth2 / 4, Image.SCALE_FAST);
@@ -84,10 +86,8 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
   private Clip explosion;
 
-  private static double[] si = new double[128];
-
-  private static double[] co = new double[128];
-
+  private RoundManager[] rounds = new RoundManager[] { new NormalRound(8000, new Color(0, 160, 255), new Color(0, 200, 64), 4), new NormalRound(12000, new Color(240, 160, 160), new Color(64, 180, 64), 3), new NormalRound(25000, Color.black, new Color(0, 128, 64), 2), new RoadRound(40000, new Color(0, 180, 240), new Color(0, 200, 64), false), new RoadRound(100000, Color.lightGray, new Color(64, 180, 64), true), new NormalRound(1000000, Color.black, new Color(0, 128, 64), 1) };
+  
   private DPoint3[] ground_points = new DPoint3[] { new DPoint3(-100.0, 2.0, 28.0), new DPoint3(-100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 28.0) };
   private Color ground_color;
 
@@ -117,10 +117,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
   private boolean registMode = false;
 
-  private int centerX;
-
-  private int centerY;
-
   private int mouseX = 0;
 
   private int mouseY = 0;
@@ -140,7 +136,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
   private int round;
 
-  private RoundManager[] rounds = new RoundManager[] { new NormalRound(8000, new Color(0, 160, 255), new Color(0, 200, 64), 4), new NormalRound(12000, new Color(240, 160, 160), new Color(64, 180, 64), 3), new NormalRound(25000, Color.black, new Color(0, 128, 64), 2), new RoadRound(40000, new Color(0, 180, 240), new Color(0, 200, 64), false), new RoadRound(100000, Color.lightGray, new Color(64, 180, 64), true), new NormalRound(1000000, Color.black, new Color(0, 128, 64), 1) };
 
   private boolean rFlag = false;
 
@@ -310,7 +305,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       Image image = this.ship[this.shipCounter % 4 > 1? 1 : 0];
       if (this.shipCounter % 12 > 6) i = 22 * this.height / 200;
       if (this.score < 200) i = (12 + this.score / 20) * this.height / 200;
-      if (this.damaged < 10) this.gra.drawImage(image, this.centerX - this.mywidth2, this.height - i, null);
+      if (this.damaged < 10) this.gra.drawImage(image, (width / 2) - this.mywidth2, this.height - i, null);
       if (this.damaged > 0) putbomb();
     }
     if (this.gameMode == TITLE_MODE) {
@@ -380,7 +375,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     this.gra.setColor(new Color(255, 255 - this.damaged * 12, 240 - this.damaged * 12));
     int i = this.damaged * 8 * this.width / 320;
     int j = this.damaged * 4 * this.height / 200;
-    this.gra.fillOval(this.centerX - i, 186 * this.height / 200 - j, i * 2, j * 2);
+    this.gra.fillOval((width / 2) - i, 186 * this.height / 200 - j, i * 2, j * 2);
     this.damaged++;
   }
 
@@ -433,7 +428,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
         this.thisGra.setColor(Color.lightGray);
         this.thisGra.fill3DRect(0, 0, this.width, this.height, true);
         this.thisGra.setColor(Color.black);
-        this.thisGra.drawString("Wait a moment!!", this.centerX - 32, this.centerY + 8);
+        this.thisGra.drawString("Wait a moment!!", (width / 2) - 32, (height / 2) + 8);
       } else {
         // letterbox scaling (i.e. respects aspect ratio)
         int b_w = this.getWidth(); int b_h = this.getHeight(); int s_w = this.width; int s_h = this.height;
