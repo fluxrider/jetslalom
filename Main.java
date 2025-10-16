@@ -59,7 +59,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
   public static void main(String[] args) { new Main(); } public Main() {
     Color bg = new Color(160, 208, 176);
-    for (byte b = 1; b < this.rounds.length; b++) this.rounds[b].setPrevRound(this.rounds[b - 1]);
+    for(int b = 1; b < this.rounds.length; b++) this.rounds[b].setPrevRound(this.rounds[b - 1]);
     for(int i = 0; i < si.length; i++) {
       si[i] = Math.sin(Math.PI * (i / (double)si.length));
       co[i] = Math.cos(Math.PI * (i / (double)si.length));
@@ -155,11 +155,11 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     int i = (int)(Math.abs(this.vx) * 100.0);
     DrawEnv.nowSin = si[i];
     DrawEnv.nowCos = co[i];
-    if (this.vx > 0.0) DrawEnv.nowSin = -DrawEnv.nowSin;
+    if(this.vx > 0.0) DrawEnv.nowSin = -DrawEnv.nowSin;
     ListIterator<Obstacle> iter = this.obstacles.listIterator(); while(iter.hasNext()) { Obstacle obstacle = iter.next();
       obstacle.move(this.vx, 0.0, -1.0);
       DPoint3[] points = obstacle.points;
-      if ((points[0]).z <= 1.1) {
+      if((points[0]).z <= 1.1) {
         double d = 0.7 * DrawEnv.nowCos;
         if (-d < (points[2]).x && (points[0]).x < d) this.damaged++;
         iter.remove();
@@ -180,7 +180,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     int n = 3;
     int h = (line_h + spacing) * n - spacing;
     int y = (this.height - h) / 2;
-    
     { String msg = "Jet Slalom Resurrected"; int line_w = fm.stringWidth(msg); this.scene_g.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
     { String msg = "by David Lareau in 2025"; int line_w = fm.stringWidth(msg); this.scene_g.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
     { String msg = "Original 1997 version by MR-C"; int line_w = fm.stringWidth(msg); this.scene_g.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
@@ -189,19 +188,14 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   public void startGame(boolean play_mode, boolean resume) {
     this.title_mode = !play_mode;
     obstacles.clear();
-    for (byte b = 0; b < this.rounds.length; b++) this.rounds[b].init();
+    for(RoundManager r : this.rounds) r.init();
     this.damaged = 0;
     this.round = 0;
     this.score = 0;
     this.vx = 0.0;
-    if (resume) {
+    if(!resume) { this.contNum = 0; } else {
       while (this.prevScore >= this.rounds[this.round].getNextRoundScore()) this.round++;
-      if (this.round > 0) {
-        this.score = this.rounds[this.round - 1].getNextRoundScore();
-        this.contNum++;
-      }
-    } else {
-      this.contNum = 0;
+      if (this.round > 0) { this.score = this.rounds[this.round - 1].getNextRoundScore(); this.contNum++; }
     }
     this.lblContinue.setText("" + (this.contNum * 1000));
   }
@@ -209,14 +203,14 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   void prt() {
     this.scene_g.setColor(this.rounds[this.round].getSkyColor());
     this.scene_g.fillRect(0, 0, this.width, this.height);
-    if (!this.title_mode) {
+    if(!this.title_mode) {
       this.score += 20;
       this.scoreWin.setNum(this.score);
     }
     this.scene_g.setColor(this.rounds[this.round].getGroundColor()); DrawEnv.drawPolygon(this.scene_g, this.ground_points);
     for(Obstacle obstacle : obstacles) obstacle.draw(this.scene_g);
     this.ship_animation++;
-    if (!this.title_mode) {
+    if(!this.title_mode) {
       int i = 24 * this.height / 200;
       Image image = this.ship[this.ship_animation % 4 > 1? 1 : 0];
       if (this.ship_animation % 12 > 6) i = 22 * this.height / 200;
@@ -224,9 +218,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       if (this.damaged < 10) this.scene_g.drawImage(image, (width / 2) - image.getWidth(null)/2, this.height - i, null);
       if (this.damaged > 0) putbomb();
     }
-    if (this.title_mode) {
-      showTitle();
-    }
+    if(this.title_mode) showTitle();
     if(!this.hasFocus()) {
       this.scene_g.setFont(this.titleFont); this.scene_g.setColor(Color.red);
       FontMetrics fm = this.scene_g.getFontMetrics();
@@ -236,18 +228,25 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   }
 
   void putbomb() {
-    if (this.damaged > 20) { endGame(); return; }
-    if (this.damaged == 1 && this.explosion != null) { this.explosion.stop(); this.explosion.setFramePosition(0); this.explosion.start(); }
-    this.scene_g.setColor(new Color(255, 255 - this.damaged * 12, 240 - this.damaged * 12));
-    int i = this.damaged * 8 * this.width / 320;
-    int j = this.damaged * 4 * this.height / 200;
-    this.scene_g.fillOval((width / 2) - i, 186 * this.height / 200 - j, i * 2, j * 2);
-    this.damaged++;
+    if(this.damaged > 20) {
+      this.scoreWin.setNum(this.score);
+      if(!this.title_mode) this.prevScore = this.score;
+      if(this.score - this.contNum * 1000 > this.hiscore && !this.title_mode) this.hiscore = this.score - this.contNum * 1000;
+      this.hiScoreLabel.setText("Your Hi-score:" + this.hiscore);
+      this.title_mode = true;
+    } else {
+      if(this.damaged == 1 && this.explosion != null) { this.explosion.stop(); this.explosion.setFramePosition(0); this.explosion.start(); }
+      this.scene_g.setColor(new Color(255, 255 - this.damaged * 12, 240 - this.damaged * 12));
+      int i = this.damaged * 8 * this.width / 320;
+      int j = this.damaged * 4 * this.height / 200;
+      this.scene_g.fillOval((width / 2) - i, 186 * this.height / 200 - j, i * 2, j * 2);
+      this.damaged++;
+    }
   }
 
   public void run() {
     obstacles.clear();
-    for (byte b = 0; b < this.rounds.length; b++) this.rounds[b].init();
+    for(RoundManager r : this.rounds) r.init();
     this.damaged = 0;
     this.round = 0;
     this.score = 0;
@@ -282,7 +281,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       // letterbox scaling (i.e. respects aspect ratio)
       Graphics g = this.getGraphics();
       int b_w = this.getWidth(); int b_h = this.getHeight(); int s_w = this.width; int s_h = this.height;
-      double scale; if ((b_w / (double)b_h) > (s_w / (double)s_h)) scale = b_h / (double)s_h; else scale = b_w / (double)s_w;
+      double scale; if((b_w / (double)b_h) > (s_w / (double)s_h)) scale = b_h / (double)s_h; else scale = b_w / (double)s_w;
       int x = (int)((b_w - s_w * scale) / 2); int y = (int)((b_h - s_h * scale) / 2);
       g.drawImage(this.scene_img,x,y,(int)(s_w*scale), (int)(s_h*scale), Color.WHITE, null);
       this.getToolkit().sync();
@@ -290,11 +289,4 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     }
   }
 
-  void endGame() {
-    this.scoreWin.setNum(this.score);
-    if (!this.title_mode) this.prevScore = this.score;
-    if (this.score - this.contNum * 1000 > this.hiscore && !this.title_mode) this.hiscore = this.score - this.contNum * 1000;
-    this.hiScoreLabel.setText("Your Hi-score:" + this.hiscore);
-    this.title_mode = true;
-  }
 }
