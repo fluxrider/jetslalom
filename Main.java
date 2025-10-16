@@ -32,9 +32,9 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private boolean title_mode;
   
   private Frame window;
-  private Label hiScoreLabel;
   private Label lblContinue;
   private NumberLabel scoreWin;
+  private Font font = new Font("Courier", Font.PLAIN, 14);
 
   private Image ship[] = new Image[2];
   private Clip explosion;
@@ -70,7 +70,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     this.addMouseMotionListener(this);
     this.setBackground(bg);
 
-    this.hiScoreLabel = new Label("Your Hi-score:0         ");
     this.lblContinue = new Label("            ");
     this.scoreWin = new NumberLabel(64, 12);
     Panel npanel = new Panel(); npanel.add(new Label("Score:")); npanel.add(this.scoreWin); npanel.add(new Label("Continue penalty:")); npanel.add(this.lblContinue);
@@ -79,7 +78,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     window.addWindowListener(this);
     window.setBackground(bg);
     window.add(this, BorderLayout.CENTER);
-    window.add(this.hiScoreLabel, BorderLayout.SOUTH);
     window.add(npanel, BorderLayout.NORTH);
     window.setSize(800, 600);
     window.setVisible(true);
@@ -169,22 +167,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     { Obstacle obstacle = this.rounds[this.round].generateObstacle(); if(obstacle != null) this.obstacles.addFirst(obstacle); }
   }
 
-  private Font titleFont = new Font("Courier", Font.PLAIN, 14);
-  private void showTitle() {
-    this.vx = 0.0;
-    this.scene_g.setFont(this.titleFont);
-    this.scene_g.setColor(Color.white);
-    FontMetrics fm = this.scene_g.getFontMetrics();
-    int line_h = fm.getHeight();
-    int spacing = 5;
-    int n = 3;
-    int h = (line_h + spacing) * n - spacing;
-    int y = (this.height - h) / 2;
-    { String msg = "Jet Slalom Resurrected"; int line_w = fm.stringWidth(msg); this.scene_g.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
-    { String msg = "by David Lareau in 2025"; int line_w = fm.stringWidth(msg); this.scene_g.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
-    { String msg = "Original 1997 version by MR-C"; int line_w = fm.stringWidth(msg); this.scene_g.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
-  }
-
   public void startGame(boolean play_mode, boolean resume) {
     this.title_mode = !play_mode;
     obstacles.clear();
@@ -218,10 +200,22 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       if (this.damaged < 10) this.scene_g.drawImage(image, (width / 2) - image.getWidth(null)/2, this.height - i, null);
       if (this.damaged > 0) putbomb();
     }
-    if(this.title_mode) showTitle();
+    if(this.title_mode) {
+      this.vx = 0.0;
+      this.scene_g.setFont(this.font); FontMetrics fm = this.scene_g.getFontMetrics();
+      this.scene_g.setColor(Color.white);
+      int line_h = fm.getHeight();
+      int spacing = 5;
+      int n = 3;
+      int h = (line_h + spacing) * n - spacing;
+      int y = (this.height - h) / 2;
+      { String msg = "Jet Slalom Resurrected"; int line_w = fm.stringWidth(msg); this.scene_g.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
+      { String msg = "by David Lareau in 2025"; int line_w = fm.stringWidth(msg); this.scene_g.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
+      { String msg = "Original 1997 version by MR-C"; int line_w = fm.stringWidth(msg); this.scene_g.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
+    }
     if(!this.hasFocus()) {
-      this.scene_g.setFont(this.titleFont); this.scene_g.setColor(Color.red);
-      FontMetrics fm = this.scene_g.getFontMetrics();
+      this.scene_g.setFont(this.font); FontMetrics fm = this.scene_g.getFontMetrics();
+      this.scene_g.setColor(Color.red);
       int y = (int)(this.height * (System.currentTimeMillis() % 10000) / 10000.0);
       { String msg = "Lost Keyboard Input Focus"; int line_w = fm.stringWidth(msg); this.scene_g.drawString(msg, (this.width - line_w) / 2, y); }
     }
@@ -232,7 +226,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       this.scoreWin.setNum(this.score);
       if(!this.title_mode) this.prevScore = this.score;
       if(this.score - this.contNum * 1000 > this.hiscore && !this.title_mode) this.hiscore = this.score - this.contNum * 1000;
-      this.hiScoreLabel.setText("Your Hi-score:" + this.hiscore);
       this.title_mode = true;
     } else {
       if(this.damaged == 1 && this.explosion != null) { this.explosion.stop(); this.explosion.setFramePosition(0); this.explosion.start(); }
@@ -284,6 +277,11 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       double scale; if((b_w / (double)b_h) > (s_w / (double)s_h)) scale = b_h / (double)s_h; else scale = b_w / (double)s_w;
       int x = (int)((b_w - s_w * scale) / 2); int y = (int)((b_h - s_h * scale) / 2);
       g.drawImage(this.scene_img,x,y,(int)(s_w*scale), (int)(s_h*scale), Color.WHITE, null);
+
+      // overlay
+      g.setFont(this.font); FontMetrics fm = g.getFontMetrics(); g.setColor(Color.white);
+      g.drawString("Your Hi-score:" + this.hiscore, 3, b_h - fm.getDescent());
+      
       this.getToolkit().sync();
       try { Thread.sleep(55); } catch (InterruptedException e) { e.printStackTrace(); }
     }
