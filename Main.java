@@ -140,8 +140,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
   private char[] memInfo = new char[8];
 
-  private Runtime runtime = Runtime.getRuntime();
-
   public void stop() {
     this.gameThread = null;
     this.registMode = false;
@@ -335,22 +333,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   }
 
   public void keyTyped(KeyEvent paramKeyEvent) {}
-
-
-  private void drawMemInfo(Graphics paramGraphics) {
-    int i = (int)this.runtime.freeMemory();
-    byte b = 7;
-    while (true) {
-      int j = i % 10;
-      i /= 10;
-      this.memInfo[b] = (char)(48 + j);
-      if (--b < 0) {
-        paramGraphics.setColor(Color.red);
-        paramGraphics.drawChars(this.memInfo, 0, 8, 0, 32);
-        return;
-      }
-    }
-  }
 
   public int getHiScore() {
     return this.hiscore;
