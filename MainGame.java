@@ -27,35 +27,30 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
   private NumberLabel scoreWin;
 
   public static void main(String[] args) { new MainGame(); } public MainGame() {
+    Color bg = new Color(160, 208, 176);
     for (byte b = 1; b < this.rounds.length; b++) this.rounds[b].setPrevRound(this.rounds[b - 1]);
     
     this.addKeyListener(this);
     this.addMouseListener(this);
     this.addMouseMotionListener(this);
+    this.setBackground(bg);
 
-    this.setBackground(new Color(160, 208, 176));
-    this.setLayout(new BorderLayout());
     this.hiScoreLabel = new Label("Your Hi-score:0         ");
     this.lblContinue = new Label("            ");
     this.scoreWin = new NumberLabel(64, 12);
-    Panel panel = new Panel();
-    panel.add(new Label("Score:")); panel.add(this.scoreWin);
-    panel.add(new Label("Continue penalty:")); panel.add(this.lblContinue);
-    this.add(panel, BorderLayout.NORTH);
-    this.add(this.hiScoreLabel, BorderLayout.SOUTH);
+    Panel npanel = new Panel(); npanel.add(new Label("Score:")); npanel.add(this.scoreWin); npanel.add(new Label("Continue penalty:")); npanel.add(this.lblContinue);
     
     window = new Frame("Jet Slalom Resurrected");
     window.addWindowListener(this);
+    window.setBackground(bg);
     window.add(this, BorderLayout.CENTER);
+    window.add(this.hiScoreLabel, BorderLayout.SOUTH);
+    window.add(npanel, BorderLayout.NORTH);
     window.setVisible(true);
 
     this.init();
     this.requestFocus();
-    this.invalidate();
-    this.validate();
 
-    window.validate();
-    window.pack();
     window.setSize(800, 600);
 
     this.start();
@@ -318,7 +313,12 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     }
     if (this.gameMode == TITLE_MODE) {
       showTitle();
-      return;
+    }
+    if(!this.hasFocus()) {
+      this.gra.setFont(this.titleFont); this.gra.setColor(Color.red);
+      FontMetrics fm = this.gra.getFontMetrics();
+      int y = (int)(this.height * (System.currentTimeMillis() % 10000) / 10000.0);
+      { String msg = "Lost Keyboard Input Focus"; int line_w = fm.stringWidth(msg); this.gra.drawString(msg, (this.width - line_w) / 2, y); }
     }
   }
 
@@ -406,6 +406,7 @@ class MainGame extends Panel implements Runnable, MouseListener, MouseMotionList
     this.vx = 0.0D;
     this.gameMode = TITLE_MODE;
     while (this.gameThread != null) {
+      //if(!this.hasFocus()) this.requestFocus();
 
       // gamepad: note that the external library I found does not seem to support plug and play at least in my Linux environment (i.e. the gamepad must be plugged before the game starts)
       boolean gamepad_left = false, gamepad_right = false; double dead_zone = .05;
