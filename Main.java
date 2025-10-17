@@ -231,7 +231,9 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     this.score = 0;
     this.vx = 0.0;
     this.title_mode = true;
+    long t0 = System.currentTimeMillis(), t1 = t0, target_dt = 55;
     while (this.gameThread == Thread.currentThread()) {
+      t0 = t1; t1 = System.currentTimeMillis(); long dt = t1 - t0;
       // gamepad: note that the external library I found does not seem to support plug and play at least in my Linux environment (i.e. the gamepad must be plugged before the game starts)
       boolean gamepad_left = false, gamepad_right = false; double dead_zone = .05;
       gamepad.poll();
@@ -300,6 +302,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
         }
         g.setColor(Color.white);
         g.drawString("Your Hi-score:" + this.hiscore, 2*fm.getDescent()/3, b_h - fm.getDescent());
+        { String msg = "Period:" + dt + "ms"; g.drawString(msg, b_w - 2*fm.getDescent()/3 - fm.stringWidth(msg), b_h - fm.getDescent()); }
         String score = "Score:" + this.score;
         String penalty = "Continue penalty:" + this.contNum * 1000;
         int score_w = fm.stringWidth(score); int penalty_w = fm.stringWidth(penalty); int padding = b_w / 10; int total_w = this.contNum > 0? score_w + padding + penalty_w : score_w; int offset = (b_w - total_w) / 2;
@@ -326,7 +329,8 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       // final double buffer blit
       if(this.backbuffer != null) { g = this.getGraphics(); g.drawImage(this.backbuffer, 0, 0, null); }
       this.getToolkit().sync();
-      try { Thread.sleep(55); } catch (InterruptedException e) { e.printStackTrace(); }
+      long dt_bust = 0; // if(dt > target_dt) { dt_bust = dt - target_dt; } // this only fixes the next frame, then the bust comes back
+      if(target_dt - dt_bust > 0) { try { Thread.sleep(target_dt - dt_bust); } catch (InterruptedException e) { e.printStackTrace(); } }
     }
   }
 
