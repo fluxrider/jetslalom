@@ -32,8 +32,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private boolean title_mode;
   
   private Frame window;
-  private Label lblContinue;
-  private NumberLabel scoreWin;
   private Font font = new Font("Courier", Font.PLAIN, 14);
 
   private Image ship[] = new Image[2];
@@ -70,15 +68,10 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     this.addMouseMotionListener(this);
     this.setBackground(bg);
 
-    this.lblContinue = new Label("            ");
-    this.scoreWin = new NumberLabel(64, 12);
-    Panel npanel = new Panel(); npanel.add(new Label("Score:")); npanel.add(this.scoreWin); npanel.add(new Label("Continue penalty:")); npanel.add(this.lblContinue);
-    
     window = new Frame("Jet Slalom Resurrected");
     window.addWindowListener(this);
     window.setBackground(bg);
     window.add(this, BorderLayout.CENTER);
-    window.add(npanel, BorderLayout.NORTH);
     window.setSize(800, 600);
     window.setVisible(true);
     this.requestFocus();
@@ -179,16 +172,12 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       while (this.prevScore >= this.rounds[this.round].getNextRoundScore()) this.round++;
       if (this.round > 0) { this.score = this.rounds[this.round - 1].getNextRoundScore(); this.contNum++; }
     }
-    this.lblContinue.setText("" + (this.contNum * 1000));
   }
 
   void prt() {
     this.scene_g.setColor(this.rounds[this.round].getSkyColor());
     this.scene_g.fillRect(0, 0, this.width, this.height);
-    if(!this.title_mode) {
-      this.score += 20;
-      this.scoreWin.setNum(this.score);
-    }
+    if(!this.title_mode) this.score += 20;
     this.scene_g.setColor(this.rounds[this.round].getGroundColor()); DrawEnv.drawPolygon(this.scene_g, this.ground_points);
     for(Obstacle obstacle : obstacles) obstacle.draw(this.scene_g);
     this.ship_animation++;
@@ -223,7 +212,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
   void putbomb() {
     if(this.damaged > 20) {
-      this.scoreWin.setNum(this.score);
       if(!this.title_mode) this.prevScore = this.score;
       if(this.score - this.contNum * 1000 > this.hiscore && !this.title_mode) this.hiscore = this.score - this.contNum * 1000;
       this.title_mode = true;
@@ -281,7 +269,12 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       // overlay
       g.setFont(this.font); FontMetrics fm = g.getFontMetrics(); g.setColor(Color.white);
       g.drawString("Your Hi-score:" + this.hiscore, 3, b_h - fm.getDescent());
-      
+      String score = "Score:" + this.score;
+      String penalty = "Continue penalty:" + this.contNum * 1000;
+      int score_w = fm.stringWidth(score); int penalty_w = fm.stringWidth(penalty); int padding = b_w / 10; int total_w = this.contNum > 0? score_w + padding + penalty_w : score_w; int offset = (b_w - total_w) / 2;
+      g.drawString(score, offset, fm.getAscent()); offset += score_w + padding;
+      if(this.contNum > 0) g.drawString(penalty, offset, fm.getAscent());
+
       this.getToolkit().sync();
       try { Thread.sleep(55); } catch (InterruptedException e) { e.printStackTrace(); }
     }
