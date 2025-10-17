@@ -49,6 +49,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private Image scene_img;
   private Graphics scene_g;
   private Thread gameThread;
+  private Color bg = new Color(160, 208, 176);
 
   private Gamepad gamepad = new Gamepad();
   private boolean key_held[] = new boolean[256]; // stores held state of KeyEvent for the VK range I care about
@@ -56,7 +57,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private int mouse_x, mouse_y;
 
   public static void main(String[] args) { new Main(); } public Main() {
-    Color bg = new Color(160, 208, 176);
     for(int b = 1; b < this.rounds.length; b++) this.rounds[b].setPrevRound(this.rounds[b - 1]);
     for(int i = 0; i < si.length; i++) {
       si[i] = Math.sin(Math.PI * (i / (double)si.length));
@@ -264,6 +264,9 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       int b_w = this.getWidth(); int b_h = this.getHeight(); int s_w = this.width; int s_h = this.height;
       double scale; if((b_w / (double)b_h) > (s_w / (double)s_h)) scale = b_h / (double)s_h; else scale = b_w / (double)s_w;
       int x = (int)((b_w - s_w * scale) / 2); int y = (int)((b_h - s_h * scale) / 2);
+      g.setColor(bg);
+      if(x > 0) { g.fillRect(0, 0, x, b_h); g.fillRect(x+(int)(s_w*scale), 0, x, b_h); }
+      if(y > 0) { g.fillRect(0, 0, b_w, y); g.fillRect(0, y+(int)(s_h*scale), b_w, y); }
       g.drawImage(this.scene_img,x,y,(int)(s_w*scale), (int)(s_h*scale), Color.WHITE, null);
 
       // overlay
