@@ -54,6 +54,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private Image backbuffer;
   private Font font;
   private boolean stretched;
+  private static long keyevent_glitch_workaround_t0; // I'm observing an issue where I sometime get random key events on start (e.g. VK_C, VK_S, VK_F). This mitigates this.
 
   private Gamepad gamepad = new Gamepad();
   private boolean key_held[] = new boolean[256]; // stores held state of KeyEvent for the VK range I care about
@@ -61,6 +62,8 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private int mouse_x, mouse_y;
 
   public static void main(String[] args) { new Main(); } public Main() {
+    keyevent_glitch_workaround_t0 = System.currentTimeMillis();
+
     for(int b = 1; b < this.rounds.length; b++) this.rounds[b].setPrevRound(this.rounds[b - 1]);
     for(int i = 0; i < si.length; i++) {
       si[i] = Math.sin(Math.PI * (i / (double)si.length));
@@ -101,6 +104,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   }
 
   public void keyPressed(KeyEvent e) {
+    if(System.currentTimeMillis() < keyevent_glitch_workaround_t0 + 100) return;
     int keycode = e.getKeyCode();
     if(keycode >= 0 && keycode < key_held.length) key_held[keycode] = true;
     if(keycode == VK_ESCAPE) System.exit(0);
@@ -108,7 +112,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     if(this.title_mode && keycode == VK_T) { this.prevScore = 110000; this.contNum = 100; startGame(true, true); } // is this some sort of cheat?
   }
   public void keyReleased(KeyEvent e) {
-    System.out.println(e);
+    if(System.currentTimeMillis() < keyevent_glitch_workaround_t0 + 100) return;
     int keycode = e.getKeyCode();
     if(keycode >= 0 && keycode < key_held.length) key_held[keycode] = false;
     if(keycode == VK_F) this.toggleFullScreen();
@@ -118,12 +122,14 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   public void keyTyped(KeyEvent paramKeyEvent) { }
 
   public void mousePressed(MouseEvent e) {
+    if(System.currentTimeMillis() < keyevent_glitch_workaround_t0 + 100) return;
     int mod = e.getModifiersEx();
     this.mouse_left_button_held = (mod & BUTTON1_DOWN_MASK) == BUTTON1_DOWN_MASK;
     this.mouse_right_button_held = (mod & BUTTON3_DOWN_MASK) == BUTTON3_DOWN_MASK;
     if(this.title_mode) startGame(true, false);
   }
   public void mouseReleased(MouseEvent e) {
+    if(System.currentTimeMillis() < keyevent_glitch_workaround_t0 + 100) return;
     int mod = e.getModifiersEx();
     this.mouse_left_button_held = (mod & BUTTON1_DOWN_MASK) == BUTTON1_DOWN_MASK;
     this.mouse_right_button_held = (mod & BUTTON3_DOWN_MASK) == BUTTON3_DOWN_MASK;
