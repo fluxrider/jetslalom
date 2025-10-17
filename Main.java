@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.*;
 import static java.awt.event.KeyEvent.*;
 import java.io.*;
 import java.net.*;
@@ -50,6 +51,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private Graphics scene_g;
   private Thread gameThread;
   private Color bg = new Color(160, 208, 176);
+  private Image backbuffer;
 
   private Gamepad gamepad = new Gamepad();
   private boolean key_held[] = new boolean[256]; // stores held state of KeyEvent for the VK range I care about
@@ -78,6 +80,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
     this.scene_img = this.createImage(width, height);
     this.scene_g = scene_img.getGraphics();
+    if(this.scene_g instanceof Graphics2D) { ((Graphics2D)this.scene_g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON); }
     this.scene_g.setColor(new Color(0,128,128));
     this.scene_g.fillRect(0, 0, width, height);
     try {
@@ -260,10 +263,14 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       prt();
       
       // letterbox scaling (i.e. respects aspect ratio)
-      Graphics g = this.getGraphics();
-      int b_w = this.getWidth(); int b_h = this.getHeight(); int s_w = this.width; int s_h = this.height;
+      int b_w = this.getWidth(); int b_h = this.getHeight(); int s_w = width; int s_h = height;
       double scale; if((b_w / (double)b_h) > (s_w / (double)s_h)) scale = b_h / (double)s_h; else scale = b_w / (double)s_w;
       int x = (int)((b_w - s_w * scale) / 2); int y = (int)((b_h - s_h * scale) / 2);
+      
+      if(this.backbuffer == null || this.backbuffer.getWidth(null) != b_w || this.backbuffer.getWidth(null) != b_h) this.backbuffer = new BufferedImage(b_w, b_h, BufferedImage.TYPE_INT_RGB);
+      
+      Graphics g = this.backbuffer == null? this.getGraphics() : this.backbuffer.getGraphics();
+      if(g instanceof Graphics2D) { ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON); }
       g.setColor(bg);
       if(x > 0) { g.fillRect(0, 0, x, b_h); g.fillRect(x+(int)(s_w*scale), 0, x, b_h); }
       if(y > 0) { g.fillRect(0, 0, b_w, y); g.fillRect(0, y+(int)(s_h*scale), b_w, y); }
@@ -278,6 +285,8 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       g.drawString(score, offset, fm.getAscent()); offset += score_w + padding;
       if(this.contNum > 0) g.drawString(penalty, offset, fm.getAscent());
 
+      // final double buffer blit
+      if(this.backbuffer != null) { g = this.getGraphics(); g.drawImage(this.backbuffer, 0, 0, null); }
       this.getToolkit().sync();
       try { Thread.sleep(55); } catch (InterruptedException e) { e.printStackTrace(); }
     }
