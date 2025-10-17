@@ -53,6 +53,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private Color bg = new Color(160, 208, 176);
   private Image backbuffer;
   private Font font;
+  private boolean stretched;
 
   private Gamepad gamepad = new Gamepad();
   private boolean key_held[] = new boolean[256]; // stores held state of KeyEvent for the VK range I care about
@@ -111,6 +112,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     if(keycode >= 0 && keycode < key_held.length) key_held[keycode] = false;
     if(keycode == VK_F) this.toggleFullScreen();
     if(keycode == VK_P) this.paused = !this.paused;
+    if(keycode == VK_S) this.stretched = !this.stretched;
   }
   public void keyTyped(KeyEvent paramKeyEvent) { }
 
@@ -253,6 +255,8 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       int b_w = this.getWidth(); int b_h = this.getHeight(); int s_w = width; int s_h = height;
       double scale; if((b_w / (double)b_h) > (s_w / (double)s_h)) scale = b_h / (double)s_h; else scale = b_w / (double)s_w;
       int x = (int)((b_w - s_w * scale) / 2); int y = (int)((b_h - s_h * scale) / 2);
+      int w = (int)(s_w*scale); int h = (int)(s_h*scale);
+      if(this.stretched) { x = 0; y = 0; w = b_w; h = b_h; }
 
       // awt needs a backbuffer, there is not final presentation, it paints live
       if(this.backbuffer == null || this.backbuffer.getWidth(null) != b_w || this.backbuffer.getWidth(null) != b_h) {
@@ -266,9 +270,9 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
         Map<?, ?> desktopHints = (Map<?, ?>) Toolkit.getDefaultToolkit().getDesktopProperty("awt.font.desktophints"); if(desktopHints != null) ((Graphics2D)g).setRenderingHints(desktopHints);
       }
       g.setColor(bg);
-      if(x > 0) { g.fillRect(0, 0, x, b_h); g.fillRect(x+(int)(s_w*scale), 0, x, b_h); }
-      if(y > 0) { g.fillRect(0, 0, b_w, y); g.fillRect(0, y+(int)(s_h*scale), b_w, y); }
-      g.drawImage(this.scene_img,x,y,(int)(s_w*scale), (int)(s_h*scale), Color.WHITE, null);
+      if(x > 0) { g.fillRect(0, 0, x, b_h); g.fillRect(x+w, 0, x, b_h); }
+      if(y > 0) { g.fillRect(0, 0, b_w, y); g.fillRect(0, y+h, b_w, y); }
+      g.drawImage(this.scene_img,x,y,w, h, Color.WHITE, null);
 
       // overlay, now that I'm using drawString on the window size surface for all text instead of widgets, I need to ensure the font scales
       try {
@@ -288,8 +292,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
           int line_h = fm.getHeight();
           int spacing = 5;
           int n = 3;
-          int h = (line_h + spacing) * n - spacing;
-          offset = (b_h - h) / 2;
+          offset = (b_h - ((line_h + spacing) * n - spacing)) / 2;
           { String msg = "Jet Slalom Resurrected"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += line_h + spacing; }
           { String msg = "by David Lareau in 2025"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += line_h + spacing; }
           { String msg = "Original 1997 version by MR-C"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += line_h + spacing; }
