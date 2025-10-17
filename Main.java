@@ -42,10 +42,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     double d3 = (points[2]).x - (points[0]).x;
     double d4 = (points[2]).y - (points[0]).y;
     float f = (float)(Math.abs(d1 * d4 - d2 * d3) / face.maxZ);
-    float red = ((face.rgb >> 16) & 0xFF) / 255.0f;
-    float green = ((face.rgb >> 8) & 0xFF) / 255.0f;
-    float blue = (face.rgb & 0xFF) / 255.0f;
-    g.setColor(new Color(red*f, green*f, blue*f));
+    g.setColor(new Color(ARGB.fr(face.rgb)*f, ARGB.fg(face.rgb)*f, ARGB.fb(face.rgb)*f));
     drawPolygon(g, points);
   }
   synchronized static void drawPolygon(Graphics g, DPoint3[] points) {
