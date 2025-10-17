@@ -33,7 +33,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private boolean title_mode;
   
   private Frame window;
-  private Font font = new Font("Courier", Font.PLAIN, 14);
 
   private Image ship[] = new Image[2];
   private Clip explosion;
@@ -52,6 +51,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private Thread gameThread;
   private Color bg = new Color(160, 208, 176);
   private Image backbuffer;
+  private Font font;
 
   private Gamepad gamepad = new Gamepad();
   private boolean key_held[] = new boolean[256]; // stores held state of KeyEvent for the VK range I care about
@@ -194,22 +194,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     }
     if(this.title_mode) {
       this.vx = 0.0;
-      this.scene_g.setFont(this.font); FontMetrics fm = this.scene_g.getFontMetrics();
-      this.scene_g.setColor(Color.white);
-      int line_h = fm.getHeight();
-      int spacing = 5;
-      int n = 3;
-      int h = (line_h + spacing) * n - spacing;
-      int y = (this.height - h) / 2;
-      { String msg = "Jet Slalom Resurrected"; int line_w = fm.stringWidth(msg); this.scene_g.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
-      { String msg = "by David Lareau in 2025"; int line_w = fm.stringWidth(msg); this.scene_g.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
-      { String msg = "Original 1997 version by MR-C"; int line_w = fm.stringWidth(msg); this.scene_g.drawString(msg, (this.width - line_w) / 2, y); y += line_h + spacing; }
-    }
-    if(!this.hasFocus()) {
-      this.scene_g.setFont(this.font); FontMetrics fm = this.scene_g.getFontMetrics();
-      this.scene_g.setColor(Color.red);
-      int y = (int)(this.height * (System.currentTimeMillis() % 10000) / 10000.0);
-      { String msg = "Lost Keyboard Input Focus"; int line_w = fm.stringWidth(msg); this.scene_g.drawString(msg, (this.width - line_w) / 2, y); }
     }
   }
 
@@ -268,7 +252,10 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       int x = (int)((b_w - s_w * scale) / 2); int y = (int)((b_h - s_h * scale) / 2);
 
       // awt needs a backbuffer, there is not final presentation, it paints live
-      if(this.backbuffer == null || this.backbuffer.getWidth(null) != b_w || this.backbuffer.getWidth(null) != b_h) this.backbuffer = new BufferedImage(b_w, b_h, BufferedImage.TYPE_INT_RGB);
+      if(this.backbuffer == null || this.backbuffer.getWidth(null) != b_w || this.backbuffer.getWidth(null) != b_h) {
+        this.backbuffer = new BufferedImage(b_w, b_h, BufferedImage.TYPE_INT_RGB);
+        this.font = null;
+      }
       
       Graphics g = this.backbuffer == null? this.getGraphics() : this.backbuffer.getGraphics();
       if(g instanceof Graphics2D) {
@@ -282,9 +269,10 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
       // overlay, now that I'm using drawString on the window size surface for all text instead of widgets, I need to ensure the font scales
       try {
-        Font font = Font.createFont(Font.TRUETYPE_FONT, new File("res/OpenSans-Regular.ttf"));
-        font = font.deriveFont(Font.PLAIN, b_h / 25);
-        //font = this.font;
+        if(font == null) {
+          font = Font.createFont(Font.TRUETYPE_FONT, new File("res/OpenSans-Regular.ttf"));
+          font = font.deriveFont(Font.PLAIN, b_h / 25);
+        }
         g.setFont(font); FontMetrics fm = g.getFontMetrics();
         g.setColor(Color.white);
         g.drawString("Your Hi-score:" + this.hiscore, 2*fm.getDescent()/3, b_h - fm.getDescent());
@@ -293,6 +281,21 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
         int score_w = fm.stringWidth(score); int penalty_w = fm.stringWidth(penalty); int padding = b_w / 10; int total_w = this.contNum > 0? score_w + padding + penalty_w : score_w; int offset = (b_w - total_w) / 2;
         g.drawString(score, offset, fm.getAscent()); offset += score_w + padding;
         if(this.contNum > 0) g.drawString(penalty, offset, fm.getAscent());
+        if(this.title_mode) {
+          int line_h = fm.getHeight();
+          int spacing = 5;
+          int n = 3;
+          int h = (line_h + spacing) * n - spacing;
+          offset = (b_h - h) / 2;
+          { String msg = "Jet Slalom Resurrected"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += line_h + spacing; }
+          { String msg = "by David Lareau in 2025"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += line_h + spacing; }
+          { String msg = "Original 1997 version by MR-C"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += line_h + spacing; }
+        }
+        if(!this.hasFocus()) {
+          g.setColor(Color.red);
+          offset = (int)(b_h * (System.currentTimeMillis() % 10000) / 10000.0);
+          { String msg = "Lost Keyboard Input Focus"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); }
+        }
       } catch(Exception e) {
         e.printStackTrace();
       }
