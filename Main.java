@@ -266,24 +266,36 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       int b_w = this.getWidth(); int b_h = this.getHeight(); int s_w = width; int s_h = height;
       double scale; if((b_w / (double)b_h) > (s_w / (double)s_h)) scale = b_h / (double)s_h; else scale = b_w / (double)s_w;
       int x = (int)((b_w - s_w * scale) / 2); int y = (int)((b_h - s_h * scale) / 2);
-      
+
+      // awt needs a backbuffer, there is not final presentation, it paints live
       if(this.backbuffer == null || this.backbuffer.getWidth(null) != b_w || this.backbuffer.getWidth(null) != b_h) this.backbuffer = new BufferedImage(b_w, b_h, BufferedImage.TYPE_INT_RGB);
       
       Graphics g = this.backbuffer == null? this.getGraphics() : this.backbuffer.getGraphics();
-      if(g instanceof Graphics2D) { ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON); }
+      if(g instanceof Graphics2D) {
+        //((Graphics2D)g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        Map<?, ?> desktopHints = (Map<?, ?>) Toolkit.getDefaultToolkit().getDesktopProperty("awt.font.desktophints"); if(desktopHints != null) ((Graphics2D)g).setRenderingHints(desktopHints);
+      }
       g.setColor(bg);
       if(x > 0) { g.fillRect(0, 0, x, b_h); g.fillRect(x+(int)(s_w*scale), 0, x, b_h); }
       if(y > 0) { g.fillRect(0, 0, b_w, y); g.fillRect(0, y+(int)(s_h*scale), b_w, y); }
       g.drawImage(this.scene_img,x,y,(int)(s_w*scale), (int)(s_h*scale), Color.WHITE, null);
 
-      // overlay
-      g.setFont(this.font); FontMetrics fm = g.getFontMetrics(); g.setColor(Color.white);
-      g.drawString("Your Hi-score:" + this.hiscore, 3, b_h - fm.getDescent());
-      String score = "Score:" + this.score;
-      String penalty = "Continue penalty:" + this.contNum * 1000;
-      int score_w = fm.stringWidth(score); int penalty_w = fm.stringWidth(penalty); int padding = b_w / 10; int total_w = this.contNum > 0? score_w + padding + penalty_w : score_w; int offset = (b_w - total_w) / 2;
-      g.drawString(score, offset, fm.getAscent()); offset += score_w + padding;
-      if(this.contNum > 0) g.drawString(penalty, offset, fm.getAscent());
+      // overlay, now that I'm using drawString on the window size surface for all text instead of widgets, I need to ensure the font scales
+      try {
+        Font font = Font.createFont(Font.TRUETYPE_FONT, new File("res/OpenSans-Regular.ttf"));
+        font = font.deriveFont(Font.PLAIN, b_h / 25);
+        //font = this.font;
+        g.setFont(font); FontMetrics fm = g.getFontMetrics();
+        g.setColor(Color.white);
+        g.drawString("Your Hi-score:" + this.hiscore, 2*fm.getDescent()/3, b_h - fm.getDescent());
+        String score = "Score:" + this.score;
+        String penalty = "Continue penalty:" + this.contNum * 1000;
+        int score_w = fm.stringWidth(score); int penalty_w = fm.stringWidth(penalty); int padding = b_w / 10; int total_w = this.contNum > 0? score_w + padding + penalty_w : score_w; int offset = (b_w - total_w) / 2;
+        g.drawString(score, offset, fm.getAscent()); offset += score_w + padding;
+        if(this.contNum > 0) g.drawString(penalty, offset, fm.getAscent());
+      } catch(Exception e) {
+        e.printStackTrace();
+      }
 
       // final double buffer blit
       if(this.backbuffer != null) { g = this.getGraphics(); g.drawImage(this.backbuffer, 0, 0, null); }

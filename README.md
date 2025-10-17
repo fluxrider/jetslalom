@@ -30,14 +30,16 @@ This is an attempt at getting it working.
 ### Known Issue
 
 - JInput, the external library I use for gamepad support, requires the gamepad to be plugged before the app starts. I've only tested on Linux.
-
+- The world of desktop scaling, 2K, 4K, and upscaling is a mess.
+  - When the app was using AWT widgets, it required `-Dsun.java2d.uiScale.enabled=true -Dsun.java2d.uiScale=2 -Djava.awt.headless=false` to look good.
+  - I've replaced the widgets with drawString to make the app more portable and simpler, but I still suspect there are problems depending of your environment, and getting the Font to look good is now a big chore.
+  
 ## How to run
 
 I assume you got a Java JDK installed and know how to use the command line for your OS. I'm using a posix system with bash (i.e. standard Linux).
 
 Simple way:
 - no gamepad support
-- no desktop scaling
 ```
 javac Main.java
 java Main
@@ -45,10 +47,8 @@ java Main
 
 The ridiculous way:
 - gamepad support
-- desktop scaling
 - an output folder for the binaries
-- an ironwill to run all that on the command line
 ```
 rm -Rf bin && javac -cp gamepad:.:gamepad/jinput-2.0.10.jar Main.java -d bin
-java -Dsun.java2d.uiScale.enabled=true -Dsun.java2d.uiScale=2 -Djava.awt.headless=false -cp bin:gamepad/jinput-2.0.10.jar -Djava.library.path=gamepad/jinput-2.0.10-natives-all --enable-native-access=ALL-UNNAMED -Djava.util.logging.config.file=gamepad/logging.properties Main
+java -cp bin:gamepad/jinput-2.0.10.jar -Djava.library.path=gamepad/jinput-2.0.10-natives-all --enable-native-access=ALL-UNNAMED -Djava.util.logging.config.file=gamepad/logging.properties Main
 ```
