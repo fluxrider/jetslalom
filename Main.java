@@ -108,6 +108,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     if(this.title_mode && keycode == VK_T) { this.prevScore = 110000; this.contNum = 100; startGame(true, true); } // is this some sort of cheat?
   }
   public void keyReleased(KeyEvent e) {
+    System.out.println(e);
     int keycode = e.getKeyCode();
     if(keycode >= 0 && keycode < key_held.length) key_held[keycode] = false;
     if(keycode == VK_F) this.toggleFullScreen();
@@ -259,7 +260,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       if(this.stretched) { x = 0; y = 0; w = b_w; h = b_h; }
 
       // awt needs a backbuffer, there is not final presentation, it paints live
-      if(this.backbuffer == null || this.backbuffer.getWidth(null) != b_w || this.backbuffer.getWidth(null) != b_h) {
+      if(this.backbuffer == null || this.backbuffer.getWidth(null) != b_w || this.backbuffer.getHeight(null) != b_h) {
         this.backbuffer = new BufferedImage(b_w, b_h, BufferedImage.TYPE_INT_RGB);
         this.font = null;
       }
@@ -276,11 +277,21 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
       // overlay, now that I'm using drawString on the window size surface for all text instead of widgets, I need to ensure the font scales
       try {
-        if(font == null) {
-          font = Font.createFont(Font.TRUETYPE_FONT, new File("res/OpenSans-Regular.ttf"));
-          font = font.deriveFont(Font.PLAIN, b_h / 25);
+        if(this.font == null) {
+          this.font = Font.createFont(Font.TRUETYPE_FONT, new File("res/OpenSans-Regular.ttf"));
+          this.font = this.font.deriveFont(Font.PLAIN, b_h / 25);
         }
-        g.setFont(font); FontMetrics fm = g.getFontMetrics();
+        // in the event that the window is very thin, then we'll have to reduce the font so the longuest line fits
+        g.setFont(this.font); FontMetrics fm = g.getFontMetrics();
+        {
+          String msg = contNum == 0? "Original 1997 version by MR-C" : "Your Hi-score: 000000      Continue penalty: 000000";
+          while(fm.stringWidth(msg) > b_w) {
+            float size = this.font.getSize2D() * .9f;
+            this.font = this.font.deriveFont(Font.PLAIN, size);
+            g.setFont(font); fm = g.getFontMetrics();
+            if(size < 6) break;
+          }
+        }
         g.setColor(Color.white);
         g.drawString("Your Hi-score:" + this.hiscore, 2*fm.getDescent()/3, b_h - fm.getDescent());
         String score = "Score:" + this.score;
