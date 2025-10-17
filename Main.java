@@ -220,7 +220,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     this.scene_g.fillRect(0, 0, this.width, this.height);
     if(!this.title_mode) this.score += 20;
     this.scene_g.setColor(new Color(this.rounds[this.round].getGroundRGB())); drawPolygon(this.scene_g, this.ground_points);
-    for(Obstacle obstacle : obstacles) obstacle.draw(this.scene_g);
+    for(Obstacle obstacle : obstacles) draw_obstacle(this.scene_g, obstacle);
     this.ship_animation++;
     if(!this.title_mode) {
       int i = 24 * this.height / 200;
@@ -249,7 +249,12 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       this.damaged++;
     }
   }
-
+  
+  void draw_obstacle(Graphics g, Obstacle o) {
+    drawPolygon(g, o.faces[0]);
+    drawPolygon(g, o.faces[1]);
+  }
+  
   public void run() {
     obstacles.clear();
     for(RoundManager r : this.rounds) r.init();

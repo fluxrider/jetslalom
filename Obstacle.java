@@ -1,5 +1,3 @@
-import java.awt.*;
-
 public class Obstacle {
 
   DPoint3[] points = new DPoint3[] { new DPoint3(), new DPoint3(), new DPoint3(), new DPoint3() };
@@ -10,11 +8,6 @@ public class Obstacle {
   public Obstacle() {
     this.faces[0].points = new DPoint3[] { this.points[3], this.points[0], this.points[1] };
     this.faces[1].points = new DPoint3[] { this.points[3], this.points[2], this.points[1] };
-  }
-
-  void draw(Graphics g) {
-    Main.drawPolygon(g, this.faces[0]);
-    Main.drawPolygon(g, this.faces[1]);
   }
 
   void prepareNewObstacle() {
