@@ -18,8 +18,8 @@ public class Obstacle {
   }
 
   void prepareNewObstacle() {
-    { Face face = this.faces[0]; Color c = this.color.brighter(); face.red = c.getRed() / 255.0f; face.green = c.getGreen() / 255.0f; face.blue = c.getBlue() / 255.0f; face.calcMaxZ(); }
-    { Face face = this.faces[1]; Color c = this.color; face.red = c.getRed() / 255.0f; face.green = c.getGreen() / 255.0f; face.blue = c.getBlue() / 255.0f; face.calcMaxZ(); }
+    { Face face = this.faces[0]; Color c = this.color.brighter(); face.rgb = c.getRGB(); face.calcMaxZ(); }
+    { Face face = this.faces[1]; Color c = this.color; face.rgb = c.getRGB(); face.calcMaxZ(); }
   }
 
   void move(double x, double y, double z) {

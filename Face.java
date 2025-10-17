@@ -1,7 +1,7 @@
 public class Face {
   DPoint3[] points;
   double maxZ;
-  float red, green, blue;
+  int rgb;
   void calcMaxZ() {
     double d1 = (this.points[1]).x - (this.points[0]).x;
     double d2 = (this.points[1]).y - (this.points[0]).y;
