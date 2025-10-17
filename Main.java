@@ -27,16 +27,38 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   }
 
   // sin/cos lookup tables
-  private double[] si = new double[128];
-  private double[] co = new double[128];
-
-  private boolean title_mode;
+  private static double[] si = new double[128];
+  private static double[] co = new double[128];
+  // preallocate buffers
+  private static int[] buffer_polyX = new int[8];
+  private static int[] buffer_polyY = new int[8];
+  // draw utilities
+  public static double nowSin;
+  public static double nowCos;
+  synchronized static void drawPolygon(Graphics g, Face face) {
+    DPoint3[] points = face.points;
+    double d1 = (points[1]).x - (points[0]).x;
+    double d2 = (points[1]).y - (points[0]).y;
+    double d3 = (points[2]).x - (points[0]).x;
+    double d4 = (points[2]).y - (points[0]).y;
+    float f = (float)(Math.abs(d1 * d4 - d2 * d3) / face.maxZ);
+    g.setColor(new Color(face.red * f, face.green * f, face.blue * f));
+    drawPolygon(g, points);
+  }
+  synchronized static void drawPolygon(Graphics g, DPoint3[] points) {
+    double d1 = Main.width / 320.0;
+    double d2 = Main.height / 200.0;
+    for (byte b = 0; b < points.length; b++) {
+      DPoint3 point = points[b];
+      double d3 = 120.0 / (1.0 + 0.6 * point.z);
+      double d4 = nowCos * point.x + nowSin * (point.y - 2.0);
+      double d5 = -nowSin * point.x + nowCos * (point.y - 2.0) + 2.0;
+      buffer_polyX[b] = (int)(d4 * d1 * d3) + Main.width / 2;
+      buffer_polyY[b] = (int)(d5 * d2 * d3) + Main.height / 2;
+    }
+    g.fillPolygon(buffer_polyX, buffer_polyY, points.length);
+  }
   
-  private Frame window;
-
-  private Image ship[] = new Image[2];
-  private Clip explosion;
-
   private RoundManager[] rounds = new RoundManager[] { new NormalRound(8000, new Color(0, 160, 255), new Color(0, 200, 64), 4), new NormalRound(12000, new Color(240, 160, 160), new Color(64, 180, 64), 3), new NormalRound(25000, Color.black, new Color(0, 128, 64), 2), new RoadRound(40000, new Color(0, 180, 240), new Color(0, 200, 64), false), new RoadRound(100000, Color.lightGray, new Color(64, 180, 64), true), new NormalRound(1000000, Color.black, new Color(0, 128, 64), 1) };
   private DPoint3[] ground_points = new DPoint3[] { new DPoint3(-100.0, 2.0, 28.0), new DPoint3(-100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 28.0) };
   private LinkedList<Obstacle> obstacles = new LinkedList<>();
@@ -46,7 +68,9 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private int score, prevScore, hiscore, contNum;
   private int ship_animation;
   private boolean paused;
+  private boolean title_mode;
 
+  private Frame window;
   private Image scene_img;
   private Graphics scene_g;
   private Thread gameThread;
@@ -56,6 +80,9 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private boolean stretched;
   private static long keyevent_glitch_workaround_t0; // I'm observing an issue where I sometime get random key events on start (e.g. VK_C, VK_S, VK_F). This mitigates this.
 
+  private Image ship[] = new Image[2];
+  private Clip explosion;
+  
   private Gamepad gamepad = new Gamepad();
   private boolean key_held[] = new boolean[256]; // stores held state of KeyEvent for the VK range I care about
   private boolean mouse_left_button_held, mouse_right_button_held;
@@ -158,14 +185,14 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
   void moveObstacle() {
     int i = (int)(Math.abs(this.vx) * 100.0);
-    DrawEnv.nowSin = si[i];
-    DrawEnv.nowCos = co[i];
-    if(this.vx > 0.0) DrawEnv.nowSin = -DrawEnv.nowSin;
+    nowSin = si[i];
+    nowCos = co[i];
+    if(this.vx > 0.0) nowSin = -nowSin;
     ListIterator<Obstacle> iter = this.obstacles.listIterator(); while(iter.hasNext()) { Obstacle obstacle = iter.next();
       obstacle.move(this.vx, 0.0, -1.0);
       DPoint3[] points = obstacle.points;
       if((points[0]).z <= 1.1) {
-        double d = 0.7 * DrawEnv.nowCos;
+        double d = 0.7 * nowCos;
         if (-d < (points[2]).x && (points[0]).x < d) this.damaged++;
         iter.remove();
       }
@@ -192,7 +219,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     this.scene_g.setColor(this.rounds[this.round].getSkyColor());
     this.scene_g.fillRect(0, 0, this.width, this.height);
     if(!this.title_mode) this.score += 20;
-    this.scene_g.setColor(this.rounds[this.round].getGroundColor()); DrawEnv.drawPolygon(this.scene_g, this.ground_points);
+    this.scene_g.setColor(this.rounds[this.round].getGroundColor()); drawPolygon(this.scene_g, this.ground_points);
     for(Obstacle obstacle : obstacles) obstacle.draw(this.scene_g);
     this.ship_animation++;
     if(!this.title_mode) {

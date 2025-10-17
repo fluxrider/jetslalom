@@ -13,8 +13,8 @@ public class Obstacle {
   }
 
   void draw(Graphics g) {
-    DrawEnv.drawPolygon(g, this.faces[0]);
-    DrawEnv.drawPolygon(g, this.faces[1]);
+    Main.drawPolygon(g, this.faces[0]);
+    Main.drawPolygon(g, this.faces[1]);
   }
 
   void prepareNewObstacle() {
