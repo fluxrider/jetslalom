@@ -41,4 +41,5 @@ public final class ARGB { private ARGB() { }
     final double SQRT_2 = 1.4; // TODO get most precise double value possible
     return argb_safe(a, (r > 0 && r < 3)? 3 : (int)(r*SQRT_2), (g > 0 && g < 3)? 3 : (int)(g*SQRT_2), (b > 0 && b < 3)? 3 : (int)(b*SQRT_2));
   }
+
 }
