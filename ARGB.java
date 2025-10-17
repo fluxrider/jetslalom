@@ -33,8 +33,7 @@ public final class ARGB { private ARGB() { }
   public static final int white = argb(255, 255, 255, 255);
 
   public static int brighter(int argb) {
-    // Original version copied on 2025-10-17 from https://github.com/openjdk/jdk/blob/master/src/java.desktop/share/classes/java/awt/Color.java Copyright (c) 1995, 2025, Oracle and/or its affiliates. GPLv2.
-    // Unless you were the copyright holder, mind your own business. Otherwise, should the GPL have the power to make the whole file or codebase GPL? Let's be honest, it should protect only this function.
+    // Original GPLv2 version copied on 2025-10-17 from https://github.com/openjdk/jdk/blob/master/src/java.desktop/share/classes/java/awt/Color.java
     // Note: I fixed a slight inconsistency found in the original code that made a 1 or 2 get a big kick to 4 instead of what I think was meant to be just 3.
     int r = r(argb); int g = g(argb); int b = b(argb); int a = a(argb);
     if(r == 0 && g == 0 && b == 0) { return argb(a, 3, 3, 3); }

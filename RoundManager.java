@@ -16,7 +16,7 @@ public abstract class RoundManager {
     arrayOfDPoint3[1].setXYZ(x1, -1.4, 25.0);
     arrayOfDPoint3[2].setXYZ(x1 + x2, 2.0, 25.5);
     arrayOfDPoint3[3].setXYZ(x1, 2.0, 24.5);
-    switch(Main.getRandom() % 4) {
+    switch(M.rand_index(4)) {
       case 0: o.rgb = ARGB.gray(192); break;
       case 1: o.rgb = ARGB.rgb(96, 160, 240); break;
       case 2: o.rgb = ARGB.rgb(200, 128, 0); break;
@@ -26,7 +26,7 @@ public abstract class RoundManager {
     return o;
   }
 
-  protected final Obstacle createObstacle(double paramDouble) { return createObstacle((Main.getRandom() % 256) / 8.0 - 16.0, 0.6); }
+  protected final Obstacle createObstacle() { return createObstacle(M.drand(-16.0, 16.0), 0.6); }
 
   public boolean isNextRound(int score) { return !(score < this.nextRoundScore); }
 

@@ -12,7 +12,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
 
   public static final int width = 320;
   public static final int height = 200;
-  public static int getRandom() { return random.nextInt(Integer.MAX_VALUE); } private static Random random = new Random();
 
   public void windowDeactivated(WindowEvent paramWindowEvent) {}
   public void windowClosing(WindowEvent paramWindowEvent) { System.exit(0); }

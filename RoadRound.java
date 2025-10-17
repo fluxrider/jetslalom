@@ -16,10 +16,10 @@ public class RoadRound extends RoundManager {
     double d1 = 1.1;
     if (this.isBrokenRoad && this.roadCounter % 13 < 7) {
       d1 = 0.7;
-      d2 = (Main.getRandom() % 256) / 8.0 - 16.0;
+      d2 = M.drand(-16.0, 16.0);
       if (d2 < this.OX2 && d2 > this.OX1) {
         d1 = 1.2;
-        if (Main.getRandom() % 256 > 128) {
+        if (M.coin()) {
           d2 = this.OX1;
         } else {
           d2 = this.OX2;
@@ -44,7 +44,7 @@ public class RoadRound extends RoundManager {
     } else {
       if (this.roadCounter < 0) {
         this.direction = -this.direction;
-        this.roadCounter += 2 * (Main.getRandom() % 8 + 4);
+        this.roadCounter += 2 * M.rand(4, 11);
       }
       if (this.direction > 0) {
         this.OVX += 0.125;

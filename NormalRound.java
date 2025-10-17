@@ -9,7 +9,7 @@ public class NormalRound extends RoundManager {
     this.counter++;
     if (this.counter < this.interval) return null;
     this.counter = 0;
-    return createObstacle(0.6);
+    return createObstacle();
   }
 
   public void init() {
