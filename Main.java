@@ -26,15 +26,12 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     if(gd.isFullScreenSupported()) gd.setFullScreenWindow(gd.getFullScreenWindow() == this.window? null : this.window);
   }
 
-  // sin/cos lookup tables
-  private static double[] si = new double[128];
-  private static double[] co = new double[128];
   // preallocate buffers
   private static int[] buffer_polyX = new int[8];
   private static int[] buffer_polyY = new int[8];
   // draw utilities
-  public static double nowSin;
-  public static double nowCos;
+  private static double nowSin;
+  private static double nowCos;
   synchronized static void drawPolygon(Graphics g, Face face) {
     DPoint3[] points = face.points;
     double d1 = (points[1]).x - (points[0]).x;
@@ -92,10 +89,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     keyevent_glitch_workaround_t0 = System.currentTimeMillis();
 
     for(int b = 1; b < this.rounds.length; b++) this.rounds[b].setPrevRound(this.rounds[b - 1]);
-    for(int i = 0; i < si.length; i++) {
-      si[i] = Math.sin(Math.PI * (i / (double)si.length));
-      co[i] = Math.cos(Math.PI * (i / (double)si.length));
-    }
     
     this.addKeyListener(this);
     this.addMouseListener(this);
@@ -184,9 +177,9 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   }
 
   void moveObstacle() {
-    int i = (int)(Math.abs(this.vx) * 100.0);
-    nowSin = si[i];
-    nowCos = co[i];
+    double angle = Math.abs(this.vx) * 100.0;
+    nowSin = Math.sin(Math.PI * (angle / 128));
+    nowCos = Math.cos(Math.PI * (angle / 128));
     if(this.vx > 0.0) nowSin = -nowSin;
     ListIterator<Obstacle> iter = this.obstacles.listIterator(); while(iter.hasNext()) { Obstacle obstacle = iter.next();
       obstacle.move(this.vx, 0.0, -1.0);
