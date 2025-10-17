@@ -11,7 +11,7 @@ public class Obstacle {
   }
 
   void prepareNewObstacle() {
-    this.faces[0].calcMaxZ(); this.faces[0].rgb = ARGB.brighter(this.rgb);
+    this.faces[0].calcMaxZ(); this.faces[0].rgb = C.brighter(this.rgb);
     this.faces[1].calcMaxZ(); this.faces[1].rgb = this.rgb;
   }
 

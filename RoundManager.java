@@ -17,10 +17,10 @@ public abstract class RoundManager {
     arrayOfDPoint3[2].setXYZ(x1 + x2, 2.0, 25.5);
     arrayOfDPoint3[3].setXYZ(x1, 2.0, 24.5);
     switch(M.rand_index(4)) {
-      case 0: o.rgb = ARGB.gray(192); break;
-      case 1: o.rgb = ARGB.rgb(96, 160, 240); break;
-      case 2: o.rgb = ARGB.rgb(200, 128, 0); break;
-      case 3: o.rgb = ARGB.rgb(240, 210, 100); break;
+      case 0: o.rgb = C.gray(192); break;
+      case 1: o.rgb = C.rgb(96, 160, 240); break;
+      case 2: o.rgb = C.rgb(200, 128, 0); break;
+      case 3: o.rgb = C.rgb(240, 210, 100); break;
     }
     o.prepareNewObstacle();
     return o;
@@ -36,10 +36,10 @@ public abstract class RoundManager {
     int j = 32 - i;
     int prev = this.prevRound.sky_rgb;
     int curr = this.sky_rgb;
-    int k = ARGB.r(prev) * j + ARGB.r(curr) * i;
-    int m = ARGB.g(prev) * j + ARGB.g(curr) * i;
-    int n = ARGB.b(prev) * j + ARGB.b(curr) * i;
-    return ARGB.argb_safe(255, k / 32, m / 32, n / 32);
+    int k = C.r(prev) * j + C.r(curr) * i;
+    int m = C.g(prev) * j + C.g(curr) * i;
+    int n = C.b(prev) * j + C.b(curr) * i;
+    return C.argb_safe(255, k / 32, m / 32, n / 32);
   }
 
   public void init() { }

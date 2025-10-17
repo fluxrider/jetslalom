@@ -1,4 +1,4 @@
-public final class ARGB { private ARGB() { }
+public final class C { private C() { }
 
   public static int a(int argb) { return (argb >> 24) & 0xFF; }
   public static int r(int argb) { return (argb >> 16) & 0xFF; }
