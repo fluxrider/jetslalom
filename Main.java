@@ -45,6 +45,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private int damaged;
   private int score, prevScore, hiscore, contNum;
   private int ship_animation;
+  private boolean paused;
 
   private Image scene_img;
   private Graphics scene_g;
@@ -109,6 +110,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     int keycode = e.getKeyCode();
     if(keycode >= 0 && keycode < key_held.length) key_held[keycode] = false;
     if(keycode == VK_F) this.toggleFullScreen();
+    if(keycode == VK_P) this.paused = !this.paused;
   }
   public void keyTyped(KeyEvent paramKeyEvent) { }
 
@@ -221,8 +223,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     this.vx = 0.0;
     this.title_mode = true;
     while (this.gameThread == Thread.currentThread()) {
-      if(this.rounds[this.round].isNextRound(this.score)) this.round++;
-
       // gamepad: note that the external library I found does not seem to support plug and play at least in my Linux environment (i.e. the gamepad must be plugged before the game starts)
       boolean gamepad_left = false, gamepad_right = false; double dead_zone = .05;
       gamepad.poll();
@@ -242,9 +242,12 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       boolean keyboard_left = key_held[VK_LEFT] || key_held[VK_J] || key_held[VK_A];
       boolean keyboard_right = key_held[VK_RIGHT] || key_held[VK_L] || key_held[VK_D];
 
-      ship_input(gamepad_left | mouse_left_button_held | keyboard_left, gamepad_right | mouse_right_button_held | keyboard_right);
-      moveObstacle();
-      prt();
+      if(this.hasFocus() && !paused) {
+        if(this.rounds[this.round].isNextRound(this.score)) this.round++;
+        ship_input(gamepad_left | mouse_left_button_held | keyboard_left, gamepad_right | mouse_right_button_held | keyboard_right);
+        moveObstacle();
+        prt();
+      }
       
       // letterbox scaling (i.e. respects aspect ratio)
       int b_w = this.getWidth(); int b_h = this.getHeight(); int s_w = width; int s_h = height;
@@ -291,10 +294,10 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
           { String msg = "by David Lareau in 2025"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += line_h + spacing; }
           { String msg = "Original 1997 version by MR-C"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += line_h + spacing; }
         }
-        if(!this.hasFocus()) {
+        if(paused || !this.hasFocus()) {
           g.setColor(Color.red);
           offset = (int)(b_h * (System.currentTimeMillis() % 10000) / 10000.0);
-          { String msg = "Lost Keyboard Input Focus"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); }
+          { String msg = this.hasFocus()? "Paused" : "Lost Keyboard Input Focus"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); }
         }
       } catch(Exception e) {
         e.printStackTrace();
