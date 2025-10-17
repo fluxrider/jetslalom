@@ -177,9 +177,9 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   }
 
   void moveObstacle() {
-    double angle = Math.abs(this.vx) * 100.0;
-    nowSin = Math.sin(Math.PI * (angle / 128));
-    nowCos = Math.cos(Math.PI * (angle / 128));
+    double angle = Math.abs(this.vx) * 100.0; // [-60, 60]
+    nowSin = Math.sin(Math.PI * angle / 180); // I can't replay the original, but the code seem to have divided by 128 here but 180 makes more sense
+    nowCos = Math.cos(Math.PI * angle / 180);
     if(this.vx > 0.0) nowSin = -nowSin;
     ListIterator<Obstacle> iter = this.obstacles.listIterator(); while(iter.hasNext()) { Obstacle obstacle = iter.next();
       obstacle.move(this.vx, 0.0, -1.0);
