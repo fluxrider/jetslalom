@@ -16,9 +16,7 @@ public final class ARGB { private ARGB() { }
     return a << 24 | r << 16 | g << 8 | b;
   }
   public static int rgb(int r, int g, int b) { return argb(1, r, g, b); }
-  public static int fargb(float a, float r, float g, float b) { return argb((int)(a*255),(int)(r*255),(int)(g*255),(int)(b*255)); }
   public static int dargb(double a, double r, double g, double b) { return argb((int)(a*255),(int)(r*255),(int)(g*255),(int)(b*255)); }
-  public static int frgb(float a, float r, float g, float b) { return argb(255,(int)(r*255),(int)(g*255),(int)(b*255)); }
   public static int drgb(double a, double r, double g, double b) { return argb(255,(int)(r*255),(int)(g*255),(int)(b*255)); }
   public static float fa(int argb) { return a(argb) / 255.0f; }
   public static float fr(int argb) { return r(argb) / 255.0f; }
@@ -28,10 +26,15 @@ public final class ARGB { private ARGB() { }
   public static double dr(int argb) { return r(argb) / 255.0; }
   public static double dg(int argb) { return g(argb) / 255.0; }
   public static double db(int argb) { return b(argb) / 255.0; }
+  public static int gray(int level) { return argb(1, level, level, level); }
+  public static int dgray(double level) { return gray((int)(level*255)); }
+  
+  public static final int black = argb(255, 0, 0, 0);
+  public static final int white = argb(255, 255, 255, 255);
 
   public static int brighter(int argb) {
     // Original version copied on 2025-10-17 from https://github.com/openjdk/jdk/blob/master/src/java.desktop/share/classes/java/awt/Color.java Copyright (c) 1995, 2025, Oracle and/or its affiliates. GPLv2.
-    // Unless you are the copyright holder, mind your own business. Otherwise, should the GPL have the power to make the whole file or codebase GPL? Let's be honest, it should protect only this function.
+    // Unless you were the copyright holder, mind your own business. Otherwise, should the GPL have the power to make the whole file or codebase GPL? Let's be honest, it should protect only this function.
     // Note: I fixed a slight inconsistency found in the original code that made a 1 or 2 get a big kick to 4 instead of what I think was meant to be just 3.
     int r = r(argb); int g = g(argb); int b = b(argb); int a = a(argb);
     if(r == 0 && g == 0 && b == 0) { return argb(a, 3, 3, 3); }

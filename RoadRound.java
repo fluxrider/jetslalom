@@ -1,5 +1,3 @@
-import java.awt.*;
-
 public class RoadRound extends RoundManager {
   private double OX1;
   private double OX2;
@@ -9,7 +7,7 @@ public class RoadRound extends RoundManager {
   private int roadCounter;
   private boolean isBrokenRoad;
 
-  public RoadRound(int score, Color sky_color, Color ground_color, boolean is_broken) { this.nextRoundScore = score; this.skyColor = sky_color; this.groundColor = ground_color; this.isBrokenRoad = is_broken; }
+  public RoadRound(int score, int sky_rgb, int ground_rgb, boolean is_broken) { this.nextRoundScore = score; this.sky_rgb = sky_rgb; this.ground_rgb = ground_rgb; this.isBrokenRoad = is_broken; }
 
   public Obstacle generateObstacle() {
     double d2;

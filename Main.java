@@ -59,7 +59,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     g.fillPolygon(buffer_polyX, buffer_polyY, points.length);
   }
   
-  private RoundManager[] rounds = new RoundManager[] { new NormalRound(8000, new Color(0, 160, 255), new Color(0, 200, 64), 4), new NormalRound(12000, new Color(240, 160, 160), new Color(64, 180, 64), 3), new NormalRound(25000, Color.black, new Color(0, 128, 64), 2), new RoadRound(40000, new Color(0, 180, 240), new Color(0, 200, 64), false), new RoadRound(100000, Color.lightGray, new Color(64, 180, 64), true), new NormalRound(1000000, Color.black, new Color(0, 128, 64), 1) };
+  private RoundManager[] rounds = new RoundManager[] { new NormalRound(8000, ARGB.rgb(0, 160, 255), ARGB.rgb(0, 200, 64), 4), new NormalRound(12000, ARGB.rgb(240, 160, 160), ARGB.rgb(64, 180, 64), 3), new NormalRound(25000, ARGB.black, ARGB.rgb(0, 128, 64), 2), new RoadRound(40000, ARGB.rgb(0, 180, 240), ARGB.rgb(0, 200, 64), false), new RoadRound(100000, ARGB.gray(192), ARGB.rgb(64, 180, 64), true), new NormalRound(1000000, ARGB.black, ARGB.rgb(0, 128, 64), 1) };
   private DPoint3[] ground_points = new DPoint3[] { new DPoint3(-100.0, 2.0, 28.0), new DPoint3(-100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 28.0) };
   private LinkedList<Obstacle> obstacles = new LinkedList<>();
   private double vx; // ship's left/right movement
@@ -216,10 +216,10 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   }
 
   void prt() {
-    this.scene_g.setColor(this.rounds[this.round].getSkyColor());
+    this.scene_g.setColor(new Color(this.rounds[this.round].getSkyRGB()));
     this.scene_g.fillRect(0, 0, this.width, this.height);
     if(!this.title_mode) this.score += 20;
-    this.scene_g.setColor(this.rounds[this.round].getGroundColor()); drawPolygon(this.scene_g, this.ground_points);
+    this.scene_g.setColor(new Color(this.rounds[this.round].getGroundRGB())); drawPolygon(this.scene_g, this.ground_points);
     for(Obstacle obstacle : obstacles) obstacle.draw(this.scene_g);
     this.ship_animation++;
     if(!this.title_mode) {

@@ -1,16 +1,14 @@
-import java.awt.*;
-
 public abstract class RoundManager {
   private RoundManager prevRound;
 
-  static final Color[] colors = new Color[] { Color.lightGray, new Color(96, 160, 240), new Color(200, 128, 0), new Color(240, 210, 100) };
+  static final int[] rgbs = new int[] { ARGB.gray(192), ARGB.rgb(96, 160, 240), ARGB.rgb(200, 128, 0), ARGB.rgb(240, 210, 100) };
 
   protected int nextRoundScore;
-  protected Color skyColor;
-  protected Color groundColor;
+  protected int sky_rgb;
+  protected int ground_rgb;
   protected int gameTime;
   public void setPrevRound(RoundManager round) { this.prevRound = round; }
-  public Color getGroundColor() { return this.groundColor; }
+  public int getGroundRGB() { return this.ground_rgb; }
   public int getNextRoundScore() { return this.nextRoundScore; }
 
   protected final Obstacle createObstacle(double x1, double x2) {
@@ -20,7 +18,7 @@ public abstract class RoundManager {
     arrayOfDPoint3[1].setXYZ(x1, -1.4, 25.0);
     arrayOfDPoint3[2].setXYZ(x1 + x2, 2.0, 25.5);
     arrayOfDPoint3[3].setXYZ(x1, 2.0, 24.5);
-    obstacle.color = colors[Main.getRandom() % 4];
+    obstacle.rgb = rgbs[Main.getRandom() % 4];
     obstacle.prepareNewObstacle();
     return obstacle;
   }
@@ -29,15 +27,16 @@ public abstract class RoundManager {
 
   public boolean isNextRound(int score) { return !(score < this.nextRoundScore); }
 
-  public Color getSkyColor() {
-    if (this.prevRound == null || this.gameTime > 32) return this.skyColor;
+  public int getSkyRGB() {
+    if (this.prevRound == null || this.gameTime > 32) return this.sky_rgb;
     int i = this.gameTime;
     int j = 32 - i;
-    Color color = this.prevRound.skyColor;
-    int k = color.getRed() * j + this.skyColor.getRed() * i;
-    int m = color.getGreen() * j + this.skyColor.getGreen() * i;
-    int n = color.getBlue() * j + this.skyColor.getBlue() * i;
-    return new Color(k / 32, m / 32, n / 32);
+    int prev = this.prevRound.sky_rgb;
+    int curr = this.sky_rgb;
+    int k = ARGB.r(prev) * j + ARGB.r(curr) * i;
+    int m = ARGB.g(prev) * j + ARGB.g(curr) * i;
+    int n = ARGB.b(prev) * j + ARGB.b(curr) * i;
+    return ARGB.argb_safe(255, k / 32, m / 32, n / 32);
   }
 
   public void init() { }
