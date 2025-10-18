@@ -34,6 +34,7 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
   private boolean paused;
   private static long keyevent_glitch_workaround_t0; // I'm observing an issue where I sometime get random key events on start (e.g. VK_C, VK_S, VK_F). This mitigates this.
   private int target_dt = 55;
+  private int delay = target_dt;
 
   private int ship_animation;
   private Image ship[] = new Image[2];
@@ -195,7 +196,7 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
         }
         g.setColor(Color.white);
         g.drawString("Your Hi-score:" + game.hiscore, 2*fm.getDescent()/3, b_h - fm.getDescent());
-        { String msg = String.format("Period: %dms (%dms)", target_dt, dt); g.drawString(msg, b_w - 2*fm.getDescent()/3 - fm.stringWidth(msg), b_h - fm.getDescent()); }
+        { String msg = String.format("Period: %dms (%dms)", this.target_dt, dt); g.drawString(msg, b_w - 2*fm.getDescent()/3 - fm.stringWidth(msg), b_h - fm.getDescent()); }
         String score = "Score:" + game.score;
         String penalty = "Continue penalty:" + game.contNum * 1000;
         int score_w = fm.stringWidth(score); int penalty_w = fm.stringWidth(penalty); int padding = b_w / 10; int total_w = game.contNum > 0? score_w + padding + penalty_w : score_w; int offset = (b_w - total_w) / 2;
@@ -222,8 +223,10 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
       // final double buffer blit
       if(this.backbuffer != null) { g = this.getGraphics(); g.drawImage(this.backbuffer, 0, 0, null); }
       this.getToolkit().sync();
-      long dt_bust = 0; // if(dt > target_dt) { dt_bust = dt - target_dt; } // this only fixes the next frame, then the bust comes back
-      if(target_dt - dt_bust > 0) { try { Thread.sleep(target_dt - dt_bust); } catch (InterruptedException e) { e.printStackTrace(); } }
+      if(dt > target_dt) { this.delay--; } // framerate too low, try faster
+      if(dt < target_dt) { this.delay++; } // framerate too high, try slower
+      if(this.delay < 1) this.delay = 1;
+      { try { Thread.sleep(this.delay); } catch (InterruptedException e) { e.printStackTrace(); } }
     }
   }
 
