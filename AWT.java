@@ -18,7 +18,18 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
   public void windowIconified(WindowEvent paramWindowEvent) {}
   public void toggleFullScreen() {
     GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-    if(gd.isFullScreenSupported()) gd.setFullScreenWindow(gd.getFullScreenWindow() == this.window? null : this.window);
+    if(gd.isFullScreenSupported()) {
+      // exit fullscreen
+      if(gd.getFullScreenWindow() == this.window) {
+        this.window.setCursor(Cursor.getDefaultCursor());
+        gd.setFullScreenWindow(null);
+      }
+      // enter fullscreen
+      else {
+        gd.setFullScreenWindow(this.window);
+        this.window.setCursor(Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), new Point(0, 0), "invisible"));
+      }
+    }
   }
 
   private int logical_w, logical_h;
