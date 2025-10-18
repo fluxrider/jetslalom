@@ -33,6 +33,7 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
   private boolean stretched;
   private boolean paused;
   private static long keyevent_glitch_workaround_t0; // I'm observing an issue where I sometime get random key events on start (e.g. VK_C, VK_S, VK_F). This mitigates this.
+  private int target_dt = 55;
 
   private int ship_animation;
   private Image ship[] = new Image[2];
@@ -97,6 +98,8 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
     if(keycode == VK_F) this.toggleFullScreen();
     if(keycode == VK_P) this.paused = !this.paused;
     if(keycode == VK_S) this.stretched = !this.stretched;
+    if(keycode == VK_ADD) this.target_dt+=5;
+    if(keycode == VK_SUBTRACT) this.target_dt-=5;
   }
   public void keyTyped(KeyEvent paramKeyEvent) { }
 
@@ -123,7 +126,7 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
   public void mouseDragged(MouseEvent e) { }
   
   public void run() {
-    long t0 = System.currentTimeMillis(), t1 = t0, target_dt = 55;
+    long t0 = System.currentTimeMillis(), t1 = t0;
     while (this.gameThread == Thread.currentThread()) {
       t0 = t1; t1 = System.currentTimeMillis(); long dt = t1 - t0;
       // gamepad: note that the external library I found does not seem to support plug and play at least in my Linux environment (i.e. the gamepad must be plugged before the game starts)
@@ -192,7 +195,7 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
         }
         g.setColor(Color.white);
         g.drawString("Your Hi-score:" + game.hiscore, 2*fm.getDescent()/3, b_h - fm.getDescent());
-        { String msg = "Period:" + dt + "ms"; g.drawString(msg, b_w - 2*fm.getDescent()/3 - fm.stringWidth(msg), b_h - fm.getDescent()); }
+        { String msg = String.format("Period: %dms (%dms)", target_dt, dt); g.drawString(msg, b_w - 2*fm.getDescent()/3 - fm.stringWidth(msg), b_h - fm.getDescent()); }
         String score = "Score:" + game.score;
         String penalty = "Continue penalty:" + game.contNum * 1000;
         int score_w = fm.stringWidth(score); int penalty_w = fm.stringWidth(penalty); int padding = b_w / 10; int total_w = game.contNum > 0? score_w + padding + penalty_w : score_w; int offset = (b_w - total_w) / 2;
