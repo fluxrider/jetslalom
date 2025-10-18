@@ -1,16 +1,18 @@
+import java.util.*;
+
 public class Game {
 
-  private RoundManager[] rounds = new RoundManager[] { new NormalRound(8000, C.rgb(0, 160, 255), C.rgb(0, 200, 64), 4), new NormalRound(12000, C.rgb(240, 160, 160), C.rgb(64, 180, 64), 3), new NormalRound(25000, C.black, C.rgb(0, 128, 64), 2), new RoadRound(40000, C.rgb(0, 180, 240), C.rgb(0, 200, 64), false), new RoadRound(100000, C.gray(192), C.rgb(64, 180, 64), true), new NormalRound(1000000, C.black, C.rgb(0, 128, 64), 1) };
-  private DPoint3[] ground_points = new DPoint3[] { new DPoint3(-100.0, 2.0, 28.0), new DPoint3(-100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 28.0) };
-  private LinkedList<Obstacle> obstacles = new LinkedList<>();
+  public RoundManager[] rounds = new RoundManager[] { new NormalRound(8000, C.rgb(0, 160, 255), C.rgb(0, 200, 64), 4), new NormalRound(12000, C.rgb(240, 160, 160), C.rgb(64, 180, 64), 3), new NormalRound(25000, C.black, C.rgb(0, 128, 64), 2), new RoadRound(40000, C.rgb(0, 180, 240), C.rgb(0, 200, 64), false), new RoadRound(100000, C.gray(192), C.rgb(64, 180, 64), true), new NormalRound(1000000, C.black, C.rgb(0, 128, 64), 1) };
+  public DPoint3[] ground_points = new DPoint3[] { new DPoint3(-100.0, 2.0, 28.0), new DPoint3(-100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 28.0) };
+  public LinkedList<Obstacle> obstacles = new LinkedList<>();
   private double vx; // ship's left/right movement
-  private int round;
-  private int damaged;
-  private int score, prevScore, hiscore, contNum;
-  private boolean title_mode;
+  public int round;
+  public int damaged;
+  public int score, prevScore, hiscore, contNum;
+  public boolean title_mode;
 
-  private static double nowSin;
-  private static double nowCos;
+  public double nowSin;
+  public double nowCos;
 
   public Game() {
     for(int b = 1; b < this.rounds.length; b++) this.rounds[b].setPrevRound(this.rounds[b - 1]);
