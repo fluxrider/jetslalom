@@ -123,7 +123,7 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
     if(keycode == VK_S) this.stretched = !this.stretched;
     if(keycode == VK_ADD) this.target_dt+=5;
     if(keycode == VK_SUBTRACT) this.target_dt-=5;
-    if(keycode == VK_H) set_logical_size(this.logical_w == 320? 6 : 1);
+    if(keycode == VK_H) this.set_logical_size(this.logical_w == 320? 6 : 1);
   }
   public void keyTyped(KeyEvent paramKeyEvent) { }
 
@@ -166,13 +166,33 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
       if(gamepad.right_shoulder) gamepad_right = true;
       if(gamepad.left_trigger > 0) gamepad_left = true;
       if(gamepad.right_trigger > 0) gamepad_right = true;
-      if(gamepad.select && gamepad.n_select) this.toggleFullScreen();
-      if(game.title_mode && ((gamepad.start && gamepad.n_start) || (gamepad.south_maybe && gamepad.n_south_maybe) || (gamepad.north_maybe && gamepad.n_north_maybe) || (gamepad.west_maybe && gamepad.n_west_maybe) || (gamepad.east_maybe && gamepad.n_east_maybe))) game.startGame(true, false);
+      // advanced system commands
+      if(gamepad.left_shoulder && gamepad.right_shoulder && gamepad.start && gamepad.select) System.exit(0);
+      if(gamepad.select) {
+        if(gamepad.l3 && gamepad.n_l3) this.set_logical_size(this.logical_w == 320? 6 : 1);
+        if(gamepad.left_shoulder && gamepad.n_left_shoulder) this.target_dt-=5;
+        if(gamepad.right_shoulder && gamepad.n_right_shoulder) this.target_dt+=5;
+      }
+      // normal system commands
+      else {
+        if(gamepad.l3 && gamepad.n_l3) this.toggleFullScreen();
+        if(gamepad.r3 && gamepad.n_r3) this.stretched = !this.stretched;
+      }
+      // title command
+      if(game.title_mode) {
+        if((gamepad.south_maybe && gamepad.n_south_maybe) || (gamepad.north_maybe && gamepad.n_north_maybe) || (gamepad.west_maybe && gamepad.n_west_maybe) || (gamepad.east_maybe && gamepad.n_east_maybe) || (gamepad.up && gamepad.n_up)) game.startGame(true, true); // continue
+        if((gamepad.start && gamepad.n_start) || (gamepad.down && gamepad.n_down)) game.startGame(true, false); // restart
+      }
+      // play command
+      else {
+        if(gamepad.start && gamepad.n_start) this.paused = !this.paused;
+      }
 
       boolean keyboard_left = key_held[VK_LEFT] || key_held[VK_J] || key_held[VK_A];
       boolean keyboard_right = key_held[VK_RIGHT] || key_held[VK_L] || key_held[VK_D];
 
-      if(this.hasFocus() && !paused) {
+      if(game.title_mode && this.paused) this.paused = false;
+      if(this.hasFocus() && !this.paused) {
         game.tick(gamepad_left | mouse_left_button_held | keyboard_left, gamepad_right | mouse_right_button_held | keyboard_right);
         prt();
       }
@@ -234,7 +254,7 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
           { String msg = "by David Lareau in 2025"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += line_h + spacing; }
           { String msg = "Original 1997 version by MR-C"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += line_h + spacing; }
         }
-        if(paused || !this.hasFocus()) {
+        if(this.paused || !this.hasFocus()) {
           g.setColor(Color.red);
           offset = (int)(b_h * (System.currentTimeMillis() % 10000) / 10000.0);
           { String msg = this.hasFocus()? "Paused" : "Lost Keyboard Input Focus"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); }

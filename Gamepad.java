@@ -2,30 +2,21 @@
 
 class Gamepad {
 
-  public boolean param_dpad_diag_count = true;
+  public boolean param_dpad_diag_count;
 
-  public boolean start;
-  public boolean select;
-  public boolean south_maybe;
-  public boolean north_maybe;
-  public boolean west_maybe;
-  public boolean east_maybe;
-  public boolean up;
-  public boolean down;
-  public boolean left;
-  public boolean right;
-  public boolean left_shoulder;
-  public boolean right_shoulder;
-  public double left_trigger;
-  public double right_trigger;
+  public boolean start, select;
+  public boolean south_maybe, north_maybe, west_maybe, east_maybe;
+  public boolean up, down, left, right;
+  public boolean left_shoulder, right_shoulder;
+  public boolean l3, r3;
+  public double left_trigger, right_trigger;
   public double lx, ly, rx, ry;
 
-  public boolean n_start;
-  public boolean n_select;
-  public boolean n_south_maybe;
-  public boolean n_north_maybe;
-  public boolean n_west_maybe;
-  public boolean n_east_maybe;
+  public boolean n_start, n_select;
+  public boolean n_south_maybe, n_north_maybe, n_west_maybe, n_east_maybe;
+  public boolean n_up, n_down, n_left, n_right;
+  public boolean n_left_shoulder, n_right_shoulder;
+  public boolean n_l3, n_r3;
 
   public void poll() { }
 

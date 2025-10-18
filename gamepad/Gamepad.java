@@ -5,43 +5,33 @@ class Gamepad {
   public boolean param_dpad_diag_count = true;
 
   // held state
-  public boolean start;
-  public boolean select;
-  public boolean south_maybe;
-  public boolean north_maybe;
-  public boolean west_maybe;
-  public boolean east_maybe;
-  public boolean up;
-  public boolean down;
-  public boolean left;
-  public boolean right;
-  public boolean left_shoulder;
-  public boolean right_shoulder;
-  public double left_trigger;
-  public double right_trigger;
+  public boolean start, select;
+  public boolean south_maybe, north_maybe, west_maybe, east_maybe; // buttons, but it's unclear if JInput knows where ABXY are (e.g. is A east like Nintendo, or is A south like XBox?)
+  public boolean up, down, left, right;
+  public boolean left_shoulder, right_shoulder;
+  public boolean l3, r3;
+  public double left_trigger, right_trigger;
   public double lx, ly, rx, ry;
 
   // pressed/release state is a bit of a hack, because a low polling rate can miss events, but whatever. I don't care that much.
   // usage: if(start && n_start) just_pressed
   //        if(!start && n_start) just released
-  public boolean n_start;
-  public boolean n_select;
-  public boolean n_south_maybe;
-  public boolean n_north_maybe;
-  public boolean n_west_maybe;
-  public boolean n_east_maybe;
+  public boolean n_start, n_select;
+  public boolean n_south_maybe, n_north_maybe, n_west_maybe, n_east_maybe;
+  public boolean n_up, n_down, n_left, n_right;
+  public boolean n_left_shoulder, n_right_shoulder;
+  public boolean n_l3, n_r3;
 
   public void poll() {
-    this.n_start = this.start;
-    this.n_select = this.select;
-    this.n_south_maybe = this.south_maybe;
-    this.n_north_maybe = this.north_maybe;
-    this.n_west_maybe = this.west_maybe;
-    this.n_east_maybe = this.east_maybe;
+    this.n_start = this.start; this.n_select = this.select;
+    this.n_south_maybe = this.south_maybe; this.n_north_maybe = this.north_maybe; this.n_west_maybe = this.west_maybe; this.n_east_maybe = this.east_maybe;
+    this.n_up = this.up; this.n_down = this.down; this.n_left = this.left; this.n_right = this.right;
+    this.n_left_shoulder = this.left_shoulder; this.n_right_shoulder = this.right_shoulder;
+    this.n_l3 = this.l3; this.n_r3 = this.r3;
     for(Controller controller : ControllerEnvironment.getDefaultEnvironment().getControllers()) {
       if(controller.getType() != Controller.Type.GAMEPAD) continue;
       controller.poll();
-      // EventQueue queue = controller.getEventQueue(); Event event = new Event(); while(queue.getNextEvent(event)) { System.out.println(event); }
+      //EventQueue queue = controller.getEventQueue(); Event event = new Event(); while(queue.getNextEvent(event)) { System.out.println(event); }
       { Component c = controller.getComponent(Component.Identifier.Button.A); this.south_maybe = c != null && c.getPollData() > 0; }
       { Component c = controller.getComponent(Component.Identifier.Button.Y); this.north_maybe = c != null && c.getPollData() > 0; }
       { Component c = controller.getComponent(Component.Identifier.Button.X); this.west_maybe = c != null && c.getPollData() > 0; }
@@ -50,6 +40,8 @@ class Gamepad {
       { Component c = controller.getComponent(Component.Identifier.Button.RIGHT_THUMB); this.right_shoulder = c != null && c.getPollData() > 0; }
       { Component c = controller.getComponent(Component.Identifier.Button.START); this.start = c != null && c.getPollData() > 0; }
       { Component c = controller.getComponent(Component.Identifier.Button.SELECT); this.select = c != null && c.getPollData() > 0; }
+      { Component c = controller.getComponent(Component.Identifier.Button.LEFT_THUMB3); this.l3 = c != null && c.getPollData() > 0; }
+      { Component c = controller.getComponent(Component.Identifier.Button.RIGHT_THUMB3); this.r3 = c != null && c.getPollData() > 0; }
       { Component c = controller.getComponent(Component.Identifier.Axis.X); this.lx = c == null? 0 : c.getPollData(); }
       { Component c = controller.getComponent(Component.Identifier.Axis.Y); this.ly = c == null? 0 : c.getPollData(); }
       { Component c = controller.getComponent(Component.Identifier.Axis.RX); this.rx = c == null? 0 : c.getPollData(); }
@@ -77,12 +69,11 @@ class Gamepad {
         this.right_trigger = value;
       }}
     }
-    this.n_start = this.start != this.n_start;
-    this.n_select = this.select != this.n_select;
-    this.n_south_maybe = this.south_maybe != this.n_south_maybe;
-    this.n_north_maybe = this.north_maybe != this.n_north_maybe;
-    this.n_west_maybe = this.west_maybe != this.n_west_maybe;
-    this.n_east_maybe = this.east_maybe != this.n_east_maybe;
+    this.n_start = this.start != this.n_start; this.n_select = this.select != this.n_select;
+    this.n_south_maybe = this.south_maybe != this.n_south_maybe; this.n_north_maybe = this.north_maybe != this.n_north_maybe; this.n_west_maybe = this.west_maybe != this.n_west_maybe; this.n_east_maybe = this.east_maybe != this.n_east_maybe;
+    this.n_up = this.up != this.n_up; this.n_down = this.down != this.n_down; this.n_left = this.left != this.n_left; this.n_right = this.right != this.n_right;
+    this.n_left_shoulder = this.left_shoulder != this.n_left_shoulder; this.n_right_shoulder = this.right_shoulder != this.n_right_shoulder;
+    this.n_l3 = this.l3 != this.n_l3; this.n_r3 = this.r3 != this.n_r3;
   }
 
   private boolean _saw_a_negative_trigger;
