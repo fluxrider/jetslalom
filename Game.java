@@ -1,4 +1,5 @@
-import java.util.*;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
 public class Game {
 
@@ -41,6 +42,7 @@ public class Game {
 
   void tick(boolean left, boolean right) {
     if(this.rounds[this.round].isNextRound(this.score)) this.round++;
+    if(this.damaged > 0) this.damaged++;
 
     // ship input
     // turn
@@ -71,16 +73,12 @@ public class Game {
     this.rounds[this.round].move(this.vx);
     { Obstacle obstacle = this.rounds[this.round].generateObstacle(); if(obstacle != null) this.obstacles.addFirst(obstacle); }
     
-    // tick and bomb
+    // tick
     if(!this.title_mode) this.score += 20;
-    if (this.damaged > 0) {
-      if(this.damaged > 20) {
-        if(!this.title_mode) this.prevScore = this.score;
-        if(this.score - this.contNum * 1000 > this.hiscore && !this.title_mode) this.hiscore = this.score - this.contNum * 1000;
-        this.title_mode = true;
-      } else {
-        this.damaged++;
-      }
+    if(this.damaged > 20) {
+      if(!this.title_mode) this.prevScore = this.score;
+      if(this.score - this.contNum * 1000 > this.hiscore && !this.title_mode) this.hiscore = this.score - this.contNum * 1000;
+      this.title_mode = true;
     }
     if(this.title_mode) {
       this.vx = 0.0;
