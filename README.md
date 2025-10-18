@@ -17,10 +17,11 @@ This is an attempt at getting it working.
   - Gamepad Support.
   - Fullscreen (using 'F' or 'Select').
 - I have removed features that I did not want to maintain.
- - Applet.
- - High Scores.
- - Fast Forward Button (use to be 'A', now that's part of WASD controls).
+  - Applet.
+  - High Scores.
+  - Fast Forward Button (use to be 'A', now that's part of WASD controls).
 - Codewise, it's a mess. I have removed a lot of unnecessary or archaic code and made it my own. Unfortunately for you, my coding style is offensive to most because I'm a disabled hermit, and the rest is decompiled Java.
+  - I'm doing changes that alter a bit the math just for my convenience or taste, so if you wanted maximum fidelity this ain't it.
 
 ### Future Work
 

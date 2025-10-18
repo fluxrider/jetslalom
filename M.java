@@ -2,7 +2,9 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class M {
 
-  // I find you can easily shoot yourself in the foot with this standard library class. Besides, the best practice changes all the time.
+  public static final double sqrt2 = 1.414213562373095048801688724209698079;
+
+  // Random: I find you can easily shoot yourself in the foot with the standard library Random class. Besides, the best practice changes all the time.
   
   // [0, INT_MAX) the classic, never negative
   public static int rand() { return ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE); }

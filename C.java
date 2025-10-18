@@ -37,8 +37,7 @@ public final class C { private C() { }
     // Note: I fixed a slight inconsistency found in the original code that made a 1 or 2 get a big kick to 4 instead of what I think was meant to be just 3.
     int r = r(argb); int g = g(argb); int b = b(argb); int a = a(argb);
     if(r == 0 && g == 0 && b == 0) { return argb(a, 3, 3, 3); }
-    final double SQRT_2 = 1.4; // TODO get most precise double value possible
-    return argb_safe(a, (r > 0 && r < 3)? 3 : (int)(r*SQRT_2), (g > 0 && g < 3)? 3 : (int)(g*SQRT_2), (b > 0 && b < 3)? 3 : (int)(b*SQRT_2));
+    return argb_safe(a, (r > 0 && r < 3)? 3 : (int)(r*M.sqrt2), (g > 0 && g < 3)? 3 : (int)(g*M.sqrt2), (b > 0 && b < 3)? 3 : (int)(b*M.sqrt2));
   }
 
 }
