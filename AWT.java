@@ -46,9 +46,21 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
   
   private Game game;
 
-  public static void main(String[] args) { new AWT(); } public AWT() {
+  public static void main(String[] args) { new AWT(args); } public AWT(String [] args) {
     keyevent_glitch_workaround_t0 = System.currentTimeMillis();
     
+    // parse args
+    boolean arg_fullscreen = false;
+    boolean arg_hq = false;
+    for(int i = 0; i < args.length; i++) {
+      switch(args[i]) {
+        case "stretch": this.stretched = true; break;
+        case "fullscreen": arg_fullscreen = true; break;
+        case "hq": arg_hq = true; break;
+        case "period": this.target_dt = Integer.parseInt(args[i+1]); break; // can crash and I like it that way
+      }
+    }
+
     this.addKeyListener(this);
     this.addMouseListener(this);
     this.addMouseMotionListener(this);
@@ -62,7 +74,7 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
     window.setVisible(true);
     this.requestFocus();
 
-    this.set_logical_size(1);
+    this.set_logical_size(arg_hq? 6 : 1);
     try {
       this.explosion = AudioSystem.getClip();
       this.explosion.open(AudioSystem.getAudioInputStream(new File("res/explosion.wav")));
@@ -74,6 +86,7 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
     game.startGame(false, false);
     this.gameThread = new Thread(this);
     this.gameThread.start();
+    if(arg_fullscreen) this.toggleFullScreen();
   }
 
   private void set_logical_size(double scale) {
