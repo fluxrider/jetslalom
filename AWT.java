@@ -7,10 +7,7 @@ import java.util.*;
 import javax.imageio.*;
 import javax.sound.sampled.*;
 
-class Main extends Panel implements Runnable, MouseListener, MouseMotionListener, KeyListener, WindowListener {
-
-  public static final int width = 320;
-  public static final int height = 200;
+class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener, KeyListener, WindowListener {
 
   public void windowDeactivated(WindowEvent paramWindowEvent) {}
   public void windowClosing(WindowEvent paramWindowEvent) { System.exit(0); }
@@ -24,6 +21,8 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     if(gd.isFullScreenSupported()) gd.setFullScreenWindow(gd.getFullScreenWindow() == this.window? null : this.window);
   }
 
+  private static final int width = 320;
+  private static final int height = 200;
   private Frame window;
   private Image scene_img;
   private Graphics scene_g;
@@ -46,7 +45,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   
   private Game game;
 
-  public static void main(String[] args) { new Main(); } public Main() {
+  public static void main(String[] args) { new AWT(); } public AWT() {
     keyevent_glitch_workaround_t0 = System.currentTimeMillis();
     
     this.addKeyListener(this);
@@ -228,7 +227,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   // draw game primitives
   private static int[] buffer_polyX = new int[8];
   private static int[] buffer_polyY = new int[8];
-  void drawPolygon(Graphics g, Face face) {
+  private void drawPolygon(Graphics g, Face face) {
     DPoint3[] points = face.points;
     double d1 = (points[1]).x - (points[0]).x;
     double d2 = (points[1]).y - (points[0]).y;
@@ -238,25 +237,25 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     g.setColor(new Color(C.fr(face.rgb)*f, C.fg(face.rgb)*f, C.fb(face.rgb)*f));
     drawPolygon(g, points);
   }
-  void drawPolygon(Graphics g, DPoint3[] points) {
-    double d1 = Main.width / 320.0;
-    double d2 = Main.height / 200.0;
+  private void drawPolygon(Graphics g, DPoint3[] points) {
+    double d1 = width / 320.0;
+    double d2 = height / 200.0;
     for (byte b = 0; b < points.length; b++) {
       DPoint3 point = points[b];
       double d3 = 120.0 / (1.0 + 0.6 * point.z);
       double d4 = game.nowCos * point.x + game.nowSin * (point.y - 2.0);
       double d5 = -game.nowSin * point.x + game.nowCos * (point.y - 2.0) + 2.0;
-      buffer_polyX[b] = (int)(d4 * d1 * d3) + Main.width / 2;
-      buffer_polyY[b] = (int)(d5 * d2 * d3) + Main.height / 2;
+      buffer_polyX[b] = (int)(d4 * d1 * d3) + width / 2;
+      buffer_polyY[b] = (int)(d5 * d2 * d3) + height / 2;
     }
     g.fillPolygon(buffer_polyX, buffer_polyY, points.length);
   }
-  void draw_obstacle(Graphics g, Obstacle o) {
+  private void draw_obstacle(Graphics g, Obstacle o) {
     drawPolygon(g, o.faces[0]);
     drawPolygon(g, o.faces[1]);
   }
 
-  void prt() {
+  private void prt() {
     this.scene_g.setColor(new Color(game.rounds[game.round].getSkyRGB()));
     this.scene_g.fillRect(0, 0, this.width, this.height);
     this.scene_g.setColor(new Color(game.rounds[game.round].getGroundRGB())); drawPolygon(this.scene_g, game.ground_points);

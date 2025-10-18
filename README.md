@@ -42,14 +42,14 @@ I assume you got a Java JDK installed and know how to use the command line for y
 Simple way:
 - no gamepad support
 ```
-javac Main.java
-java Main
+javac AWT.java
+java AWT
 ```
 
 The ridiculous way:
 - gamepad support
 - an output folder for the binaries
 ```
-rm -Rf bin && javac -cp gamepad:.:gamepad/jinput-2.0.10.jar Main.java -d bin
-java -cp bin:gamepad/jinput-2.0.10.jar -Djava.library.path=gamepad/jinput-2.0.10-natives-all --enable-native-access=ALL-UNNAMED -Djava.util.logging.config.file=gamepad/logging.properties Main
+rm -Rf bin && javac -cp gamepad:.:gamepad/jinput-2.0.10.jar AWT.java -d bin
+java -cp bin:gamepad/jinput-2.0.10.jar -Djava.library.path=gamepad/jinput-2.0.10-natives-all --enable-native-access=ALL-UNNAMED -Djava.util.logging.config.file=gamepad/logging.properties AWT
 ```
