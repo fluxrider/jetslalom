@@ -21,8 +21,7 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
     if(gd.isFullScreenSupported()) gd.setFullScreenWindow(gd.getFullScreenWindow() == this.window? null : this.window);
   }
 
-  private static final int width = 320;
-  private static final int height = 200;
+  private int logical_w, logical_h;
   private Frame window;
   private Image scene_img;
   private Graphics scene_g;
@@ -63,15 +62,8 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
     window.setVisible(true);
     this.requestFocus();
 
-    this.scene_img = this.createImage(width, height);
-    this.scene_g = scene_img.getGraphics();
-    if(this.scene_g instanceof Graphics2D) { ((Graphics2D)this.scene_g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON); }
-    this.scene_g.setColor(new Color(0,128,128));
-    this.scene_g.fillRect(0, 0, width, height);
+    this.set_logical_size(1);
     try {
-      int scale = (int)(this.width * 0.7 * 120 / 1.6 / 320);
-      this.ship[0] = ImageIO.read(new File("res/jiki.gif")).getScaledInstance(scale * 2, scale / 4, Image.SCALE_FAST);
-      this.ship[1] = ImageIO.read(new File("res/jiki2.gif")).getScaledInstance(scale * 2, scale / 4, Image.SCALE_FAST);
       this.explosion = AudioSystem.getClip();
       this.explosion.open(AudioSystem.getAudioInputStream(new File("res/explosion.wav")));
     } catch(Exception e) {
@@ -82,6 +74,23 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
     game.startGame(false, false);
     this.gameThread = new Thread(this);
     this.gameThread.start();
+  }
+
+  private void set_logical_size(double scale) {
+    this.logical_w = (int)(320 * scale);
+    this.logical_h = (int)(200 * scale);
+    this.scene_img = this.createImage(this.logical_w, this.logical_h);
+    this.scene_g = scene_img.getGraphics();
+    if(this.scene_g instanceof Graphics2D) { ((Graphics2D)this.scene_g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON); }
+    this.scene_g.setColor(new Color(0,128,128));
+    this.scene_g.fillRect(0, 0, this.logical_w, this.logical_h);
+    try {
+      int image_scale = (int)(this.logical_w * 0.7 * 120 / 1.6 / 320);
+      this.ship[0] = ImageIO.read(new File("res/jiki.gif")).getScaledInstance(image_scale * 2, image_scale / 4, Image.SCALE_FAST);
+      this.ship[1] = ImageIO.read(new File("res/jiki2.gif")).getScaledInstance(image_scale * 2, image_scale / 4, Image.SCALE_FAST);
+    } catch(Exception e) {
+      e.printStackTrace();
+    }
   }
 
   public void keyPressed(KeyEvent e) {
@@ -101,6 +110,7 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
     if(keycode == VK_S) this.stretched = !this.stretched;
     if(keycode == VK_ADD) this.target_dt+=5;
     if(keycode == VK_SUBTRACT) this.target_dt-=5;
+    if(keycode == VK_H) set_logical_size(this.logical_w == 320? 6 : 1);
   }
   public void keyTyped(KeyEvent paramKeyEvent) { }
 
@@ -155,7 +165,7 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
       }
       
       // letterbox scaling (i.e. respects aspect ratio)
-      int b_w = this.getWidth(); int b_h = this.getHeight(); int s_w = width; int s_h = height;
+      int b_w = this.getWidth(); int b_h = this.getHeight(); int s_w = this.logical_w; int s_h = this.logical_h;
       double scale; if((b_w / (double)b_h) > (s_w / (double)s_h)) scale = b_h / (double)s_h; else scale = b_w / (double)s_w;
       int x = (int)((b_w - s_w * scale) / 2); int y = (int)((b_h - s_h * scale) / 2);
       int w = (int)(s_w*scale); int h = (int)(s_h*scale);
@@ -244,15 +254,15 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
     drawPolygon(g, points);
   }
   private void drawPolygon(Graphics g, Game.DPoint3[] points) {
-    double d1 = width / 320.0;
-    double d2 = height / 200.0;
+    double d1 = this.logical_w / 320.0;
+    double d2 = this.logical_h / 200.0;
     for (byte b = 0; b < points.length; b++) {
       Game.DPoint3 point = points[b];
       double d3 = 120.0 / (1.0 + 0.6 * point.z);
       double d4 = game.nowCos * point.x + game.nowSin * (point.y - 2.0);
       double d5 = -game.nowSin * point.x + game.nowCos * (point.y - 2.0) + 2.0;
-      buffer_polyX[b] = (int)(d4 * d1 * d3) + width / 2;
-      buffer_polyY[b] = (int)(d5 * d2 * d3) + height / 2;
+      buffer_polyX[b] = (int)(d4 * d1 * d3) + this.logical_w / 2;
+      buffer_polyY[b] = (int)(d5 * d2 * d3) + this.logical_h / 2;
     }
     g.fillPolygon(buffer_polyX, buffer_polyY, points.length);
   }
@@ -263,23 +273,23 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
 
   private void prt() {
     this.scene_g.setColor(new Color(game.rounds[game.round].getSkyRGB()));
-    this.scene_g.fillRect(0, 0, this.width, this.height);
+    this.scene_g.fillRect(0, 0, this.logical_w, this.logical_h);
     this.scene_g.setColor(new Color(game.rounds[game.round].getGroundRGB())); drawPolygon(this.scene_g, game.ground_points);
     for(Game.Obstacle obstacle : game.obstacles) draw_obstacle(this.scene_g, obstacle);
     this.ship_animation++;
     if(!game.title_mode) {
-      int y = 24 * this.height / 200;
+      int y = 24 * this.logical_h / 200;
       Image image = this.ship[this.ship_animation % 4 > 1? 1 : 0];
-      if (this.ship_animation % 12 > 6) y = 22 * this.height / 200;
-      if (game.score < 200) y = (12 + game.score / 20) * this.height / 200;
-      if (game.damaged < 10) this.scene_g.drawImage(image, (width / 2) - image.getWidth(null)/2, this.height - y, null);
+      if (this.ship_animation % 12 > 6) y = 22 * this.logical_h / 200;
+      if (game.score < 200) y = (12 + game.score / 20) * this.logical_h / 200;
+      if (game.damaged < 10) this.scene_g.drawImage(image, (this.logical_w / 2) - image.getWidth(null)/2, this.logical_h - y, null);
       if (game.damaged > 0) {
         if(game.damaged <= 20) {
           if(game.damaged == 1 && this.explosion != null) { this.explosion.stop(); this.explosion.setFramePosition(0); this.explosion.start(); }
           this.scene_g.setColor(new Color(255, 255 - game.damaged * 12, 240 - game.damaged * 12));
-          int i = game.damaged * 8 * this.width / 320;
-          int j = game.damaged * 4 * this.height / 200;
-          this.scene_g.fillOval((width / 2) - i, 186 * this.height / 200 - j, i * 2, j * 2);
+          int i = game.damaged * 8 * this.logical_w / 320;
+          int j = game.damaged * 4 * this.logical_h / 200;
+          this.scene_g.fillOval((this.logical_w / 2) - i, 186 * this.logical_h / 200 - j, i * 2, j * 2);
         }
       }
     }
