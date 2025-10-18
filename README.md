@@ -25,8 +25,8 @@ This is an attempt at getting it working.
 
 ### Future Work
 
-- Fix the turn strength, I'm pretty sure it's way too hard right now.
-- Have a web browser version somehow.
+- Web Browser version somehow.
+- Android version.
 
 ### Known Issue
 

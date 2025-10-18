@@ -25,47 +25,6 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     if(gd.isFullScreenSupported()) gd.setFullScreenWindow(gd.getFullScreenWindow() == this.window? null : this.window);
   }
 
-  // preallocate buffers
-  private static int[] buffer_polyX = new int[8];
-  private static int[] buffer_polyY = new int[8];
-  // draw utilities
-  private static double nowSin;
-  private static double nowCos;
-  synchronized static void drawPolygon(Graphics g, Face face) {
-    DPoint3[] points = face.points;
-    double d1 = (points[1]).x - (points[0]).x;
-    double d2 = (points[1]).y - (points[0]).y;
-    double d3 = (points[2]).x - (points[0]).x;
-    double d4 = (points[2]).y - (points[0]).y;
-    float f = (float)(Math.abs(d1 * d4 - d2 * d3) / face.maxZ);
-    g.setColor(new Color(C.fr(face.rgb)*f, C.fg(face.rgb)*f, C.fb(face.rgb)*f));
-    drawPolygon(g, points);
-  }
-  synchronized static void drawPolygon(Graphics g, DPoint3[] points) {
-    double d1 = Main.width / 320.0;
-    double d2 = Main.height / 200.0;
-    for (byte b = 0; b < points.length; b++) {
-      DPoint3 point = points[b];
-      double d3 = 120.0 / (1.0 + 0.6 * point.z);
-      double d4 = nowCos * point.x + nowSin * (point.y - 2.0);
-      double d5 = -nowSin * point.x + nowCos * (point.y - 2.0) + 2.0;
-      buffer_polyX[b] = (int)(d4 * d1 * d3) + Main.width / 2;
-      buffer_polyY[b] = (int)(d5 * d2 * d3) + Main.height / 2;
-    }
-    g.fillPolygon(buffer_polyX, buffer_polyY, points.length);
-  }
-  
-  private RoundManager[] rounds = new RoundManager[] { new NormalRound(8000, C.rgb(0, 160, 255), C.rgb(0, 200, 64), 4), new NormalRound(12000, C.rgb(240, 160, 160), C.rgb(64, 180, 64), 3), new NormalRound(25000, C.black, C.rgb(0, 128, 64), 2), new RoadRound(40000, C.rgb(0, 180, 240), C.rgb(0, 200, 64), false), new RoadRound(100000, C.gray(192), C.rgb(64, 180, 64), true), new NormalRound(1000000, C.black, C.rgb(0, 128, 64), 1) };
-  private DPoint3[] ground_points = new DPoint3[] { new DPoint3(-100.0, 2.0, 28.0), new DPoint3(-100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 28.0) };
-  private LinkedList<Obstacle> obstacles = new LinkedList<>();
-  private double vx; // ship's left/right movement
-  private int round;
-  private int damaged;
-  private int score, prevScore, hiscore, contNum;
-  private int ship_animation;
-  private boolean paused;
-  private boolean title_mode;
-
   private Frame window;
   private Image scene_img;
   private Graphics scene_g;
@@ -74,8 +33,10 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private Image backbuffer;
   private Font font;
   private boolean stretched;
+  private boolean paused;
   private static long keyevent_glitch_workaround_t0; // I'm observing an issue where I sometime get random key events on start (e.g. VK_C, VK_S, VK_F). This mitigates this.
 
+  private int ship_animation;
   private Image ship[] = new Image[2];
   private Clip explosion;
   
@@ -83,11 +44,11 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   private boolean key_held[] = new boolean[256]; // stores held state of KeyEvent for the VK range I care about
   private boolean mouse_left_button_held, mouse_right_button_held;
   private int mouse_x, mouse_y;
+  
+  private Game game;
 
   public static void main(String[] args) { new Main(); } public Main() {
     keyevent_glitch_workaround_t0 = System.currentTimeMillis();
-
-    for(int b = 1; b < this.rounds.length; b++) this.rounds[b].setPrevRound(this.rounds[b - 1]);
     
     this.addKeyListener(this);
     this.addMouseListener(this);
@@ -117,7 +78,8 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       e.printStackTrace();
     }
     
-    this.startGame(false, false);
+    this.game = new Game();
+    this.game.startGame(false, false);
     this.gameThread = new Thread(this);
     this.gameThread.start();
   }
@@ -127,8 +89,8 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     int keycode = e.getKeyCode();
     if(keycode >= 0 && keycode < key_held.length) key_held[keycode] = true;
     if(keycode == VK_ESCAPE) System.exit(0);
-    if(this.title_mode && (keycode == VK_SPACE || keycode == VK_ENTER || keycode == VK_W || keycode == VK_UP || keycode == VK_C)) startGame(true, !(keycode != VK_C));
-    if(this.title_mode && keycode == VK_T) { this.prevScore = 110000; this.contNum = 100; startGame(true, true); } // is this some sort of cheat?
+    if(this.title_mode && (keycode == VK_SPACE || keycode == VK_ENTER || keycode == VK_W || keycode == VK_UP || keycode == VK_C)) this.game.startGame(true, !(keycode != VK_C));
+    if(this.title_mode && keycode == VK_T) { this.prevScore = 110000; this.contNum = 100; this.game.startGame(true, true); } // is this some sort of cheat?
   }
   public void keyReleased(KeyEvent e) {
     if(System.currentTimeMillis() < keyevent_glitch_workaround_t0 + 100) return;
@@ -145,7 +107,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
     int mod = e.getModifiersEx();
     this.mouse_left_button_held = (mod & BUTTON1_DOWN_MASK) == BUTTON1_DOWN_MASK;
     this.mouse_right_button_held = (mod & BUTTON3_DOWN_MASK) == BUTTON3_DOWN_MASK;
-    if(this.title_mode) startGame(true, false);
+    if(this.title_mode) this.game.startGame(true, false);
   }
   public void mouseReleased(MouseEvent e) {
     if(System.currentTimeMillis() < keyevent_glitch_workaround_t0 + 100) return;
@@ -162,99 +124,7 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
   public void mouseClicked(MouseEvent e) { }
   public void mouseDragged(MouseEvent e) { }
   
-  void ship_input(boolean left, boolean right) {
-    // turn
-    if(this.damaged == 0 && !this.title_mode) {
-      if(right) this.vx = Math.max(this.vx - 0.1, -.6);
-      if(left) this.vx = Math.min(this.vx + 0.1, .6);
-    }
-    // stabilize back
-    if(!left && !right) {
-      if(this.vx < 0.0) this.vx = Math.min(this.vx + .025, 0);
-      if(this.vx > 0.0) this.vx = Math.max(this.vx - .025, 0);
-    }
-  }
-
-  void moveObstacle() {
-    double angle = Math.abs(this.vx) * 100.0; // [-60, 60]
-    nowSin = Math.sin(Math.PI * angle / 180); // I can't replay the original, but the code seem to have divided by 128 here but 180 makes more sense
-    nowCos = Math.cos(Math.PI * angle / 180);
-    if(this.vx > 0.0) nowSin = -nowSin;
-    ListIterator<Obstacle> iter = this.obstacles.listIterator(); while(iter.hasNext()) { Obstacle obstacle = iter.next();
-      obstacle.move(this.vx, 0.0, -1.0);
-      DPoint3[] points = obstacle.points;
-      if((points[0]).z <= 1.1) {
-        double d = 0.7 * nowCos;
-        if (-d < (points[2]).x && (points[0]).x < d) this.damaged++;
-        iter.remove();
-      }
-    }
-    this.rounds[this.round].move(this.vx);
-    { Obstacle obstacle = this.rounds[this.round].generateObstacle(); if(obstacle != null) this.obstacles.addFirst(obstacle); }
-  }
-
-  public void startGame(boolean play_mode, boolean resume) {
-    this.title_mode = !play_mode;
-    obstacles.clear();
-    for(RoundManager r : this.rounds) r.init();
-    this.damaged = 0;
-    this.round = 0;
-    this.score = 0;
-    this.vx = 0.0;
-    if(!resume) { this.contNum = 0; } else {
-      while (this.prevScore >= this.rounds[this.round].getNextRoundScore()) this.round++;
-      if (this.round > 0) { this.score = this.rounds[this.round - 1].getNextRoundScore(); this.contNum++; }
-    }
-  }
-
-  void prt() {
-    this.scene_g.setColor(new Color(this.rounds[this.round].getSkyRGB()));
-    this.scene_g.fillRect(0, 0, this.width, this.height);
-    if(!this.title_mode) this.score += 20;
-    this.scene_g.setColor(new Color(this.rounds[this.round].getGroundRGB())); drawPolygon(this.scene_g, this.ground_points);
-    for(Obstacle obstacle : obstacles) draw_obstacle(this.scene_g, obstacle);
-    this.ship_animation++;
-    if(!this.title_mode) {
-      int i = 24 * this.height / 200;
-      Image image = this.ship[this.ship_animation % 4 > 1? 1 : 0];
-      if (this.ship_animation % 12 > 6) i = 22 * this.height / 200;
-      if (this.score < 200) i = (12 + this.score / 20) * this.height / 200;
-      if (this.damaged < 10) this.scene_g.drawImage(image, (width / 2) - image.getWidth(null)/2, this.height - i, null);
-      if (this.damaged > 0) putbomb();
-    }
-    if(this.title_mode) {
-      this.vx = 0.0;
-    }
-  }
-
-  void putbomb() {
-    if(this.damaged > 20) {
-      if(!this.title_mode) this.prevScore = this.score;
-      if(this.score - this.contNum * 1000 > this.hiscore && !this.title_mode) this.hiscore = this.score - this.contNum * 1000;
-      this.title_mode = true;
-    } else {
-      if(this.damaged == 1 && this.explosion != null) { this.explosion.stop(); this.explosion.setFramePosition(0); this.explosion.start(); }
-      this.scene_g.setColor(new Color(255, 255 - this.damaged * 12, 240 - this.damaged * 12));
-      int i = this.damaged * 8 * this.width / 320;
-      int j = this.damaged * 4 * this.height / 200;
-      this.scene_g.fillOval((width / 2) - i, 186 * this.height / 200 - j, i * 2, j * 2);
-      this.damaged++;
-    }
-  }
-  
-  void draw_obstacle(Graphics g, Obstacle o) {
-    drawPolygon(g, o.faces[0]);
-    drawPolygon(g, o.faces[1]);
-  }
-  
   public void run() {
-    obstacles.clear();
-    for(RoundManager r : this.rounds) r.init();
-    this.damaged = 0;
-    this.round = 0;
-    this.score = 0;
-    this.vx = 0.0;
-    this.title_mode = true;
     long t0 = System.currentTimeMillis(), t1 = t0, target_dt = 55;
     while (this.gameThread == Thread.currentThread()) {
       t0 = t1; t1 = System.currentTimeMillis(); long dt = t1 - t0;
@@ -272,15 +142,13 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       if(gamepad.left_trigger > 0) gamepad_left = true;
       if(gamepad.right_trigger > 0) gamepad_right = true;
       if(gamepad.select && gamepad.n_select) this.toggleFullScreen();
-      if(this.title_mode && ((gamepad.start && gamepad.n_start) || (gamepad.south_maybe && gamepad.n_south_maybe) || (gamepad.north_maybe && gamepad.n_north_maybe) || (gamepad.west_maybe && gamepad.n_west_maybe) || (gamepad.east_maybe && gamepad.n_east_maybe))) startGame(true, false);
+      if(this.title_mode && ((gamepad.start && gamepad.n_start) || (gamepad.south_maybe && gamepad.n_south_maybe) || (gamepad.north_maybe && gamepad.n_north_maybe) || (gamepad.west_maybe && gamepad.n_west_maybe) || (gamepad.east_maybe && gamepad.n_east_maybe))) this.game.startGame(true, false);
 
       boolean keyboard_left = key_held[VK_LEFT] || key_held[VK_J] || key_held[VK_A];
       boolean keyboard_right = key_held[VK_RIGHT] || key_held[VK_L] || key_held[VK_D];
 
       if(this.hasFocus() && !paused) {
-        if(this.rounds[this.round].isNextRound(this.score)) this.round++;
-        ship_input(gamepad_left | mouse_left_button_held | keyboard_left, gamepad_right | mouse_right_button_held | keyboard_right);
-        moveObstacle();
+        this.game.tick(gamepad_left | mouse_left_button_held | keyboard_left, gamepad_right | mouse_right_button_held | keyboard_right);
         prt();
       }
       
@@ -355,6 +223,61 @@ class Main extends Panel implements Runnable, MouseListener, MouseMotionListener
       this.getToolkit().sync();
       long dt_bust = 0; // if(dt > target_dt) { dt_bust = dt - target_dt; } // this only fixes the next frame, then the bust comes back
       if(target_dt - dt_bust > 0) { try { Thread.sleep(target_dt - dt_bust); } catch (InterruptedException e) { e.printStackTrace(); } }
+    }
+  }
+
+  // draw game primitives
+  private static int[] buffer_polyX = new int[8];
+  private static int[] buffer_polyY = new int[8];
+  synchronized static void drawPolygon(Graphics g, Face face) {
+    DPoint3[] points = face.points;
+    double d1 = (points[1]).x - (points[0]).x;
+    double d2 = (points[1]).y - (points[0]).y;
+    double d3 = (points[2]).x - (points[0]).x;
+    double d4 = (points[2]).y - (points[0]).y;
+    float f = (float)(Math.abs(d1 * d4 - d2 * d3) / face.maxZ);
+    g.setColor(new Color(C.fr(face.rgb)*f, C.fg(face.rgb)*f, C.fb(face.rgb)*f));
+    drawPolygon(g, points);
+  }
+  synchronized static void drawPolygon(Graphics g, DPoint3[] points) {
+    double d1 = Main.width / 320.0;
+    double d2 = Main.height / 200.0;
+    for (byte b = 0; b < points.length; b++) {
+      DPoint3 point = points[b];
+      double d3 = 120.0 / (1.0 + 0.6 * point.z);
+      double d4 = nowCos * point.x + nowSin * (point.y - 2.0);
+      double d5 = -nowSin * point.x + nowCos * (point.y - 2.0) + 2.0;
+      buffer_polyX[b] = (int)(d4 * d1 * d3) + Main.width / 2;
+      buffer_polyY[b] = (int)(d5 * d2 * d3) + Main.height / 2;
+    }
+    g.fillPolygon(buffer_polyX, buffer_polyY, points.length);
+  }
+  void draw_obstacle(Graphics g, Obstacle o) {
+    drawPolygon(g, o.faces[0]);
+    drawPolygon(g, o.faces[1]);
+  }
+
+  void prt() {
+    this.scene_g.setColor(new Color(this.rounds[this.round].getSkyRGB()));
+    this.scene_g.fillRect(0, 0, this.width, this.height);
+    this.scene_g.setColor(new Color(this.rounds[this.round].getGroundRGB())); drawPolygon(this.scene_g, this.ground_points);
+    for(Obstacle obstacle : obstacles) draw_obstacle(this.scene_g, obstacle);
+    this.ship_animation++;
+    if(!this.title_mode) {
+      int y = 24 * this.height / 200;
+      Image image = this.ship[this.ship_animation % 4 > 1? 1 : 0];
+      if (this.ship_animation % 12 > 6) y = 22 * this.height / 200;
+      if (this.score < 200) y = (12 + this.score / 20) * this.height / 200;
+      if (this.damaged < 10) this.scene_g.drawImage(image, (width / 2) - image.getWidth(null)/2, this.height - y, null);
+      if (this.damaged > 0) {
+        if(this.damaged <= 20) {
+          if(this.damaged == 1 && this.explosion != null) { this.explosion.stop(); this.explosion.setFramePosition(0); this.explosion.start(); }
+          this.scene_g.setColor(new Color(255, 255 - this.damaged * 12, 240 - this.damaged * 12));
+          int i = this.damaged * 8 * this.width / 320;
+          int j = this.damaged * 4 * this.height / 200;
+          this.scene_g.fillOval((width / 2) - i, 186 * this.height / 200 - j, i * 2, j * 2);
+        }
+      }
     }
   }
 
