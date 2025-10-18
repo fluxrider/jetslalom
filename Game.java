@@ -85,5 +85,151 @@ public class Game {
     }
   }
 
-  
+  public abstract class RoundManager {
+    private RoundManager prevRound;
+
+    protected int nextRoundScore;
+    protected int sky_rgb;
+    protected int ground_rgb;
+    protected int gameTime;
+    public void setPrevRound(RoundManager round) { this.prevRound = round; }
+    public int getGroundRGB() { return this.ground_rgb; }
+    public int getNextRoundScore() { return this.nextRoundScore; }
+
+    protected final Obstacle createObstacle(double x1, double x2) {
+      Obstacle o = new Obstacle();
+      DPoint3[] arrayOfDPoint3 = o.points;
+      arrayOfDPoint3[0].setXYZ(x1 - x2, 2.0, 25.5);
+      arrayOfDPoint3[1].setXYZ(x1, -1.4, 25.0);
+      arrayOfDPoint3[2].setXYZ(x1 + x2, 2.0, 25.5);
+      arrayOfDPoint3[3].setXYZ(x1, 2.0, 24.5);
+      switch(M.rand_index(4)) {
+        case 0: o.rgb = C.gray(192); break;
+        case 1: o.rgb = C.rgb(96, 160, 240); break;
+        case 2: o.rgb = C.rgb(200, 128, 0); break;
+        case 3: o.rgb = C.rgb(240, 210, 100); break;
+      }
+      o.prepareNewObstacle();
+      return o;
+    }
+
+    protected final Obstacle createObstacle() { return createObstacle(M.drand(-16.0, 16.0), 0.6); }
+
+    public boolean isNextRound(int score) { return !(score < this.nextRoundScore); }
+
+    public int getSkyRGB() {
+      if (this.prevRound == null || this.gameTime > 32) return this.sky_rgb;
+      int i = this.gameTime;
+      int j = 32 - i;
+      int prev = this.prevRound.sky_rgb;
+      int curr = this.sky_rgb;
+      int k = C.r(prev) * j + C.r(curr) * i;
+      int m = C.g(prev) * j + C.g(curr) * i;
+      int n = C.b(prev) * j + C.b(curr) * i;
+      return C.argb_safe(255, k / 32, m / 32, n / 32);
+    }
+
+    public void init() { }
+    public void move(double dx) { }
+    public abstract Obstacle generateObstacle();
+  }
+
+  private class NormalRound extends RoundManager {
+    private int interval;
+    private int counter;
+
+    public NormalRound(int round_score, int sky_rgb, int ground_rgb, int interval) { this.nextRoundScore = round_score; this.sky_rgb = sky_rgb; this.ground_rgb = ground_rgb; this.interval = interval; }
+
+    public Obstacle generateObstacle() {
+      this.gameTime++;
+      this.counter++;
+      if (this.counter < this.interval) return null;
+      this.counter = 0;
+      return createObstacle();
+    }
+
+    public void init() {
+      this.counter = 0;
+      this.gameTime = 0;
+    }
+  }
+
+  private class RoadRound extends RoundManager {
+    private double OX1;
+    private double OX2;
+    private double OVX;
+    private double WX;
+    private int direction;
+    private int roadCounter;
+    private boolean isBrokenRoad;
+
+    public RoadRound(int score, int sky_rgb, int ground_rgb, boolean is_broken) { this.nextRoundScore = score; this.sky_rgb = sky_rgb; this.ground_rgb = ground_rgb; this.isBrokenRoad = is_broken; }
+
+    public Obstacle generateObstacle() {
+      double d2;
+      this.gameTime++;
+      this.roadCounter--;
+      double d1 = 1.1;
+      if (this.isBrokenRoad && this.roadCounter % 13 < 7) {
+        d1 = 0.7;
+        d2 = M.drand(-16.0, 16.0);
+        if (d2 < this.OX2 && d2 > this.OX1) {
+          d1 = 1.2;
+          if (M.coin()) {
+            d2 = this.OX1;
+          } else {
+            d2 = this.OX2;
+          }
+        }
+      } else if (this.roadCounter % 2 == 0) {
+        d2 = this.OX1;
+      } else {
+        d2 = this.OX2;
+      }
+      if (this.OX2 - this.OX1 > 9.0) {
+        this.OX1 += 0.6;
+        this.OX2 -= 0.6;
+        if (this.OX2 - this.OX1 > 10.0)
+          d1 = 2.0;
+      } else if (this.OX1 > 18.0) {
+        this.OX2 -= 0.6;
+        this.OX1 -= 0.6;
+      } else if (this.OX2 < -18.0) {
+        this.OX2 += 0.6;
+        this.OX1 += 0.6;
+      } else {
+        if (this.roadCounter < 0) {
+          this.direction = -this.direction;
+          this.roadCounter += 2 * M.rand(4, 11);
+        }
+        if (this.direction > 0) {
+          this.OVX += 0.125;
+        } else {
+          this.OVX -= 0.125;
+        }
+        if (this.OVX > 0.7)
+          this.OVX = 0.7;
+        if (this.OVX < -0.7)
+          this.OVX = -0.7;
+        this.OX1 += this.OVX;
+        this.OX2 += this.OVX;
+      }
+      return createObstacle(d2, d1);
+    }
+
+    public void init() {
+      this.OX1 = -17.0;
+      this.OX2 = 17.0;
+      this.OVX = 0.0;
+      this.roadCounter = 0;
+      this.direction = 1;
+      this.gameTime = 0;
+    }
+
+    public void move(double dx) {
+      this.OX1 += dx;
+      this.OX2 += dx;
+    }
+  }
+
 }
