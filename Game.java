@@ -64,12 +64,6 @@ public class Game {
 
   public Game() {
     for(int b = 1; b < this.rounds.length; b++) this.rounds[b].setPrevRound(this.rounds[b - 1]);
-    obstacles.clear();
-    for(RoundManager r : this.rounds) r.init();
-    this.damaged = 0;
-    this.round = 0;
-    this.score = 0;
-    this.vx = 0.0;
     this.title_mode = true;
   }
 
