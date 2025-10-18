@@ -18,6 +18,7 @@ class Gamepad {
   public boolean n_left_shoulder, n_right_shoulder;
   public boolean n_l3, n_r3;
 
+  public boolean available;
   public void poll() { }
 
 }

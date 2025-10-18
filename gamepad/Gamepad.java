@@ -22,6 +22,7 @@ class Gamepad {
   public boolean n_left_shoulder, n_right_shoulder;
   public boolean n_l3, n_r3;
 
+  public boolean available;
   public void poll() {
     this.n_start = this.start; this.n_select = this.select;
     this.n_south_maybe = this.south_maybe; this.n_north_maybe = this.north_maybe; this.n_west_maybe = this.west_maybe; this.n_east_maybe = this.east_maybe;
@@ -31,6 +32,7 @@ class Gamepad {
     for(Controller controller : ControllerEnvironment.getDefaultEnvironment().getControllers()) {
       if(controller.getType() != Controller.Type.GAMEPAD) continue;
       controller.poll();
+      this.available = true;
       //EventQueue queue = controller.getEventQueue(); Event event = new Event(); while(queue.getNextEvent(event)) { System.out.println(event); }
       { Component c = controller.getComponent(Component.Identifier.Button.A); this.south_maybe = c != null && c.getPollData() > 0; }
       { Component c = controller.getComponent(Component.Identifier.Button.Y); this.north_maybe = c != null && c.getPollData() > 0; }

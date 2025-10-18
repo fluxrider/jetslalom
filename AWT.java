@@ -28,7 +28,7 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
   private Thread gameThread;
   private Color bg = new Color(160, 208, 176);
   private Image backbuffer;
-  private Font font;
+  private Font font, small_font;
   private boolean stretched;
   private boolean paused;
   private static long keyevent_glitch_workaround_t0; // I'm observing an issue where I sometime get random key events on start (e.g. VK_C, VK_S, VK_F). This mitigates this.
@@ -111,8 +111,11 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
     int keycode = e.getKeyCode();
     if(keycode >= 0 && keycode < key_held.length) key_held[keycode] = true;
     if(keycode == VK_ESCAPE) System.exit(0);
-    if(game.title_mode && (keycode == VK_SPACE || keycode == VK_ENTER || keycode == VK_W || keycode == VK_UP || keycode == VK_C)) game.startGame(true, !(keycode != VK_C));
-    if(game.title_mode && keycode == VK_T) { game.prevScore = 110000; game.contNum = 100; game.startGame(true, true); } // is this some sort of cheat?
+    if(game.title_mode) {
+      if(keycode == VK_SPACE || keycode == VK_ENTER) game.startGame(true, false);
+      if(keycode == VK_W || keycode == VK_UP || keycode == VK_C) game.startGame(true, true);
+      if(keycode == VK_T) { game.prevScore = 110000; game.contNum = 100; game.startGame(true, true); } // some sort of cheat
+    }
   }
   public void keyReleased(KeyEvent e) {
     if(System.currentTimeMillis() < keyevent_glitch_workaround_t0 + 100) return;
@@ -132,7 +135,7 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
     int mod = e.getModifiersEx();
     this.mouse_left_button_held = (mod & BUTTON1_DOWN_MASK) == BUTTON1_DOWN_MASK;
     this.mouse_right_button_held = (mod & BUTTON3_DOWN_MASK) == BUTTON3_DOWN_MASK;
-    if(game.title_mode) game.startGame(true, false);
+    if(game.title_mode) { game.startGame(true, e.getButton() == MouseEvent.BUTTON3); }
   }
   public void mouseReleased(MouseEvent e) {
     if(System.currentTimeMillis() < keyevent_glitch_workaround_t0 + 100) return;
@@ -181,7 +184,11 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
       // title command
       if(game.title_mode) {
         if((gamepad.south_maybe && gamepad.n_south_maybe) || (gamepad.north_maybe && gamepad.n_north_maybe) || (gamepad.west_maybe && gamepad.n_west_maybe) || (gamepad.east_maybe && gamepad.n_east_maybe) || (gamepad.up && gamepad.n_up)) game.startGame(true, true); // continue
-        if((gamepad.start && gamepad.n_start) || (gamepad.down && gamepad.n_down)) game.startGame(true, false); // restart
+        if(gamepad.select) {
+          if(gamepad.start && gamepad.n_start) { game.prevScore = 110000; game.contNum = 100; game.startGame(true, true); } // some sort of cheat
+        } else {
+          if((gamepad.start && gamepad.n_start) || (gamepad.down && gamepad.n_down)) game.startGame(true, false); // restart
+        }
       }
       // play command
       else {
@@ -233,10 +240,11 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
           while(fm.stringWidth(msg) > b_w) {
             float size = this.font.getSize2D() * .9f;
             this.font = this.font.deriveFont(Font.PLAIN, size);
-            g.setFont(font); fm = g.getFontMetrics();
+            g.setFont(this.font); fm = g.getFontMetrics();
             if(size < 6) break;
           }
         }
+        this.small_font = this.font.deriveFont(Font.PLAIN, this.font.getSize2D() * .6f);
         g.setColor(Color.white);
         g.drawString("Your Hi-score:" + game.hiscore, 2*fm.getDescent()/3, b_h - fm.getDescent());
         { String msg = String.format("Period: %dms (%dms)", this.target_dt, dt); g.drawString(msg, b_w - 2*fm.getDescent()/3 - fm.stringWidth(msg), b_h - fm.getDescent()); }
@@ -246,13 +254,27 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
         g.drawString(score, offset, fm.getAscent()); offset += score_w + padding;
         if(game.contNum > 0) g.drawString(penalty, offset, fm.getAscent());
         if(game.title_mode) {
-          int line_h = fm.getHeight();
-          int spacing = 5;
-          int n = 3;
-          offset = (b_h - ((line_h + spacing) * n - spacing)) / 2;
+          int line_h = fm.getHeight(); g.setFont(this.small_font); int small_line_h = g.getFontMetrics().getHeight(); g.setFont(this.font);
+          int spacing = 5, small_spacing = 3;
+          int n = 4, small_n = 6 + (gamepad.available? 4 : 0);
+          offset = (b_h - ((line_h + spacing) * n + (small_line_h + small_spacing) * small_n)) / 2;
           { String msg = "Jet Slalom Resurrected"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += line_h + spacing; }
           { String msg = "by David Lareau in 2025"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += line_h + spacing; }
           { String msg = "Original 1997 version by MR-C"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += line_h + spacing; }
+          { offset += line_h + spacing; }
+          g.setFont(this.small_font); fm = g.getFontMetrics();
+          { String msg = "-- Keyboard --"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += small_line_h + small_spacing; }
+          { String msg = "(F)ullscreen, (H)ighRez, (S)tretch, Speed(num+/num-)"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += small_line_h + small_spacing; }
+          { String msg = "Restart(Spacebar/Enter), (C)ontinue(up/W), Chea(T)"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += small_line_h + small_spacing; }
+          { String msg = "(P)ause, Quit(ESC), Ship(Left/Right/A/D/J/L)"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += small_line_h + small_spacing; }
+          { String msg = "-- Mouse --"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += small_line_h + small_spacing; }
+          { String msg = "Ship(L/R), Restart(L), Continue(R)"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += small_line_h + small_spacing; }
+          if(gamepad.available) {
+            { String msg = "-- Gamepad --"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += small_line_h + small_spacing; }
+            { String msg = "Fullscreen(L3), HighRez(Select+L3), Stretch(R3), Speed(Select+LB/RB)"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += small_line_h + small_spacing; }
+            { String msg = "Re(Start/Down), Resume(A/B/X/Y/Up), Cheat(Select+Start)"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += small_line_h + small_spacing; }
+            { String msg = "Pause(Start), Quit(LB+RB+Start+Select), Ship(Sticks/Dpad/Shoulders)"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += small_line_h + small_spacing; }
+          }
         }
         if(this.paused || !this.hasFocus()) {
           g.setColor(Color.red);
