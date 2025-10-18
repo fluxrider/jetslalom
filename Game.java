@@ -3,6 +3,53 @@ import java.util.ListIterator;
 
 public class Game {
 
+  public class DPoint3 {
+    public double x, y, z;
+    public DPoint3() { }
+    public DPoint3(double x, double y, double z) { setXYZ(x,y,z); }
+    public void setXYZ(double x, double y, double z) { this.x = x; this.y = y; this.z = z; }
+  }
+  
+  public class Face {
+    DPoint3[] points;
+    double maxZ;
+    int rgb;
+    void calcMaxZ() {
+      double d1 = (this.points[1]).x - (this.points[0]).x;
+      double d2 = (this.points[1]).y - (this.points[0]).y;
+      double d3 = (this.points[1]).z - (this.points[0]).z;
+      double d4 = (this.points[2]).x - (this.points[0]).x;
+      double d5 = (this.points[2]).y - (this.points[0]).y;
+      double d6 = (this.points[2]).z - (this.points[0]).z;
+      double a = d2 * d6 - d3 * d5;
+      double b = d1 * d6 - d3 * d4;
+      double c = d1 * d5 - d2 * d4;
+      this.maxZ = Math.sqrt(a*a + b*b + c*c);
+    }
+  }
+
+  public class Obstacle {
+    DPoint3[] points = new DPoint3[] { new DPoint3(), new DPoint3(), new DPoint3(), new DPoint3() };
+    Face[] faces = new Face[] { new Face(), new Face(), new Face() };
+    int rgb;
+    public Obstacle() {
+      this.faces[0].points = new DPoint3[] { this.points[3], this.points[0], this.points[1] };
+      this.faces[1].points = new DPoint3[] { this.points[3], this.points[2], this.points[1] };
+    }
+    void prepareNewObstacle() {
+      this.faces[0].calcMaxZ(); this.faces[0].rgb = C.brighter(this.rgb);
+      this.faces[1].calcMaxZ(); this.faces[1].rgb = this.rgb;
+    }
+    void move(double x, double y, double z) {
+      for(int i = 0; i < 4; i++) {
+        DPoint3 dPoint3 = this.points[i];
+        dPoint3.x += x;
+        dPoint3.y += y;
+        dPoint3.z += z;
+      }
+    }
+  }
+
   public RoundManager[] rounds = new RoundManager[] { new NormalRound(8000, C.rgb(0, 160, 255), C.rgb(0, 200, 64), 4), new NormalRound(12000, C.rgb(240, 160, 160), C.rgb(64, 180, 64), 3), new NormalRound(25000, C.black, C.rgb(0, 128, 64), 2), new RoadRound(40000, C.rgb(0, 180, 240), C.rgb(0, 200, 64), false), new RoadRound(100000, C.gray(192), C.rgb(64, 180, 64), true), new NormalRound(1000000, C.black, C.rgb(0, 128, 64), 1) };
   public DPoint3[] ground_points = new DPoint3[] { new DPoint3(-100.0, 2.0, 28.0), new DPoint3(-100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 0.1), new DPoint3(100.0, 2.0, 28.0) };
   public LinkedList<Obstacle> obstacles = new LinkedList<>();

@@ -227,8 +227,8 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
   // draw game primitives
   private static int[] buffer_polyX = new int[8];
   private static int[] buffer_polyY = new int[8];
-  private void drawPolygon(Graphics g, Face face) {
-    DPoint3[] points = face.points;
+  private void drawPolygon(Graphics g, Game.Face face) {
+    Game.DPoint3[] points = face.points;
     double d1 = (points[1]).x - (points[0]).x;
     double d2 = (points[1]).y - (points[0]).y;
     double d3 = (points[2]).x - (points[0]).x;
@@ -237,11 +237,11 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
     g.setColor(new Color(C.fr(face.rgb)*f, C.fg(face.rgb)*f, C.fb(face.rgb)*f));
     drawPolygon(g, points);
   }
-  private void drawPolygon(Graphics g, DPoint3[] points) {
+  private void drawPolygon(Graphics g, Game.DPoint3[] points) {
     double d1 = width / 320.0;
     double d2 = height / 200.0;
     for (byte b = 0; b < points.length; b++) {
-      DPoint3 point = points[b];
+      Game.DPoint3 point = points[b];
       double d3 = 120.0 / (1.0 + 0.6 * point.z);
       double d4 = game.nowCos * point.x + game.nowSin * (point.y - 2.0);
       double d5 = -game.nowSin * point.x + game.nowCos * (point.y - 2.0) + 2.0;
@@ -250,7 +250,7 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
     }
     g.fillPolygon(buffer_polyX, buffer_polyY, points.length);
   }
-  private void draw_obstacle(Graphics g, Obstacle o) {
+  private void draw_obstacle(Graphics g, Game.Obstacle o) {
     drawPolygon(g, o.faces[0]);
     drawPolygon(g, o.faces[1]);
   }
@@ -259,7 +259,7 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
     this.scene_g.setColor(new Color(game.rounds[game.round].getSkyRGB()));
     this.scene_g.fillRect(0, 0, this.width, this.height);
     this.scene_g.setColor(new Color(game.rounds[game.round].getGroundRGB())); drawPolygon(this.scene_g, game.ground_points);
-    for(Obstacle obstacle : game.obstacles) draw_obstacle(this.scene_g, obstacle);
+    for(Game.Obstacle obstacle : game.obstacles) draw_obstacle(this.scene_g, obstacle);
     this.ship_animation++;
     if(!game.title_mode) {
       int y = 24 * this.height / 200;
