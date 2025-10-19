@@ -46,7 +46,7 @@ cat > app/src/main/AndroidManifest.xml <<EOF
       android:label="@string/app_name"
       android:alwaysRetainTaskState="true"
       android:launchMode="singleInstance"
-      android:screenOrientation="landscape"
+      android:screenOrientation="fullUser"
       android:configChanges="layoutDirection|locale|orientation|uiMode|screenLayout|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
       android:preferMinimalPostProcessing="true"
       android:exported="true">
