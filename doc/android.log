@@ -1,0 +1,98 @@
+Android changes their mind on everything every other month, so if you want to build the apk yourself you might be in for a long ride.
+
+Here's what I got installed on my system.
+
+extra/gradle 9.1.0-1 [installed]
+extra/jdk-openjdk 25.u36-1 [installed]
+
+I downloaded the command line tools only:
+
+https://developer.android.com/studio -> commandlinetools-linux-13114758_latest.zip 164.8MB, in which source.properties says: Pkg.Revision=19.0
+
+First issue:
+~/_/apps/android-cmdline-tools/bin$ ./sdkmanager --version
+Error: Could not determine SDK root.
+Error: Either specify it explicitly with --sdk_root= or move this package into its expected location: <sdk>/cmdline-tools/latest/
+Solution: Move things in a very specific structure which was not the one from the zip! What hot garbage.
+~/_/apps/android-sdk/cmdline-tools/latest/bin$ ./sdkmanager --version
+19.0
+
+./sdkmanager --list
+
+Old issue: In the past, I've had problem where the command line tools were not even the latest one. So double check they are. If not: ./sdkmanager "cmdline-tools;latest"
+My phone says it's Android 16, and a look at https://apilevels.com/ tells me that's API Level 36. I don't care about you.
+
+./sdkmanager "platform-tools" "build-tools;36.1.0" "platforms;android-36.1"
+
+I'm not doing ndk today, so let's forget about it.
+
+./sdkmanager --licenses
+
+Now we have a bunch of new things in the parent folder ~/_/apps/android-sdk/, notably: /home/flux/_/apps/android-sdk/platform-tools/adb
+
+Lets test gradle:
+gradle --version
+Welcome to Gradle 9.1.0!
+Here are the highlights of this release:
+ - Full Java 25 support  (that's good, but for how long? As soon as java has a new version, gradle will break. Who lives like this?)
+
+Sadly there is no create project helper of any kind, as everybody is expected to use Android Studio. I will not. Sucks to be me.
+The best I can do is look at an old project and hope gradle didn't change syntax too much since.
+
+I used two older project (from 2 and 6 years ago... one was ndk). I stripped all I could from the gradle files to not include ndk stuff.
+In build.gradle I had to use: classpath 'com.android.tools.build:gradle:9.0.0-alpha10'
+because 9.1.0 is not supported yet. What an ugly tool chain.
+I later changed it to gradle:+ because I want to always use the latest jdk, even through that is a pipe dream.
+Rant: Android is slow supporting the latest gradle, which in turn is slow supporting the latest java. Wow. I've never written any tool that broke when a dependancy updated. How do you even do that?
+
+I ran gradle assembleDebug and it worked with a bunch of warnings. It also looked like it download a ton of stuff.
+
+I did generate: app/build/outputs/apk/debug/app-debug.apk
+I did not try it yet cause I'm still fiddling.
+
+--------------
+
+In the root build.gradle, I can add
+allprojects {
+    ...
+    gradle.projectsEvaluated { tasks.withType(JavaCompile) { options.compilerArgs.add("-Xlint:deprecation") } }
+}
+and get a bunch of deprecated warnings about that SDL java code of my template. I don't care for now obviously because I'm not using SDL.
+
+-------------
+
+gradle --warning-mode all assembleDebug
+
+> Configure project :app
+Build file '/home/flux/_/dev/slalom/android/app/build.gradle': line 4
+Properties should be assigned using the 'propName = value' syntax. Setting a property via the Gradle-generated 'propName value' or 'propName(value)' syntax in Groovy DSL has been deprecated. This is scheduled to be removed in Gradle 10. Use assignment ('namespace = <value>') instead. Consult the upgrading guide for further information: https://docs.gradle.org/9.1.0/userguide/upgrading_version_8.html#groovy_space_assignment_syntax
+        at build_2da97fh9z1tzrtnslgjs414pi$_run_closure1.doCall$original(/home/flux/_/dev/slalom/android/app/build.gradle:4)
+        (Run with --stacktrace to get the full stack trace of this deprecation warning.)
+        at build_2da97fh9z1tzrtnslgjs414pi.run(/home/flux/_/dev/slalom/android/app/build.gradle:3)
+        (Run with --stacktrace to get the full stack trace of this deprecation warning.)
+Build file '/home/flux/_/dev/slalom/android/app/build.gradle': line 18
+Properties should be assigned using the 'propName = value' syntax. Setting a property via the Gradle-generated 'propName value' or 'propName(value)' syntax in Groovy DSL has been deprecated. This is scheduled to be removed in Gradle 10. Use assignment ('abortOnError = <value>') instead. Consult the upgrading guide for further information: https://docs.gradle.org/9.1.0/userguide/upgrading_version_8.html#groovy_space_assignment_syntax
+        at build_2da97fh9z1tzrtnslgjs414pi$_run_closure1$_closure4.doCall$original(/home/flux/_/dev/slalom/android/app/build.gradle:18)
+        (Run with --stacktrace to get the full stack trace of this deprecation warning.)
+        at build_2da97fh9z1tzrtnslgjs414pi$_run_closure1.doCall$original(/home/flux/_/dev/slalom/android/app/build.gradle:17)
+        (Run with --stacktrace to get the full stack trace of this deprecation warning.)
+
+So I added = everywhere, then it complained about compileSdkVersion = 36, so I change to compileSdkVersion = "android-36.1" and now it's good.
+
+-----------
+
+/home/flux/_/apps/android-sdk/platform-tools/adb devices
+empty list
+
+on phone, tab a million time on Settings -> About Phone -> Build Number (couldn't make this a normal toggle in system settings, what a bunch of dumb dumb, being a dev is not a mysterious secret society).
+That's not enough, now got in Settings -> Dev Options -> USB Debugging (why would that not be on by default?)
+Plug, accept the computer's signature.
+
+/home/flux/_/apps/android-sdk/platform-tools/adb devices
+List of devices attached
+2C141JEHN17808  device
+
+Yay.
+
+gradle installDebug
+I get a black screen like I expect I guess. Yay.
