@@ -5,3 +5,4 @@ settings.gradle
 build.gradle
 .gradle/
 build/
+app/
