@@ -1,9 +1,0 @@
-buildscript {
-  repositories { mavenCentral(); google(); }
-  dependencies { classpath 'com.android.tools.build:gradle:+' } // living on the edge so you can use the latest JDK if all stars align, on 2025-10-19 that's 9.0.0-alpha11.
-}
-
-allprojects {
-  repositories { mavenCentral(); google(); }
-  // gradle.projectsEvaluated { tasks.withType(JavaCompile) { options.compilerArgs.add("-Xlint:deprecation") } }
-}

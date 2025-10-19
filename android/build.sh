@@ -9,6 +9,21 @@ set -e
 [ ! -f local.properties ] && echo "ERROR: local.properties is missing. Create it with path to android SDK (e.g. sdk.dir=/home/flux/_/apps/android-sdk/)" && exit 1
 #echo "org.gradle.jvmargs=-Xmx1536m" > gradle.properties # I'm gonna go out on a limb here and comment this out. Works for me with what I imagine are sensible defaults.
 echo "include ':app'" > settings.gradle
+cat > build.gradle <<EOF
+buildscript {
+  repositories { mavenCentral(); google(); }
+  // I'm living on the edge. What is the point of improving gradle, the JDK, or android if everyone is encouraged to lock versions?
+  // There is nothing on my end that says: I want JDK 25, gradle 9.0.0-alpha11, and Android Platform 36.1, except those are the current latest version (actually gradle on my system is version 9.1 but android doesn't support it yet).
+  // The real question is why does gradle break on new JDK releases, and why does android break on new gradle releases? This is a very disfunctional toolchain.
+  // Anyway, let's assume latest is best and that the devs of those libs try their best not to break userspace (spoiler alert: they don't care). This will break in a week.
+  dependencies { classpath 'com.android.tools.build:gradle:+' }
+}
+
+allprojects {
+  repositories { mavenCentral(); google(); }
+  // gradle.projectsEvaluated { tasks.withType(JavaCompile) { options.compilerArgs.add("-Xlint:deprecation") } }
+}
+EOF
 
 # icon madness (from dpi folder mess, to handling round icon like idiots, now android wants a so called adaptive icon, which ends up being a xml file that is identical for us all, great engineering bud)
 mkdir app/src/main/res/mipmap-xxxhdpi
