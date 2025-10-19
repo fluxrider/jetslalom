@@ -9,7 +9,7 @@ shopt -s nullglob
 # boring files for gradle
 [ ! -f local.properties ] && echo "ERROR: local.properties is missing. Create it with path to android SDK (e.g. sdk.dir=/home/flux/_/apps/android-sdk/)" && exit 1
 #echo "org.gradle.jvmargs=-Xmx1536m" > gradle.properties # I'm gonna go out on a limb here and comment this out. Works for me with what I imagine are sensible defaults.
-echo "include ':app'" > settings.gradle
+echo "include ':android'" > settings.gradle
 cat > build.gradle <<EOF
 buildscript {
   repositories { mavenCentral(); google(); }
@@ -27,8 +27,8 @@ allprojects {
 EOF
 
 # android config, mostly boring but it does contain the package name and android version min/target
-mkdir app
-cat > app/build.gradle <<EOF
+mkdir android
+cat > android/build.gradle <<EOF
 apply plugin: 'com.android.application'
 android {
   namespace = "fluxrider.jetslalom"
@@ -37,8 +37,8 @@ android {
   lint { abortOnError = false }
 }
 EOF
-mkdir -p app/src/main
-cat > app/src/main/AndroidManifest.xml <<EOF
+mkdir -p android/src/main
+cat > android/src/main/AndroidManifest.xml <<EOF
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" android:installLocation="auto">
   <application android:label="@string/app_name" android:icon="@mipmap/app_icon" android:roundIcon="@mipmap/app_icon" android:allowBackup="true" android:theme="@android:style/Theme.NoTitleBar.Fullscreen" android:hardwareAccelerated="true">
@@ -58,13 +58,13 @@ cat > app/src/main/AndroidManifest.xml <<EOF
   </application>
 </manifest>
 EOF
-mkdir -p app/src/main/res/values
-cat > app/src/main/res/values/strings.xml <<EOF
+mkdir -p android/src/main/res/values
+cat > android/src/main/res/values/strings.xml <<EOF
 <resources>
   <string name="app_name">Jet Slalom Resurrected</string>
 </resources>
 EOF
-cat > app/src/main/res/values/colors.xml <<EOF
+cat > android/src/main/res/values/colors.xml <<EOF
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <color name="colorPrimary">#3F51B5</color>
@@ -73,29 +73,29 @@ cat > app/src/main/res/values/colors.xml <<EOF
   <color name="app_icon_background">#f6d66c</color>
 </resources>
 EOF
-cat > app/src/main/res/values/styles.xml <<EOF
+cat > android/src/main/res/values/styles.xml <<EOF
 <resources>
   <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar"></style>
 </resources>
 EOF
 
 # src, but also prepend the package to all files, damn nothing is ever simple.
-mkdir -p app/src/main/java/fluxrider.jetslalom/
-for f in ../*.java; do
+mkdir -p android/src/main/java/fluxrider.jetslalom/
+for f in *.java; do
   f=$(basename -- "$f")
-  echo "package fluxrider.jetslalom;" > app/src/main/java/fluxrider.jetslalom/$f
-  cat ../$f >> app/src/main/java/fluxrider.jetslalom/$f
+  echo "package fluxrider.jetslalom;" > android/src/main/java/fluxrider.jetslalom/$f
+  cat $f >> android/src/main/java/fluxrider.jetslalom/$f
 done
-rm app/src/main/java/fluxrider.jetslalom/AWT.java
+rm android/src/main/java/fluxrider.jetslalom/AWT.java
 
 # icon
-mkdir -p app/src/main/res/mipmap-xxxhdpi
-cp ../icon_512.png app/src/main/res/mipmap-xxxhdpi/app_icon_foreground.png
+mkdir -p android/src/main/res/mipmap-xxxhdpi
+cp icon_512.png android/src/main/res/mipmap-xxxhdpi/app_icon_foreground.png
 
 # icon madness (from dpi folder mess, to handling round icon like idiots, now android wants a so called adaptive icon, which ends up being a xml file that is identical for us all, great engineering bud)
 # and why the monochrome version, can't grayscale yourself?
-mkdir app/src/main/res/mipmap-anydpi-v26
-cat > app/src/main/res/mipmap-anydpi-v26/app_icon.xml <<EOF
+mkdir android/src/main/res/mipmap-anydpi-v26
+cat > android/src/main/res/mipmap-anydpi-v26/app_icon.xml <<EOF
 <?xml version="1.0" encoding="utf-8"?>
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
   <background android:drawable="@color/app_icon_background"/>
@@ -104,7 +104,7 @@ cat > app/src/main/res/mipmap-anydpi-v26/app_icon.xml <<EOF
 </adaptive-icon>
 EOF
 # if the script fails on this line, maybe just comment it out and remove the line from the app_icon.xml just above. Who cares about monochrome icons?
-magick app/src/main/res/mipmap-xxxhdpi/app_icon_foreground.png -colorspace Gray app/src/main/res/mipmap-xxxhdpi/app_icon_grayscale.png
+magick android/src/main/res/mipmap-xxxhdpi/app_icon_foreground.png -colorspace Gray android/src/main/res/mipmap-xxxhdpi/app_icon_grayscale.png
 
 # finally, build
 gradle --warning-mode all assembleDebug

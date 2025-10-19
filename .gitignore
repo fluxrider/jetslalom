@@ -1,8 +1,9 @@
 *.class
+# android
 local.properties
 gradle.properties
 settings.gradle
 build.gradle
 .gradle/
+android/
 build/
-app/
