@@ -1,4 +1,5 @@
 set -e
+shopt -s nullglob
 
 ./clean.sh
 
@@ -78,9 +79,14 @@ cat > app/src/main/res/values/styles.xml <<EOF
 </resources>
 EOF
 
-# src
+# src, but also prepend the package to all files, damn nothing is ever simple.
 mkdir -p app/src/main/java/fluxrider.jetslalom/
-cp ../Android.java app/src/main/java/fluxrider.jetslalom/
+for f in ../*.java; do
+  f=$(basename -- "$f")
+  echo "package fluxrider.jetslalom;" > app/src/main/java/fluxrider.jetslalom/$f
+  cat ../$f >> app/src/main/java/fluxrider.jetslalom/$f
+done
+rm app/src/main/java/fluxrider.jetslalom/AWT.java
 
 # icon
 mkdir -p app/src/main/res/mipmap-xxxhdpi

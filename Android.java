@@ -1,4 +1,3 @@
-package fluxrider.jetslalom;
 import android.app.*;
 import android.os.*;
 
