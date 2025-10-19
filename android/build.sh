@@ -6,8 +6,9 @@ set -e
 # Of course this means you better be running this script in an environment similar to mine (e.g. image magick is installed)
 
 # boring files, enjoy your slop gradle
+[ ! -f local.properties ] && echo "ERROR: local.properties is missing. Create it with path to android SDK (e.g. sdk.dir=/home/flux/_/apps/android-sdk/)" && exit 1
 #echo "org.gradle.jvmargs=-Xmx1536m" > gradle.properties # I'm gonna go out on a limb here and comment this out. Works for me with what I imagine are sensible defaults.
-[ ! -f local.properties ] && echo "ERROR: local.properties is missing. It should exist and contain a line to the path to your android SDK (e.g. sdk.dir=/home/flux/_/apps/android-sdk/)" && exit 1
+echo "include ':app'" > settings.gradle
 
 # icon madness (from dpi folder mess, to handling round icon like idiots, now android wants a so called adaptive icon, which ends up being a xml file that is identical for us all, great engineering bud)
 mkdir app/src/main/res/mipmap-xxxhdpi
