@@ -2,6 +2,8 @@ set -e
 
 rm -Rf build
 rm -Rf app/build
-rm -Rf app/src/main/res/mipmap-xxxhdpi
 
-#rm -Rf app/src/main/res/mipmap-anydpi-v26
+rm -f gradle.properties
+
+rm -Rf app/src/main/res/mipmap-xxxhdpi
+rm -Rf app/src/main/res/mipmap-anydpi-v26
