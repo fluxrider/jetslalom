@@ -1,5 +1,10 @@
+#!/bin/bash
 set -e
 
+# desktop
+rm -Rf bin/
+
+# android
 rm -Rf build/
 rm -Rf android/
 rm -f gradle.properties

@@ -1,6 +1,5 @@
 set -e
 shopt -s nullglob
-
 ./clean.sh
 
 # I dislike modern framework so much. I'm storing only the files I want, location, format, and all then create the idiotic requirements android wants on the fly. I ain't storing 5 icon flavors or one line files that mean nothing to me.
@@ -106,6 +105,6 @@ EOF
 # if the script fails on this line, maybe just comment it out and remove the line from the app_icon.xml just above. Who cares about monochrome icons?
 magick android/src/main/res/mipmap-xxxhdpi/app_icon_foreground.png -colorspace Gray android/src/main/res/mipmap-xxxhdpi/app_icon_grayscale.png
 
-# finally, build
+# finally, build & install
 gradle --warning-mode all assembleDebug
-# gradle installDebug
+gradle installDebug
