@@ -1,4 +1,9 @@
 *.class
-.gradle
 local.properties
+.gradle/
 build/
+mipmap-mdpi/
+mipmap-hdpi/
+mipmap-xhdpi/
+mipmap-xxhdpi/
+mipmap-xxxhdpi/
