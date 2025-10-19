@@ -2,8 +2,5 @@
 local.properties
 .gradle/
 build/
-mipmap-mdpi/
-mipmap-hdpi/
-mipmap-xhdpi/
-mipmap-xxhdpi/
 mipmap-xxxhdpi/
+mipmap-anydpi-v26/
