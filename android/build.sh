@@ -97,7 +97,9 @@ cat > app/src/main/res/mipmap-anydpi-v26/app_icon.xml <<EOF
   <monochrome android:drawable="@mipmap/app_icon_grayscale"/>
 </adaptive-icon>
 EOF
+# if the script fails on this line, maybe just comment it out and remove the line from the app_icon.xml just above. Who cares about monochrome icons?
 magick app/src/main/res/mipmap-xxxhdpi/app_icon_foreground.png -colorspace Gray app/src/main/res/mipmap-xxxhdpi/app_icon_grayscale.png
 
 # finally, build
 gradle --warning-mode all assembleDebug
+# gradle installDebug
