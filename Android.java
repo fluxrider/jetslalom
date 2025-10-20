@@ -32,7 +32,7 @@ public class Android extends Activity {
       private int delay = target_dt;
       private long dt;
 
-      private int i = 0;
+      private Gamepad gamepad = new Gamepad();
 
       private Game game = new Game();
 
@@ -95,44 +95,41 @@ public class Android extends Activity {
         canvas.drawBitmap(scene_img, null, new RectF(x, y, x+w, y+h), p);
 
         // overlay, now that I'm using drawString on the window size surface for all text instead of widgets, I need to ensure the font scales
-        pt.setColor(C.white); pst.setColor(C.white); Paint.FontMetrics fm = pt.getFontMetrics(), sfm = pst.getFontMetrics();
+        pt.setColor(C.white); pst.setColor(C.white); Paint.FontMetricsInt fm = pt.getFontMetricsInt(), sfm = pst.getFontMetricsInt();
         canvas.drawText(String.format("Your Hi-score:%d", game.hiscore), 2*fm.descent/3, b_h - fm.descent, pt);
-        { String msg = String.format("Period: %dms (%dms)", this.target_dt, this.dt); canvas.drawText(msg, b_w - 2*fm.descent/3 - pt.measureText(msg), b_h - fm.descent, pt); }
-        /*
+        { String msg = String.format("Period: %dms (%dms)", this.target_dt, this.dt); canvas.drawText(msg, b_w - 2*fm.descent/3 - (int)pt.measureText(msg), b_h - fm.descent, pt); }
         String score = "Score:" + game.score;
         String penalty = "Continue penalty:" + game.contNum * 1000;
-        int score_w = fm.stringWidth(score); int penalty_w = fm.stringWidth(penalty); int padding = b_w / 10; int total_w = game.contNum > 0? score_w + padding + penalty_w : score_w; int offset = (b_w - total_w) / 2;
-        g.drawString(score, offset, fm.getAscent()); offset += score_w + padding;
-        if(game.contNum > 0) g.drawString(penalty, offset, fm.getAscent());
+        int score_w = (int)pt.measureText(score); int penalty_w = (int)pt.measureText(penalty); int padding = b_w / 10; int total_w = game.contNum > 0? score_w + padding + penalty_w : score_w; int offset = (b_w - total_w) / 2;
+        canvas.drawText(score, offset, -fm.ascent, pt); offset += score_w + padding;
+        if(game.contNum > 0) canvas.drawText(penalty, offset, -fm.ascent, pt);
         if(game.title_mode) {
-          int line_h = fm.getHeight(); g.setFont(this.small_font); int small_line_h = g.getFontMetrics().getHeight(); g.setFont(this.font);
+          int line_h = -fm.ascent + fm.descent; int small_line_h = -sfm.ascent + sfm.descent;
           int spacing = 5, small_spacing = 3;
           int n = 4, small_n = 6 + (gamepad.available? 4 : 0);
           offset = (b_h - ((line_h + spacing) * n + (small_line_h + small_spacing) * small_n)) / 2;
-          { String msg = "Jet Slalom Resurrected"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += line_h + spacing; }
-          { String msg = "by David Lareau in 2025"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += line_h + spacing; }
-          { String msg = "Original 1997 version by MR-C"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += line_h + spacing; }
+          { String msg = "Jet Slalom Resurrected"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += line_h + spacing; }
+          { String msg = "by David Lareau in 2025"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += line_h + spacing; }
+          { String msg = "Original 1997 version by MR-C"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += line_h + spacing; }
           { offset += line_h + spacing; }
-          g.setFont(this.small_font); fm = g.getFontMetrics();
-          { String msg = "-- Keyboard --"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += small_line_h + small_spacing; }
-          { String msg = "(F)ullscreen, (H)ighRez, (S)tretch, Speed(num+/num-)"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += small_line_h + small_spacing; }
-          { String msg = "Restart(Spacebar/Enter), (C)ontinue(up/W), Chea(T)"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += small_line_h + small_spacing; }
-          { String msg = "(P)ause, Quit(ESC), Ship(Left/Right/A/D/J/L)"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += small_line_h + small_spacing; }
-          { String msg = "-- Mouse --"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += small_line_h + small_spacing; }
-          { String msg = "Ship(L/R), Restart(L), Continue(R)"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += small_line_h + small_spacing; }
+          { String msg = "-- Keyboard --"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
+          { String msg = "(F)ullscreen, (H)ighRez, (S)tretch, Speed(num+/num-)"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
+          { String msg = "Restart(Spacebar/Enter), (C)ontinue(up/W), Chea(T)"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
+          { String msg = "(P)ause, Quit(ESC), Ship(Left/Right/A/D/J/L)"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
+          { String msg = "-- Mouse --"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
+          { String msg = "Ship(L/R), Restart(L), Continue(R)"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
           if(gamepad.available) {
-            { String msg = "-- Gamepad --"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += small_line_h + small_spacing; }
-            { String msg = "Fullscreen(L3), HighRez(Select+L3), Stretch(R3), Speed(Select+LB/RB)"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += small_line_h + small_spacing; }
-            { String msg = "Re(Start/Down), Resume(A/B/X/Y/Up), Cheat(Select+Start)"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += small_line_h + small_spacing; }
-            { String msg = "Pause(Start), Quit(LB+RB+Start+Select), Ship(Sticks/Dpad/Shoulders)"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += small_line_h + small_spacing; }
+            { String msg = "-- Gamepad --"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
+            { String msg = "Fullscreen(L3), HighRez(Select+L3), Stretch(R3), Speed(Select+LB/RB)"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
+            { String msg = "Re(Start/Down), Resume(A/B/X/Y/Up), Cheat(Select+Start)"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
+            { String msg = "Pause(Start), Quit(LB+RB+Start+Select), Ship(Sticks/Dpad/Shoulders)"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
           }
         }
-        if(this.paused || !this.hasFocus()) {
-          g.setColor(Color.red);
+        if(this.paused) {
+          pt.setColor(C.rgb(255,0,0));
           offset = (int)(b_h * (System.currentTimeMillis() % 10000) / 10000.0);
-          { String msg = this.hasFocus()? "Paused" : "Lost Keyboard Input Focus"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); }
+          { String msg = "Paused"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); }
         }
-        */
       }
 
       // draw game primitives
