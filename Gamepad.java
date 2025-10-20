@@ -1,4 +1,4 @@
-// This class is a mock stub for when you want to compile without gamepad support
+// This class is a mock stub for when you want to compile without gamepad support on desktop, but it also used directly as a struct by the Android port.
 
 class Gamepad {
 

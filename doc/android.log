@@ -47,8 +47,7 @@ Rant: Android is slow supporting the latest gradle, which in turn is slow suppor
 
 I ran gradle assembleDebug and it worked with a bunch of warnings. It also looked like it download a ton of stuff.
 
-I did generate: app/build/outputs/apk/debug/app-debug.apk
-I did not try it yet cause I'm still fiddling.
+It generated: app/build/outputs/apk/debug/app-debug.apk
 
 --------------
 
