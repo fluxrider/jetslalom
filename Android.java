@@ -81,8 +81,8 @@ public class Android extends Activity {
       }
 
       protected void onDraw(Canvas canvas) {
+        p.setFilterBitmap(false);
 
-        canvas.drawBitmap(scene_img, null, new RectF(0, 0, canvas.getWidth()/2, canvas.getHeight()/2), p);
         // letterbox scaling (i.e. respects aspect ratio)
         int b_w = canvas.getWidth(); int b_h = canvas.getHeight(); int s_w = this.logical_w; int s_h = this.logical_h;
         double scale; if((b_w / (double)b_h) > (s_w / (double)s_h)) scale = b_h / (double)s_h; else scale = b_w / (double)s_w;
@@ -131,6 +131,9 @@ public class Android extends Activity {
       }
 
       private void prt() {
+        p.setFilterBitmap(false);
+        p.setAntiAlias(false);
+
         this.scene_c.drawColor(game.rounds[game.round].getSkyRGB());
         this.drawPolygon(game.rounds[game.round].getGroundRGB(), game.ground_points);
         for(Game.Obstacle obstacle : game.obstacles) draw_obstacle(obstacle);
