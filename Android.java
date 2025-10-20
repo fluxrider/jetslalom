@@ -92,6 +92,7 @@ public class Android extends Activity {
 
       // Note: Missed input are very likely
       public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //this.debug = event.toString();
         if((event.getSource() & InputDevice.SOURCE_GAMEPAD) != InputDevice.SOURCE_GAMEPAD || event.getRepeatCount() != 0) return super.onKeyDown(keyCode, event);
         gamepad.available = true;
         gamepad.param_dpad_diag_count = true; // note: this probably corrupts n_left/n_right states, but I don't actually use those checks in this game
@@ -118,7 +119,6 @@ public class Android extends Activity {
         return false;
       }
       public boolean onKeyUp(int keyCode, KeyEvent event) {
-        //this.debug = event.toString();
         if((event.getSource() & InputDevice.SOURCE_GAMEPAD) != InputDevice.SOURCE_GAMEPAD || event.getRepeatCount() != 0) return super.onKeyUp(keyCode, event);
         gamepad.available = true;
         gamepad.param_dpad_diag_count = true;
@@ -234,8 +234,8 @@ public class Android extends Activity {
         String penalty = "Continue penalty:" + game.contNum * 1000;
         int score_w = (int)pt.measureText(score); int penalty_w = (int)pt.measureText(penalty); int padding = b_w / 10; int total_w = game.contNum > 0? score_w + padding + penalty_w : score_w; int offset = (b_w - total_w) / 2;
         canvas.drawText(score, offset, safe_top_y + (-fm.ascent), pt); offset += score_w + padding;
-        //synchronized(touches_x) { canvas.drawText(touches_x.values().toString(), 10, safe_top_y + 2*(-fm.ascent), pt); }
-        if(this.debug != null) canvas.drawText(debug, 10, safe_top_y + 2*(-fm.ascent), pt);
+        //synchronized(touches_x) { canvas.drawText(touches_x.values().toString(), 10, safe_top_y + 2*(-fm.ascent), pst); }
+        if(this.debug != null) { int i = 2; int start = 0; int end = this.debug.length() - 1; while(true) { canvas.drawText(debug, start, end, 0, safe_top_y + i*(-fm.ascent), pst); if((int)pst.measureText(debug, start, end) < b_w) break; start += 60; i++; if(start >= debug.length()) break; } }
         if(game.contNum > 0) canvas.drawText(penalty, offset, safe_top_y + (-fm.ascent), pt);
         if(game.title_mode) {
           int line_h = -fm.ascent + fm.descent; int small_line_h = -sfm.ascent + sfm.descent;
