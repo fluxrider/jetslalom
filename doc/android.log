@@ -97,12 +97,3 @@ Yay.
 gradle installDebug
 I get a black screen like I expect I guess. Yay.
 
-
---------
-Code snippet for debugging
-AlertDialog.Builder builder = new AlertDialog.Builder(this);
-builder.setMessage(e.toString());
-builder.setTitle("Exception");
-builder.setCancelable(true);
-AlertDialog alertDialog = builder.create();
-alertDialog.show();
