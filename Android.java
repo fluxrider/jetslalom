@@ -93,7 +93,8 @@ public class Android extends Activity {
       // Note: Missed input are very likely
       public boolean onKeyDown(int keyCode, KeyEvent event) {
         //this.debug = event.toString();
-        if((event.getSource() & InputDevice.SOURCE_GAMEPAD) != InputDevice.SOURCE_GAMEPAD || event.getRepeatCount() != 0) return super.onKeyDown(keyCode, event);
+        //if((event.getSource() & InputDevice.SOURCE_GAMEPAD) != InputDevice.SOURCE_GAMEPAD) return super.onKeyDown(keyCode, event);
+        if(event.getRepeatCount() != 0) return super.onKeyDown(keyCode, event);
         gamepad.available = true;
         gamepad.param_dpad_diag_count = true; // note: this probably corrupts n_left/n_right states, but I don't actually use those checks in this game
         switch(keyCode) {
@@ -119,7 +120,7 @@ public class Android extends Activity {
         return false;
       }
       public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if((event.getSource() & InputDevice.SOURCE_GAMEPAD) != InputDevice.SOURCE_GAMEPAD || event.getRepeatCount() != 0) return super.onKeyUp(keyCode, event);
+        //if((event.getSource() & InputDevice.SOURCE_GAMEPAD) != InputDevice.SOURCE_GAMEPAD) return super.onKeyUp(keyCode, event);
         gamepad.available = true;
         gamepad.param_dpad_diag_count = true;
         switch(keyCode) {
