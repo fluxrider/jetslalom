@@ -90,6 +90,18 @@ public class Android extends Activity {
         return true;
       }
 
+      public boolean onGenericMotionEvent(MotionEvent e) {
+        if(!((e.getSource() & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK && e.getAction() == MotionEvent.ACTION_MOVE)) return super.onGenericMotionEvent(e);
+        //this.debug = e.toString();
+        gamepad.left_trigger = e.getAxisValue(MotionEvent.AXIS_LTRIGGER);
+        gamepad.right_trigger = e.getAxisValue(MotionEvent.AXIS_RTRIGGER);
+        gamepad.lx = e.getAxisValue(MotionEvent.AXIS_X);
+        gamepad.ly = e.getAxisValue(MotionEvent.AXIS_Y);
+        gamepad.rx = e.getAxisValue(MotionEvent.AXIS_Z);
+        gamepad.ry = e.getAxisValue(MotionEvent.AXIS_RZ);
+        return super.onGenericMotionEvent(e); // I pretend I didn't handle it, so I don't prevent the DPAD key events
+      }
+
       // Note: Missed input are very likely
       public boolean onKeyDown(int keyCode, KeyEvent event) {
         //this.debug = event.toString();
