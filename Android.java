@@ -13,16 +13,45 @@ public class Android extends Activity {
 
       private Paint p = new Paint();
       private TextPaint pt = load_font("OpenSans-Regular.ttf", 60);
-      private Bitmap image = load_image("jiki.gif");
-      private int i;
+
+      private int ship_animation;
+      private int ship_w, ship_h;
+      private Bitmap ship[] = new Bitmap[] { load_image("jiki.gif"), load_image("jiki2.gif") };
       private int explosion = load_audio("explosion.wav");
+      private Bitmap scene_img;
+      private Canvas scene_c;
+
+      private int logical_w, logical_h;
+      private Thread gameThread;
+      private int bg = C.rgb(160, 208, 176);
+      private TextPaint font, small_font;
+      private boolean stretched;
+      private boolean paused;
+      private int target_dt = 55;
+      private int delay = target_dt;
+
+      private Game game;
+
+      {
+        this.set_logical_size(1);
+      }
+
+      private void set_logical_size(double scale) {
+        this.logical_w = (int)(320 * scale);
+        this.logical_h = (int)(200 * scale);
+        int image_scale = (int)(this.logical_w * 0.7 * 120 / 1.6 / 320); this.ship_w = image_scale * 2; this.ship_h = image_scale / 4;
+        this.scene_img = Bitmap.createBitmap(this.logical_w, this.logical_h, Bitmap.Config.ARGB_8888);
+        this.scene_c = new Canvas(scene_img);
+        this.scene_c.drawColor(C.rgb(0,128,128));
+      }
 
       protected void onDraw(Canvas canvas) {
-        canvas.drawColor(0xffaaaaaa);
+        canvas.drawColor(bg);
+        canvas.drawBitmap(scene_img, null, new RectF(0, 0, canvas.getWidth()/2, canvas.getHeight()/2), p);
         p.setColor(0xffff0000); canvas.drawLine((float)(Math.random() * 100), (float)(Math.random() * 100), (float)(Math.random() * 200 + 100), (float)(Math.random() * 200 + 100), p);
         p.setColor(0xff000000); canvas.drawText(String.format("Sound ID: %d", explosion), 10, 100, p);
-        pt.setColor(0xff000000); canvas.drawText(String.format("Counter: %d", i++), 10, 200, pt);
-        if(image != null) { canvas.drawBitmap(image, 10, 300, p); }
+        pt.setColor(0xff000000); canvas.drawText(String.format("Font test"), 10, 200, pt);
+        if(ship[0] != null) { canvas.drawBitmap(ship[0], 10, 300, p); }
       }
 
       public boolean onTouchEvent(MotionEvent e) {
