@@ -90,15 +90,20 @@ public class Android extends Activity {
         return true;
       }
 
+      private double _gamepad_axis_value(MotionEvent e, int axis) {
+        double flat = e.getDevice().getMotionRange(axis, e.getSource()).getFlat();
+        double value = e.getAxisValue(axis);
+        return (Math.abs(value) < flat)? 0 : value;
+      }
       public boolean onGenericMotionEvent(MotionEvent e) {
         if(!((e.getSource() & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK && e.getAction() == MotionEvent.ACTION_MOVE)) return super.onGenericMotionEvent(e);
         //this.debug = e.toString();
-        gamepad.left_trigger = e.getAxisValue(MotionEvent.AXIS_LTRIGGER);
-        gamepad.right_trigger = e.getAxisValue(MotionEvent.AXIS_RTRIGGER);
-        gamepad.lx = e.getAxisValue(MotionEvent.AXIS_X);
-        gamepad.ly = e.getAxisValue(MotionEvent.AXIS_Y);
-        gamepad.rx = e.getAxisValue(MotionEvent.AXIS_Z);
-        gamepad.ry = e.getAxisValue(MotionEvent.AXIS_RZ);
+        gamepad.left_trigger = _gamepad_axis_value(e, MotionEvent.AXIS_LTRIGGER);
+        gamepad.right_trigger = _gamepad_axis_value(e, MotionEvent.AXIS_RTRIGGER);
+        gamepad.lx = _gamepad_axis_value(e, MotionEvent.AXIS_X);
+        gamepad.ly = _gamepad_axis_value(e, MotionEvent.AXIS_Y);
+        gamepad.rx = _gamepad_axis_value(e, MotionEvent.AXIS_Z);
+        gamepad.ry = _gamepad_axis_value(e, MotionEvent.AXIS_RZ);
         return super.onGenericMotionEvent(e); // I pretend I didn't handle it, so I don't prevent the DPAD key events
       }
 
