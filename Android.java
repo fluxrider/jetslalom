@@ -325,7 +325,8 @@ public class Android extends Activity {
           Bitmap image = this.ship[this.ship_animation % 4 > 1? 1 : 0];
           if (this.ship_animation % 12 > 6) y = 22 * this.logical_h / 200;
           if (game.score < 200) y = (12 + game.score / 20) * this.logical_h / 200;
-          if (game.damaged < 10) this.scene_c.drawBitmap(image, (this.logical_w / 2) - image.getWidth()/2, this.logical_h - y, p);
+          float ship_x = (this.logical_w / 2) - this.ship_w/2, ship_y = this.logical_h - y;
+          if (game.damaged < 10) this.scene_c.drawBitmap(image, null, new RectF(ship_x, ship_y, ship_x + this.ship_w, ship_y + this.ship_h), p);
           if (game.damaged > 0) {
             if(game.damaged <= 20) {
               if(game.damaged == 1) { audio.play(explosion, 1, 1, 0, 0, 1); }
