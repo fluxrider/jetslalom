@@ -122,6 +122,7 @@ public class Android extends Activity {
           int spacing = 3, small_spacing = 2;
           int n = 3, small_n = 6 + (gamepad.available? 4 : 0);
           offset = (b_h - ((line_h + spacing) * n + (small_line_h + small_spacing) * small_n - spacing - small_spacing)) / 2;
+          offset += (-fm.ascent);
           { String msg = "Jet Slalom Resurrected"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += line_h + spacing; }
           { String msg = "by David Lareau in 2025"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += line_h + spacing; }
           { String msg = "Original 1997 version by MR-C"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += line_h + spacing; }
