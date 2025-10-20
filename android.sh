@@ -40,7 +40,7 @@ mkdir -p android/src/main
 cat > android/src/main/AndroidManifest.xml <<EOF
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" android:installLocation="auto">
-  <application android:label="@string/app_name" android:icon="@mipmap/app_icon" android:roundIcon="@mipmap/app_icon" android:allowBackup="true" android:theme="@android:style/Theme.NoTitleBar.Fullscreen" android:hardwareAccelerated="true">
+  <application android:label="@string/app_name" android:icon="@mipmap/app_icon" android:roundIcon="@mipmap/app_icon" android:allowBackup="true" android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen" android:hardwareAccelerated="true">
     <activity android:name="Android"
       android:label="@string/app_name"
       android:alwaysRetainTaskState="true"
@@ -66,15 +66,11 @@ EOF
 cat > android/src/main/res/values/colors.xml <<EOF
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <color name="colorPrimary">#3F51B5</color>
-  <color name="colorPrimaryDark">#303F9F</color>
-  <color name="colorAccent">#FF4081</color>
   <color name="app_icon_background">#f6d66c</color>
 </resources>
 EOF
 cat > android/src/main/res/values/styles.xml <<EOF
 <resources>
-  <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar"></style>
 </resources>
 EOF
 
