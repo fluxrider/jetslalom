@@ -15,7 +15,7 @@ public final class C { private C() { }
     if(a < 0 || a > 255 || r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) throw new RuntimeException(String.format("Color argb components out of range [0-255]: %d %d %d %d", a, r, g, b));
     return a << 24 | r << 16 | g << 8 | b;
   }
-  public static int rgb(int r, int g, int b) { return argb(1, r, g, b); }
+  public static int rgb(int r, int g, int b) { return argb(255, r, g, b); }
   public static int dargb(double a, double r, double g, double b) { return argb((int)(a*255),(int)(r*255),(int)(g*255),(int)(b*255)); }
   public static int drgb(double a, double r, double g, double b) { return argb(255,(int)(r*255),(int)(g*255),(int)(b*255)); }
   public static float fa(int argb) { return a(argb) / 255.0f; }
@@ -26,7 +26,7 @@ public final class C { private C() { }
   public static double dr(int argb) { return r(argb) / 255.0; }
   public static double dg(int argb) { return g(argb) / 255.0; }
   public static double db(int argb) { return b(argb) / 255.0; }
-  public static int gray(int level) { return argb(1, level, level, level); }
+  public static int gray(int level) { return argb(255, level, level, level); }
   public static int dgray(double level) { return gray((int)(level*255)); }
   
   public static final int black = argb(255, 0, 0, 0);
