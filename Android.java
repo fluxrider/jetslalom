@@ -146,54 +146,54 @@ public class Android extends Activity {
       }
 
       private void tick() {
+        // gamepad input
+        boolean gamepad_left = false, gamepad_right = false; double dead_zone = .05;
+        if(gamepad.lx < -dead_zone) gamepad_left = true;
+        if(gamepad.lx > dead_zone) gamepad_right = true;
+        if(gamepad.rx < -dead_zone) gamepad_left = true;
+        if(gamepad.rx > dead_zone) gamepad_right = true;
+        if(gamepad.left) gamepad_left = true;
+        if(gamepad.right) gamepad_right = true;
+        if(gamepad.left_shoulder) gamepad_left = true;
+        if(gamepad.right_shoulder) gamepad_right = true;
+        if(gamepad.left_trigger > 0) gamepad_left = true;
+        if(gamepad.right_trigger > 0) gamepad_right = true;
+        // advanced system commands
+        if(gamepad.left_shoulder && gamepad.right_shoulder && gamepad.start && gamepad.select) System.exit(0);
+        if(gamepad.select) {
+          if(gamepad.left_shoulder && gamepad.n_left_shoulder) this.target_dt-=5;
+          if(gamepad.right_shoulder && gamepad.n_right_shoulder) this.target_dt+=5;
+        }
+        // normal system commands
+        else {
+          if(gamepad.l3 && gamepad.n_l3) this.set_logical_size(this.logical_w == 320? 6 : 1);
+          if(gamepad.r3 && gamepad.n_r3) this.stretched = !this.stretched;
+        }
+        // title command
+        if(game.title_mode) {
+          if((gamepad.south_maybe && gamepad.n_south_maybe) || (gamepad.north_maybe && gamepad.n_north_maybe) || (gamepad.west_maybe && gamepad.n_west_maybe) || (gamepad.east_maybe && gamepad.n_east_maybe) || (gamepad.up && gamepad.n_up)) game.startGame(true, true); // continue
+          if(gamepad.select) {
+            if(gamepad.start && gamepad.n_start) { game.prevScore = 110000; game.contNum = 100; game.startGame(true, true); } // some sort of cheat
+          } else {
+            if((gamepad.start && gamepad.n_start) || (gamepad.down && gamepad.n_down)) game.startGame(true, false); // restart
+          }
+        }
+        // play command
+        else {
+          if(gamepad.start && gamepad.n_start) this.paused = !this.paused;
+        }
+        // clear new flags
+        gamepad.n_start = gamepad.n_select = gamepad.n_south_maybe = gamepad.n_north_maybe = gamepad.n_west_maybe = gamepad.n_east_maybe = gamepad.n_up = gamepad.n_down = gamepad.n_left = gamepad.n_right = gamepad.n_left_shoulder = gamepad.n_right_shoulder = gamepad.n_l3 = gamepad.n_r3 = false;
+
+        // touch input
+        int w = getWidth(); boolean touching_left = false, touching_right = false;
+        synchronized(touches_x) { for(double x : touches_x.values()) {
+          touching_left |= x < w/2;
+          touching_right |= x > w/2;
+        }}
+
         if(game.title_mode && this.paused) this.paused = false;
         if(!this.paused) {
-          // gamepad input
-          boolean gamepad_left = false, gamepad_right = false; double dead_zone = .05;
-          if(gamepad.lx < -dead_zone) gamepad_left = true;
-          if(gamepad.lx > dead_zone) gamepad_right = true;
-          if(gamepad.rx < -dead_zone) gamepad_left = true;
-          if(gamepad.rx > dead_zone) gamepad_right = true;
-          if(gamepad.left) gamepad_left = true;
-          if(gamepad.right) gamepad_right = true;
-          if(gamepad.left_shoulder) gamepad_left = true;
-          if(gamepad.right_shoulder) gamepad_right = true;
-          if(gamepad.left_trigger > 0) gamepad_left = true;
-          if(gamepad.right_trigger > 0) gamepad_right = true;
-          // advanced system commands
-          if(gamepad.left_shoulder && gamepad.right_shoulder && gamepad.start && gamepad.select) System.exit(0);
-          if(gamepad.select) {
-            if(gamepad.left_shoulder && gamepad.n_left_shoulder) this.target_dt-=5;
-            if(gamepad.right_shoulder && gamepad.n_right_shoulder) this.target_dt+=5;
-          }
-          // normal system commands
-          else {
-            if(gamepad.l3 && gamepad.n_l3) this.set_logical_size(this.logical_w == 320? 6 : 1);
-            if(gamepad.r3 && gamepad.n_r3) this.stretched = !this.stretched;
-          }
-          // title command
-          if(game.title_mode) {
-            if((gamepad.south_maybe && gamepad.n_south_maybe) || (gamepad.north_maybe && gamepad.n_north_maybe) || (gamepad.west_maybe && gamepad.n_west_maybe) || (gamepad.east_maybe && gamepad.n_east_maybe) || (gamepad.up && gamepad.n_up)) game.startGame(true, true); // continue
-            if(gamepad.select) {
-              if(gamepad.start && gamepad.n_start) { game.prevScore = 110000; game.contNum = 100; game.startGame(true, true); } // some sort of cheat
-            } else {
-              if((gamepad.start && gamepad.n_start) || (gamepad.down && gamepad.n_down)) game.startGame(true, false); // restart
-            }
-          }
-          // play command
-          else {
-            if(gamepad.start && gamepad.n_start) this.paused = !this.paused;
-          }
-          // clear new flags
-          gamepad.n_start = gamepad.n_select = gamepad.n_south_maybe = gamepad.n_north_maybe = gamepad.n_west_maybe = gamepad.n_east_maybe = gamepad.n_up = gamepad.n_down = gamepad.n_left = gamepad.n_right = gamepad.n_left_shoulder = gamepad.n_right_shoulder = gamepad.n_l3 = gamepad.n_r3 = false;
-
-          // touch input
-          int w = getWidth(); boolean touching_left = false, touching_right = false;
-          synchronized(touches_x) { for(double x : touches_x.values()) {
-            touching_left |= x < w/2;
-            touching_right |= x > w/2;
-          }}
-
           // game tick and draw on offscreen game surface
           game.tick(touching_left | gamepad_left, touching_right | gamepad_right);
           this.prt();
