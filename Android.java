@@ -1,6 +1,6 @@
 import android.app.*; import android.os.*; import android.view.*;
 import android.graphics.*; import android.text.*; import android.media.*;
-import java.io.*;
+import java.io.*; import java.util.*;
 
 
 public class Android extends Activity {
@@ -65,10 +65,24 @@ public class Android extends Activity {
         this.scene_c.drawColor(C.rgb(0,128,128));
       }
       
+      public Map<Integer, Double> touches_x = new TreeMap<>();
       public boolean onTouchEvent(MotionEvent e) {
-        switch(e.getAction()) {
+        int index = e.getActionIndex();
+        int action = e.getActionMasked();
+        int pointer_id = e.getPointerId(index);
+        switch(action) {
+          case MotionEvent.ACTION_DOWN:
+          case MotionEvent.ACTION_POINTER_DOWN:
+          case MotionEvent.ACTION_MOVE:
+            synchronized(touches_x) { touches_x.put(pointer_id, (double)e.getX(index)); }
+            break;
           case MotionEvent.ACTION_UP:
-            //audio.play(explosion, 1, 1, 0, 0, 1);
+          case MotionEvent.ACTION_POINTER_UP:
+          case MotionEvent.ACTION_CANCEL:
+            synchronized(touches_x) { touches_x.remove(pointer_id); }
+            if(game.title_mode) {
+              game.startGame(true, false);
+            }
             break;
         }
         return true;
@@ -77,7 +91,14 @@ public class Android extends Activity {
       private void tick() {
         if(game.title_mode && this.paused) this.paused = false;
         if(!this.paused) {
-          game.tick(false, false); // TODO input
+          // touch input
+          int w = getWidth(); boolean touching_left = false, touching_right = false;
+          synchronized(touches_x) { for(double x : touches_x.values()) {
+            touching_left |= x < w/2;
+            touching_right |= x > w/2;
+          }}
+          // game tick and draw on offscreen game surface
+          game.tick(touching_left, touching_right);
           this.prt();
         }
       }
@@ -116,6 +137,7 @@ public class Android extends Activity {
         String penalty = "Continue penalty:" + game.contNum * 1000;
         int score_w = (int)pt.measureText(score); int penalty_w = (int)pt.measureText(penalty); int padding = b_w / 10; int total_w = game.contNum > 0? score_w + padding + penalty_w : score_w; int offset = (b_w - total_w) / 2;
         canvas.drawText(score, offset, safe_top_y + (-fm.ascent), pt); offset += score_w + padding;
+        //synchronized(touches_x) { canvas.drawText(touches_x.values().toString(), 10, safe_top_y + 2*(-fm.ascent), pt); }
         if(game.contNum > 0) canvas.drawText(penalty, offset, safe_top_y + (-fm.ascent), pt);
         if(game.title_mode) {
           int line_h = -fm.ascent + fm.descent; int small_line_h = -sfm.ascent + sfm.descent;
