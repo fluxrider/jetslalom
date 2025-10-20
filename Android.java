@@ -83,7 +83,7 @@ public class Android extends Activity {
           case MotionEvent.ACTION_CANCEL:
             synchronized(touches_x) { touches_x.remove(pointer_id); }
             if(game.title_mode) {
-              game.startGame(true, false);
+              game.startGame(true, e.getX(index) > getWidth()/2);
             }
             break;
         }
@@ -253,18 +253,15 @@ public class Android extends Activity {
         if(game.title_mode) {
           int line_h = -fm.ascent + fm.descent; int small_line_h = -sfm.ascent + sfm.descent;
           int spacing = 3, small_spacing = 2;
-          int n = 3, small_n = 6 + (gamepad.available? 4 : 0);
+          int n = 3, small_n = 2 + (gamepad.available? 4 : 0);
           offset = (b_h - ((line_h + spacing) * n + (small_line_h + small_spacing) * small_n - spacing - small_spacing)) / 2;
           offset += (-fm.ascent);
           { String msg = "Jet Slalom Resurrected"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += line_h + spacing; }
           { String msg = "by David Lareau in 2025"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += line_h + spacing; }
           { String msg = "Original 1997 version by MR-C"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += line_h + spacing; }
-          { String msg = "-- Keyboard --"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
-          { String msg = "(F)ullscreen, (H)ighRez, (S)tretch, Speed(num+/num-)"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
-          { String msg = "Restart(Spacebar/Enter), (C)ontinue(up/W), Chea(T)"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
-          { String msg = "(P)ause, Quit(ESC), Ship(Left/Right/A/D/J/L)"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
-          { String msg = "-- Mouse --"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
-          { String msg = "Ship(L/R), Restart(L), Continue(R)"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
+          { String msg = "-- Touch --"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
+          { String msg = "Ship(L/R side of screen)"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
+          { String msg = "Restart(L side tap), Continue(R side tap)"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
           if(gamepad.available) {
             { String msg = "-- Gamepad --"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
             { String msg = "HighRez(L3), Stretch(R3), Speed(Select+LB/RB)"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
