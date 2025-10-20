@@ -14,6 +14,7 @@ public class Android extends Activity {
       private Paint p = new Paint();
       private TextPaint pt = load_font("OpenSans-Regular.ttf");
       private TextPaint pst = load_font("OpenSans-Regular.ttf"); // TODO this is redundant, just reuse pt with setTextSize
+      private String debug;
 
       private int ship_animation;
       private int ship_w, ship_h;
@@ -37,6 +38,7 @@ public class Android extends Activity {
       private Game game = new Game();
 
       {
+        this.setFocusable(true);
         this.set_logical_size(1);
         this.game.startGame(false, false);
         this.gameThread = new Thread(new Runnable() {
@@ -116,6 +118,7 @@ public class Android extends Activity {
         return false;
       }
       public boolean onKeyUp(int keyCode, KeyEvent event) {
+        //this.debug = event.toString();
         if((event.getSource() & InputDevice.SOURCE_GAMEPAD) != InputDevice.SOURCE_GAMEPAD || event.getRepeatCount() != 0) return super.onKeyUp(keyCode, event);
         gamepad.available = true;
         gamepad.param_dpad_diag_count = true;
@@ -232,6 +235,7 @@ public class Android extends Activity {
         int score_w = (int)pt.measureText(score); int penalty_w = (int)pt.measureText(penalty); int padding = b_w / 10; int total_w = game.contNum > 0? score_w + padding + penalty_w : score_w; int offset = (b_w - total_w) / 2;
         canvas.drawText(score, offset, safe_top_y + (-fm.ascent), pt); offset += score_w + padding;
         //synchronized(touches_x) { canvas.drawText(touches_x.values().toString(), 10, safe_top_y + 2*(-fm.ascent), pt); }
+        if(this.debug != null) canvas.drawText(debug, 10, safe_top_y + 2*(-fm.ascent), pt);
         if(game.contNum > 0) canvas.drawText(penalty, offset, safe_top_y + (-fm.ascent), pt);
         if(game.title_mode) {
           int line_h = -fm.ascent + fm.descent; int small_line_h = -sfm.ascent + sfm.descent;
