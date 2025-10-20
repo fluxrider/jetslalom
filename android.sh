@@ -83,6 +83,10 @@ for f in *.java; do
 done
 rm android/src/main/java/fluxrider.jetslalom/AWT.java
 
+# res
+mkdir -p android/src/main/assets/
+cp res/*.* android/src/main/assets/
+
 # icon
 mkdir -p android/src/main/res/mipmap-xxxhdpi
 cp icon_512.png android/src/main/res/mipmap-xxxhdpi/app_icon_foreground.png
