@@ -101,8 +101,12 @@ public class Android extends Activity {
         String score = "Score:" + game.score;
         String penalty = "Continue penalty:" + game.contNum * 1000;
         int score_w = (int)pt.measureText(score); int penalty_w = (int)pt.measureText(penalty); int padding = b_w / 10; int total_w = game.contNum > 0? score_w + padding + penalty_w : score_w; int offset = (b_w - total_w) / 2;
-        canvas.drawText(score, offset, -fm.ascent, pt); offset += score_w + padding;
-        if(game.contNum > 0) canvas.drawText(penalty, offset, -fm.ascent, pt);
+
+        // stupid camera hole in the screen. I only care if we are in portrait not reverse. Hopefully this will survive the test of time.
+        int safe_top_y = 0; { WindowInsets insets = getWindow().getDecorView().getRootWindowInsets(); if(insets != null) { DisplayCutout cutout = insets.getDisplayCutout(); if(cutout != null) { safe_top_y = cutout.getSafeInsetTop(); } } }
+
+        canvas.drawText(score, offset, safe_top_y + (-fm.ascent), pt); offset += score_w + padding;
+        if(game.contNum > 0) canvas.drawText(penalty, offset, safe_top_y + (-fm.ascent), pt);
         if(game.title_mode) {
           int line_h = -fm.ascent + fm.descent; int small_line_h = -sfm.ascent + sfm.descent;
           int spacing = 5, small_spacing = 3;
