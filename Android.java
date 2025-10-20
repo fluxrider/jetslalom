@@ -30,6 +30,7 @@ public class Android extends Activity {
       private boolean paused;
       private int target_dt = 55;
       private int delay = target_dt;
+      private long dt;
 
       private int i = 0;
 
@@ -42,7 +43,7 @@ public class Android extends Activity {
           public void run() {
             long t0 = System.currentTimeMillis(), t1 = t0;
             while (gameThread == Thread.currentThread()) {
-              t0 = t1; t1 = System.currentTimeMillis(); long dt = t1 - t0;
+              t0 = t1; t1 = System.currentTimeMillis(); dt = t1 - t0;
               tick();
               invalidate();
               if(dt > target_dt) { delay--; } // framerate too low, try faster
@@ -94,12 +95,10 @@ public class Android extends Activity {
         canvas.drawBitmap(scene_img, null, new RectF(x, y, x+w, y+h), p);
 
         // overlay, now that I'm using drawString on the window size surface for all text instead of widgets, I need to ensure the font scales
-        pt.setColor(C.white);
-        //canvas.drawText(String.format("Debug %d %d %d %d %d", i++, x, y, w, h), 10, 200, pt);
-        Paint.FontMetrics fm = pt.getFontMetrics();
+        pt.setColor(C.white); pst.setColor(C.white); Paint.FontMetrics fm = pt.getFontMetrics(), sfm = pst.getFontMetrics();
         canvas.drawText(String.format("Your Hi-score:%d", game.hiscore), 2*fm.descent/3, b_h - fm.descent, pt);
+        { String msg = String.format("Period: %dms (%dms)", this.target_dt, this.dt); canvas.drawText(msg, b_w - 2*fm.descent/3 - pt.measureText(msg), b_h - fm.descent, pt); }
         /*
-        { String msg = String.format("Period: %dms (%dms)", this.target_dt, dt); g.drawString(msg, b_w - 2*fm.getDescent()/3 - fm.stringWidth(msg), b_h - fm.getDescent()); }
         String score = "Score:" + game.score;
         String penalty = "Continue penalty:" + game.contNum * 1000;
         int score_w = fm.stringWidth(score); int penalty_w = fm.stringWidth(penalty); int padding = b_w / 10; int total_w = game.contNum > 0? score_w + padding + penalty_w : score_w; int offset = (b_w - total_w) / 2;
