@@ -6,14 +6,14 @@ import java.io.*;
 public class Android extends Activity {
   public void message_box(String title, String msg) { AlertDialog.Builder b = new AlertDialog.Builder(this); b.setMessage(msg); b.setTitle(title); b.setCancelable(true); b.create().show(); }
   public Bitmap load_image(String in_assets_path) { try(InputStream in = this.getAssets().open(in_assets_path)) { return BitmapFactory.decodeStream(in); } catch (IOException e) { message_box(e.getClass().getName(), String.format("load_image '%s'", in_assets_path)); } return null; }
-  public TextPaint load_font(String in_assets_path, double size) { TextPaint p = new TextPaint(); try { p.setTypeface(Typeface.createFromAsset(this.getAssets(), in_assets_path)); } catch(Exception e) { message_box(e.getClass().getName(), String.format("load_font '%s'", in_assets_path)); } p.setAntiAlias(true); p.setTextSize((float)size); return p; }
+  public TextPaint load_font(String in_assets_path) { TextPaint p = new TextPaint(); try { p.setTypeface(Typeface.createFromAsset(this.getAssets(), in_assets_path)); } catch(Exception e) { message_box(e.getClass().getName(), String.format("load_font '%s'", in_assets_path)); } p.setAntiAlias(true); return p; }
   private SoundPool audio = new SoundPool.Builder().setMaxStreams(2).build();
   public int load_audio(String in_assets_path) { try { return this.audio.load(this.getAssets().openFd(in_assets_path), 1); } catch(Exception e) { message_box(e.getClass().getName(), String.format("load_audio '%s'", in_assets_path)); } return 0; } // it's undocumented, but in practice the id returned is non-zero, and 0 will be ignored by play() when used.
   protected void onCreate(Bundle state) { super.onCreate(state); this.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION); this.setContentView(new View(this) {
 
       private Paint p = new Paint();
-      private TextPaint pt = load_font("OpenSans-Regular.ttf", 60);
-      private TextPaint pst = load_font("OpenSans-Regular.ttf", 60 * .6);
+      private TextPaint pt = load_font("OpenSans-Regular.ttf");
+      private TextPaint pst = load_font("OpenSans-Regular.ttf"); // TODO this is redundant, just reuse pt with setTextSize
 
       private int ship_animation;
       private int ship_w, ship_h;
@@ -94,28 +94,37 @@ public class Android extends Activity {
         if(!this.stretched) canvas.drawColor(bg);
         canvas.drawBitmap(scene_img, null, new RectF(x, y, x+w, y+h), p);
 
+        // stupid camera hole in the screen. I only care if we are in portrait not reverse. Hopefully this will survive the test of time.
+        int safe_top_y = 0; { WindowInsets insets = getWindow().getDecorView().getRootWindowInsets(); if(insets != null) { DisplayCutout cutout = insets.getDisplayCutout(); if(cutout != null) { safe_top_y = cutout.getSafeInsetTop(); } } }
+
         // overlay, now that I'm using drawString on the window size surface for all text instead of widgets, I need to ensure the font scales
-        pt.setColor(C.white); pst.setColor(C.white); Paint.FontMetricsInt fm = pt.getFontMetricsInt(), sfm = pst.getFontMetricsInt();
+        // in the event that the window is very thin, then we'll have to reduce the font so the longuest line fits
+        pt.setTextSize(b_h / 15); 
+        {
+          String msg = game.contNum == 0? "Your Hi-score: 000000    Period: 00 (00)" : "Your Hi-score: 000000      Continue penalty: 000000";
+          while(pt.measureText(msg) > b_w) {
+            pt.setTextSize(pt.getTextSize() * .9f);
+            if(pt.getTextSize() < 6) break;
+          }
+        }
+        pst.setTextSize(pt.getTextSize() * .6f); Paint.FontMetricsInt fm = pt.getFontMetricsInt(), sfm = pst.getFontMetricsInt();
+        
+        pt.setColor(C.white); pst.setColor(C.white); 
         canvas.drawText(String.format("Your Hi-score:%d", game.hiscore), 2*fm.descent/3, b_h - fm.descent, pt);
         { String msg = String.format("Period: %dms (%dms)", this.target_dt, this.dt); canvas.drawText(msg, b_w - 2*fm.descent/3 - (int)pt.measureText(msg), b_h - fm.descent, pt); }
         String score = "Score:" + game.score;
         String penalty = "Continue penalty:" + game.contNum * 1000;
         int score_w = (int)pt.measureText(score); int penalty_w = (int)pt.measureText(penalty); int padding = b_w / 10; int total_w = game.contNum > 0? score_w + padding + penalty_w : score_w; int offset = (b_w - total_w) / 2;
-
-        // stupid camera hole in the screen. I only care if we are in portrait not reverse. Hopefully this will survive the test of time.
-        int safe_top_y = 0; { WindowInsets insets = getWindow().getDecorView().getRootWindowInsets(); if(insets != null) { DisplayCutout cutout = insets.getDisplayCutout(); if(cutout != null) { safe_top_y = cutout.getSafeInsetTop(); } } }
-
         canvas.drawText(score, offset, safe_top_y + (-fm.ascent), pt); offset += score_w + padding;
         if(game.contNum > 0) canvas.drawText(penalty, offset, safe_top_y + (-fm.ascent), pt);
         if(game.title_mode) {
           int line_h = -fm.ascent + fm.descent; int small_line_h = -sfm.ascent + sfm.descent;
-          int spacing = 5, small_spacing = 3;
-          int n = 4, small_n = 6 + (gamepad.available? 4 : 0);
-          offset = (b_h - ((line_h + spacing) * n + (small_line_h + small_spacing) * small_n)) / 2;
+          int spacing = 3, small_spacing = 2;
+          int n = 3, small_n = 6 + (gamepad.available? 4 : 0);
+          offset = (b_h - ((line_h + spacing) * n + (small_line_h + small_spacing) * small_n - spacing - small_spacing)) / 2;
           { String msg = "Jet Slalom Resurrected"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += line_h + spacing; }
           { String msg = "by David Lareau in 2025"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += line_h + spacing; }
           { String msg = "Original 1997 version by MR-C"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += line_h + spacing; }
-          { offset += line_h + spacing; }
           { String msg = "-- Keyboard --"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
           { String msg = "(F)ullscreen, (H)ighRez, (S)tretch, Speed(num+/num-)"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
           { String msg = "Restart(Spacebar/Enter), (C)ontinue(up/W), Chea(T)"; int line_w = (int)pst.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pst); offset += small_line_h + small_spacing; }
