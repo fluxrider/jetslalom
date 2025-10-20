@@ -30,10 +30,27 @@ public class Android extends Activity {
       private int target_dt = 55;
       private int delay = target_dt;
 
+      private int i = 0;
+
       private Game game;
 
       {
         this.set_logical_size(1);
+        this.gameThread = new Thread(new Runnable() {
+          public void run() {
+            long t0 = System.currentTimeMillis(), t1 = t0;
+            while (gameThread == Thread.currentThread()) {
+              t0 = t1; t1 = System.currentTimeMillis(); long dt = t1 - t0;
+
+              invalidate();
+              if(dt > target_dt) { delay--; } // framerate too low, try faster
+              if(dt < target_dt) { delay++; } // framerate too high, try slower
+              if(delay < 1) delay = 1;
+              { try { Thread.sleep(delay); } catch (InterruptedException e) { e.printStackTrace(); } }
+            }
+          }
+        });
+        this.gameThread.start();
       }
 
       private void set_logical_size(double scale) {
@@ -50,7 +67,7 @@ public class Android extends Activity {
         canvas.drawBitmap(scene_img, null, new RectF(0, 0, canvas.getWidth()/2, canvas.getHeight()/2), p);
         p.setColor(0xffff0000); canvas.drawLine((float)(Math.random() * 100), (float)(Math.random() * 100), (float)(Math.random() * 200 + 100), (float)(Math.random() * 200 + 100), p);
         p.setColor(0xff000000); canvas.drawText(String.format("Sound ID: %d", explosion), 10, 100, p);
-        pt.setColor(0xff000000); canvas.drawText(String.format("Font test"), 10, 200, pt);
+        pt.setColor(0xff000000); canvas.drawText(String.format("Counter %d", i++), 10, 200, pt);
         if(ship[0] != null) { canvas.drawBitmap(ship[0], 10, 300, p); }
       }
 
@@ -58,7 +75,6 @@ public class Android extends Activity {
         switch(e.getAction()) {
           case MotionEvent.ACTION_UP:
             audio.play(explosion, 1, 1, 0, 0, 1);
-            this.invalidate();
             break;
         }
         return true;
