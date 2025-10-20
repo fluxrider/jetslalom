@@ -269,6 +269,7 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
           int spacing = 5, small_spacing = 3;
           int n = 4, small_n = 6 + (gamepad.available? 4 : 0);
           offset = (b_h - ((line_h + spacing) * n + (small_line_h + small_spacing) * small_n)) / 2;
+          offset += fm.getAscent();
           { String msg = "Jet Slalom Resurrected"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += line_h + spacing; }
           { String msg = "by David Lareau in 2025"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += line_h + spacing; }
           { String msg = "Original 1997 version by MR-C"; int line_w = fm.stringWidth(msg); g.drawString(msg, (b_w - line_w) / 2, offset); offset += line_h + spacing; }
