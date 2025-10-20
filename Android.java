@@ -32,16 +32,17 @@ public class Android extends Activity {
 
       private int i = 0;
 
-      private Game game;
+      private Game game = new Game();
 
       {
         this.set_logical_size(1);
+        this.game.startGame(false, false);
         this.gameThread = new Thread(new Runnable() {
           public void run() {
             long t0 = System.currentTimeMillis(), t1 = t0;
             while (gameThread == Thread.currentThread()) {
               t0 = t1; t1 = System.currentTimeMillis(); long dt = t1 - t0;
-
+              tick();
               invalidate();
               if(dt > target_dt) { delay--; } // framerate too low, try faster
               if(dt < target_dt) { delay++; } // framerate too high, try slower
@@ -61,25 +62,99 @@ public class Android extends Activity {
         this.scene_c = new Canvas(scene_img);
         this.scene_c.drawColor(C.rgb(0,128,128));
       }
-
-      protected void onDraw(Canvas canvas) {
-        canvas.drawColor(bg);
-        canvas.drawBitmap(scene_img, null, new RectF(0, 0, canvas.getWidth()/2, canvas.getHeight()/2), p);
-        p.setColor(0xffff0000); canvas.drawLine((float)(Math.random() * 100), (float)(Math.random() * 100), (float)(Math.random() * 200 + 100), (float)(Math.random() * 200 + 100), p);
-        p.setColor(0xff000000); canvas.drawText(String.format("Sound ID: %d", explosion), 10, 100, p);
-        pt.setColor(0xff000000); canvas.drawText(String.format("Counter %d", i++), 10, 200, pt);
-        if(ship[0] != null) { canvas.drawBitmap(ship[0], 10, 300, p); }
-      }
-
+      
       public boolean onTouchEvent(MotionEvent e) {
         switch(e.getAction()) {
           case MotionEvent.ACTION_UP:
-            audio.play(explosion, 1, 1, 0, 0, 1);
+            //audio.play(explosion, 1, 1, 0, 0, 1);
             break;
         }
         return true;
       }
 
+      private void tick() {
+        if(game.title_mode && this.paused) this.paused = false;
+        if(!this.paused) {
+          game.tick(false, false); // TODO input
+          this.prt();
+        }
+      }
+
+      protected void onDraw(Canvas canvas) {
+
+        canvas.drawBitmap(scene_img, null, new RectF(0, 0, canvas.getWidth()/2, canvas.getHeight()/2), p);
+        // letterbox scaling (i.e. respects aspect ratio)
+        int b_w = canvas.getWidth(); int b_h = canvas.getHeight(); int s_w = this.logical_w; int s_h = this.logical_h;
+        double scale; if((b_w / (double)b_h) > (s_w / (double)s_h)) scale = b_h / (double)s_h; else scale = b_w / (double)s_w;
+        int x = (int)((b_w - s_w * scale) / 2); int y = (int)((b_h - s_h * scale) / 2);
+        int w = (int)(s_w*scale); int h = (int)(s_h*scale);
+        if(this.stretched) { x = 0; y = 0; w = b_w; h = b_h; }
+        if(!this.stretched) canvas.drawColor(bg);
+        canvas.drawBitmap(scene_img, null, new RectF(x, y, x+w, y+h), p);
+
+        p.setColor(0xffff0000); canvas.drawLine((float)(Math.random() * 100), (float)(Math.random() * 100), (float)(Math.random() * 200 + 100), (float)(Math.random() * 200 + 100), p);
+        p.setColor(0xff000000); canvas.drawText(String.format("Sound ID: %d", explosion), 10, 100, p);
+        pt.setColor(0xff000000); canvas.drawText(String.format("Debug %d %d %d %d %d", i++, x, y, w, h), 10, 200, pt);
+      }
+
+      // draw game primitives
+      private void drawPolygon(Game.Face face) {
+        Game.DPoint3[] points = face.points;
+        double d1 = (points[1]).x - (points[0]).x;
+        double d2 = (points[1]).y - (points[0]).y;
+        double d3 = (points[2]).x - (points[0]).x;
+        double d4 = (points[2]).y - (points[0]).y;
+        float f = (float)(Math.abs(d1 * d4 - d2 * d3) / face.maxZ);
+        drawPolygon(C.drgb(C.fr(face.rgb)*f, C.fg(face.rgb)*f, C.fb(face.rgb)*f), points);
+      }
+      private void drawPolygon(int color, Game.DPoint3[] points) {
+        double d1 = this.logical_w / 320.0;
+        double d2 = this.logical_h / 200.0;
+        Path path = new Path();
+        path.setFillType(Path.FillType.EVEN_ODD);
+        for (byte b = 0; b < points.length; b++) {
+          Game.DPoint3 point = points[b];
+          double d3 = 120.0 / (1.0 + 0.6 * point.z);
+          double d4 = game.nowCos * point.x + game.nowSin * (point.y - 2.0);
+          double d5 = -game.nowSin * point.x + game.nowCos * (point.y - 2.0) + 2.0;
+          int x  = (int)(d4 * d1 * d3) + this.logical_w / 2;
+          int y = (int)(d5 * d2 * d3) + this.logical_h / 2;
+          if(b == 0) path.moveTo(x,y);
+          else path.lineTo(x,y);
+        }
+        path.close();
+        p.setColor(color); p.setStyle(Paint.Style.FILL); this.scene_c.drawPath(path, p);
+      }
+      private void draw_obstacle(Game.Obstacle o) {
+        drawPolygon(o.faces[0]);
+        drawPolygon(o.faces[1]);
+      }
+
+      private void prt() {
+        this.scene_c.drawColor(game.rounds[game.round].getSkyRGB());
+        this.drawPolygon(game.rounds[game.round].getGroundRGB(), game.ground_points);
+        for(Game.Obstacle obstacle : game.obstacles) draw_obstacle(obstacle);
+        this.ship_animation++;
+        if(!game.title_mode) {
+          int y = 24 * this.logical_h / 200;
+          Bitmap image = this.ship[this.ship_animation % 4 > 1? 1 : 0];
+          if (this.ship_animation % 12 > 6) y = 22 * this.logical_h / 200;
+          if (game.score < 200) y = (12 + game.score / 20) * this.logical_h / 200;
+          if (game.damaged < 10) this.scene_c.drawBitmap(image, (this.logical_w / 2) - image.getWidth()/2, this.logical_h - y, p);
+          if (game.damaged > 0) {
+            if(game.damaged <= 20) {
+              if(game.damaged == 1) { audio.play(explosion, 1, 1, 0, 0, 1); }
+              this.p.setColor(C.rgb(255, 255 - game.damaged * 12, 240 - game.damaged * 12));
+              int i = game.damaged * 8 * this.logical_w / 320;
+              int j = game.damaged * 4 * this.logical_h / 200;
+              int left = (this.logical_w / 2) - i;
+              int top = 186 * this.logical_h / 200 - j;
+              this.scene_c.drawOval(left, top, left + i * 2, top + j * 2, p);
+            }
+          }
+        }
+      }
+  
     });
   }
 }

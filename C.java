@@ -17,7 +17,7 @@ public final class C { private C() { }
   }
   public static int rgb(int r, int g, int b) { return argb(255, r, g, b); }
   public static int dargb(double a, double r, double g, double b) { return argb((int)(a*255),(int)(r*255),(int)(g*255),(int)(b*255)); }
-  public static int drgb(double a, double r, double g, double b) { return argb(255,(int)(r*255),(int)(g*255),(int)(b*255)); }
+  public static int drgb(double r, double g, double b) { return argb(255,(int)(r*255),(int)(g*255),(int)(b*255)); }
   public static float fa(int argb) { return a(argb) / 255.0f; }
   public static float fr(int argb) { return r(argb) / 255.0f; }
   public static float fg(int argb) { return g(argb) / 255.0f; }
