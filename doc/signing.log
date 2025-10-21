@@ -20,3 +20,21 @@ The warnings are many (and don't matter):
 This jar contains entries whose certificate chain is invalid. Reason: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
 This jar contains entries whose signer certificate is self-signed.
 This jar contains signatures that do not include a timestamp. Without a timestamp, users may not be able to validate this jar after any of the signer certificates expire (as early as 3025-02-21).
+
+----- Signing APK -----
+
+~/_/apps/android-sdk/build-tools/36.1.0/apksigner --version
+0.9
+
+Assuming your ~/.keystore is set:
+~/_/apps/android-sdk/build-tools/36.1.0/apksigner sign -ks ~/.keystore JetSlalomResurrected.apk
+I find it very strange that I don't need to specify the alias. In the end I can so I do:
+~/_/apps/android-sdk/build-tools/36.1.0/apksigner sign -ks ~/.keystore -ks-key-alias fluxrider JetSlalomResurrected.apk 
+
+Using:
+ ~/_/apps/android-sdk/build-tools/36.1.0/apksigner verify --verbose JetSlalomResurrected.apk 
+it looks like it was only signed with v3 (not v1 as well). I don't care but hey, all the doc out there says to sign v1 and v3.
+
+The apksigner verify it pretty bad, doesn't even tell you who signed. You can still use:
+jarsigner -verify -verbose JetSlalomResurrected.apk 
+but the output of warnings is massive.

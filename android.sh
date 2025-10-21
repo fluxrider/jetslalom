@@ -1,3 +1,4 @@
+#!/bin/bash
 set -e
 shopt -s nullglob
 ./clean.sh
@@ -105,6 +106,8 @@ EOF
 # if the script fails on this line, maybe just comment it out and remove the line from the app_icon.xml just above. Who cares about monochrome icons?
 magick android/src/main/res/mipmap-xxxhdpi/app_icon_foreground.png -colorspace Gray android/src/main/res/mipmap-xxxhdpi/app_icon_grayscale.png
 
-# finally, build & install
-gradle --warning-mode all assembleDebug
-gradle installDebug
+# finally, build & install or do nothing if there is an arg, we'll do it manually
+if [ "$#" -ne 1 ]; then
+  gradle --warning-mode all assembleDebug
+  gradle installDebug
+fi
