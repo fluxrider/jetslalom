@@ -88,7 +88,7 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
     this.set_logical_size(arg_hq? 6 : 1);
     try {
       this.explosion = AudioSystem.getClip();
-      this.explosion.open(AudioSystem.getAudioInputStream(AWT.class.getResourceAsStream("/res/explosion.wav")));
+      this.explosion.open(AudioSystem.getAudioInputStream(new BufferedInputStream(AWT.class.getResourceAsStream("/res/explosion.wav")))); // the buffer is necessary when inside a jar
     } catch(Exception e) {
       e.printStackTrace();
     }
