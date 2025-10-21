@@ -264,7 +264,7 @@ public class Android extends Activity {
         if(game.title_mode) {
           int line_h = -fm.ascent + fm.descent; int small_line_h = -sfm.ascent + sfm.descent;
           int spacing = 3, small_spacing = 2;
-          int n = 4, small_n = 3 + ((true || gamepad.available)? 4 : 0);
+          int n = 4, small_n = 3 + (gamepad.available? 4 : 0);
           offset = (b_h - ((line_h + spacing) * n + (small_line_h + small_spacing) * small_n - small_spacing)) / 2;
           offset += (-fm.ascent);
           offset -= 15; // no matter what I do, it's not perfectly centered unless I hack this value, but of course this cannot survive resolution changes
@@ -276,7 +276,7 @@ public class Android extends Activity {
           { String msg = "-- Touch --"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += small_line_h + small_spacing; }
           { String msg = "Ship(L/R side of screen)"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += small_line_h + small_spacing; }
           { String msg = "Restart(L side tap), Continue(R side tap)"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += small_line_h + small_spacing; }
-          if(true || gamepad.available) {
+          if(gamepad.available) {
             { String msg = "-- Gamepad --"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += small_line_h + small_spacing; }
             { String msg = "HighRez(L3), Stretch(R3), Speed(Select+LB/RB)"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += small_line_h + small_spacing; }
             { String msg = "Re(Start/Down), Resume(A/B/X/Y/Up), Cheat(Select+Start)"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += small_line_h + small_spacing; }
