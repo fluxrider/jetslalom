@@ -56,7 +56,7 @@ function draw_scene(canvas, width, height) {
 </script>
 </head>
 <body onload="start_canvas();">
-<p><button onclick="go_fullscreen();">Go Fullscreen</button></p>
+<p><button onclick="go_fullscreen();">Go Fullscreen</button>&emsp;<a href="https://github.com/fluxrider/jetslalom">Github</a></p>
 <canvas id="canvas" width="1280" height="800" style="border: 3px solid black; image-rendering: pixelated;"></canvas>
 <!-- hack to disable anti-alias drawing: https://stackoverflow.com/questions/4261090/html5-canvas-and-anti-aliasing -->
 <svg width="0" height="0" style="position:absolute;z-index:-1;"><defs><filter id="remove-alpha" x="0" y="0" width="100%" height="100%"><feComponentTransfer><feFuncA type="discrete" tableValues="0 1"></feFuncA></feComponentTransfer></filter></defs></svg>
