@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jet Slalom Resurrected</title>
+<script>
+async function start_canvas() {
+  console.log("start_canvas()")
+  const canvas_element = document.getElementById("canvas");
+  const width = canvas_element.width; const height = canvas_element.height;
+  const canvas = canvas_element.getContext("2d");
+  canvas.imageSmoothingEnabled = false;
+  console.log(canvas);
+  
+  canvas.fillStyle = "rgb(200 0 0)";
+  canvas.fillRect(10, 10, 50, 50);
+
+  canvas.fillStyle = "rgb(0 255 0)";
+  canvas.beginPath();
+  canvas.moveTo(30, 20);
+  canvas.lineTo(90, 20);
+  canvas.lineTo(195, 70.5);
+  canvas.lineTo(15, 90);
+  canvas.closePath();
+  canvas.fill();
+
+  const ship = new Image(); ship.src = "res/jiki.gif"; await ship.decode();
+  canvas.drawImage(ship, (width - ship.width)/2, (height - ship.height) / 2);
+  canvas.drawImage(ship, (width - 2*ship.width)/2, (height - 2*ship.height), 2*ship.width, 2*ship.height);
+
+  canvas.fillStyle = "rgb(0 0 0)";
+  canvas.font = "24px serif";
+  const msg = "Hello World";
+  const fm = canvas.measureText("Hello world");
+  console.log(fm);
+  canvas.fillText(msg, 0, height);
+  canvas.fillText(msg, width - fm.width, height);
+  canvas.fillText(msg, 0, fm.actualBoundingBoxAscent);
+}
+</script>
+</head>
+<body onload="start_canvas();">
+<canvas id="canvas" width="320" height="200" style="border: 3px solid black;"></canvas>
+</body>
+</html>
