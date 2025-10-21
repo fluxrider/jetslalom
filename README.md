@@ -7,8 +7,8 @@
 ![Title Screenshot](doc/screenshot_hq.png?raw=true)
 ![HighRez Feature](doc/screenshot_title.png?raw=true)
 
-I played Jet Slalom as an online applet when I was a young adult back in 1999.
-I wrote a WebGL crappy homage test around 2010.
+I played Jet Slalom as an online Java applet when I was a young adult back in 1999.
+I wrote a crappy WebGL homage test around 2010.
 Some random guy on the internet emailed me about it in 2025, praising my controls but pooping on my inexistant levels design.
 
 The guy also sent me a half broken code base of what he could salvage off the internet of what may have been a decompiled version of the original code.
@@ -50,17 +50,17 @@ It didn't compile, and had commented bytecode sections. This is me getting it to
 
 ### How to run the release files
 
-The .jar file is the simplest possible, which sadly still requires command line 101, and an intuition that when I write 'version' in the filename, it's not verbatim.
+The jar file is the simplest possible, which sadly still requires command line 101, and an intuition that when I write 'version' in the filename, it's not verbatim.
 ```
 java -jar JetSlalomResurrected-version.jar
 ```
 
-The .zip file has gamepad support, which comes with the mess of 3rd party library. You unzip it, and run the launch script. If you aren't on posix, tough luck. If you can't decypher the run script yourself you have no business here.
+The zip is for Desktop too and adds gamepad support but has a 3rd party library which is bound to backfire one day.
 ```
 ./run.sh
 ```
 
-The .apk is an android release. Get the file on your phone, and run it. If you live in an alternate universe it will work no problem. In this one you'll have an ugly dialog telling you it wasn't scanned by an authority, and the button to install anyway will be hidden. Worst, when it shows it has no background so it doesn't look like a button compared to the rest of the dialog. Worst, I'm writting this in 2025. Google is threatening to disable all sideloading soon. Worst, I probably forget that you have to allow sideloading to begin with in the phone settings, something I've done once and forgot how to do.
+The apk is an android release. The development is hard enough, so it is easier to pick the latest version of android as a target. It's a jerk move but it's what I did. You need Android 16 to install it. Get the file on your phone, and run it. If you live in an alternate universe it will work no problem. In this one you'll have an ugly dialog telling you it wasn't scanned by an authority, and the button to install anyway will be hidden. Worst, when it shows it has no background so it doesn't look like a button compared to the rest of the dialog. Worst, I'm writting this in 2025. Google is threatening to disable all sideloading soon. Worst, I probably forget that you have to allow sideloading to begin with in the phone settings, something I've done once and forgot how to do.
 
 ## How to build
 
@@ -78,8 +78,8 @@ If you want gamepad support, but aren't running a posix system (e.g. Linux), you
 ./desktop.sh
 ```
 
-If you want to build for android, you are probably going to suffer. One because Google breaks their build system every day. Second because I'm a jerk and you probably noticed there aren't any android folder structure commited.
-The scripts generates everything on the fly. I ain't bending the knee to no convention.
+If you want to build for android, you are probably going to suffer. One because Google breaks their build system every other month. Second because I'm a jerk and you probably noticed there aren't any android folder structure commited.
+The scripts generates everything on the fly. I ain't bending the knee to no conventions.
 ```
 ./android.sh
 ```
