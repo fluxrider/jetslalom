@@ -6,5 +6,8 @@ settings.gradle
 build.gradle
 .gradle/
 android/
+# desktop and release scripts
+bin/
 build/
 JetSlalomResurrected.jar
+JetSlalomResurrected.zip
