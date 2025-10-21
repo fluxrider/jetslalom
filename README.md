@@ -37,7 +37,6 @@ It didn't compile, and had commented bytecode sections. This is me getting it to
 ### Future Work
 
 - Web Browser version somehow.
-- Android version.
 
 ### Known Issue
 
@@ -45,6 +44,8 @@ It didn't compile, and had commented bytecode sections. This is me getting it to
 - The world of desktop scaling, 2K, 4K, and upscaling is a mess.
   - When the app was using AWT widgets, it required `-Dsun.java2d.uiScale.enabled=true -Dsun.java2d.uiScale=2 -Djava.awt.headless=false` to look good.
   - I've replaced the widgets with drawString to make the app more portable and simpler, but I still suspect there are problems depending of your environment, and getting the Font to look good is now a chore.
+- Android
+  - I can't figure how to detect when the navigation (i.e. 3 button overlay) or status bar (i.e. clock, battery) overlays show up. I would love to pause when this happens. I tried 3 different ways to no avail.
   
 ## How to run
 
