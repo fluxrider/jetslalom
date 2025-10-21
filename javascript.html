@@ -10,34 +10,19 @@ async function start_canvas() {
   const canvas_element = document.getElementById("canvas");
   const width = canvas_element.width; const height = canvas_element.height;
   const canvas = canvas_element.getContext("2d");
-  canvas.imageSmoothingEnabled = false;
-  
   const logical_width = 320; const logical_height = 200;
-  const logical_canvas_element = new OffscreenCanvas(logical_width, logical_height);
-  const logical_canvas = logical_canvas_element.getContext("2d");
-  logical_canvas.imageSmoothingEnabled = false;
-  logical_canvas.filter = 'url(#remove-alpha)'; // TODO this hack doesn't seem to work for me
-  
-  console.log(canvas_element);
-  console.log(logical_canvas_element);
-  
-  logical_canvas.fillStyle = "rgb(0 196 196)";
-  logical_canvas.fillRect(0, 0, logical_width, logical_height);
+  const original_filter = canvas.filter;
+  canvas.imageSmoothingEnabled = false;
 
-  logical_canvas.fillStyle = "rgb(255 0 0)";
-  logical_canvas.beginPath();
-  logical_canvas.moveTo(30, 20);
-  logical_canvas.lineTo(90, 20);
-  logical_canvas.lineTo(195, 70);
-  logical_canvas.lineTo(15, 90);
-  logical_canvas.closePath();
-  logical_canvas.fill();
-
+  // load assets
   const ship = new Image(); ship.src = "res/jiki.gif"; await ship.decode();
-  logical_canvas.drawImage(ship, (logical_width - ship.width)/2, (logical_height - ship.height) / 2);
-  logical_canvas.drawImage(ship, (logical_width - 2*ship.width)/2, (logical_height - 2*ship.height), 2*ship.width, 2*ship.height);
 
-  canvas.drawImage(logical_canvas_element, 0, 0, width, height);
+  // the svg trick to disable anti-alias of shapes does not work on an offscreen surface, so I scale the real one instead
+  canvas.filter = 'url(#remove-alpha)';
+  canvas.scale(4,4); draw_scene(canvas, logical_width, logical_height, ship);
+  
+  // text overlay
+  canvas.filter = original_filter; canvas.scale(.25,.25);
   canvas.fillStyle = "rgb(0 0 0)";
   canvas.font = "48px serif";
   const msg = "Hello World";
@@ -45,7 +30,23 @@ async function start_canvas() {
   canvas.fillText(msg, 0, height);
   canvas.fillText(msg, width - fm.width, height);
   canvas.fillText(msg, 0, fm.actualBoundingBoxAscent);
-  // image-rendering: -moz-crisp-edges; image-rendering: -webkit-crisp-edges; image-rendering: pixelated; image-rendering: crisp-edges;
+}
+
+async function draw_scene(canvas, width, height, ship) {
+  canvas.fillStyle = "rgb(0 196 196)";
+  canvas.fillRect(0, 0, width, height);
+
+  canvas.fillStyle = "rgb(255 0 0)";
+  canvas.beginPath();
+  canvas.moveTo(30, 20);
+  canvas.lineTo(90, 20);
+  canvas.lineTo(195, 70);
+  canvas.lineTo(15, 90);
+  canvas.closePath();
+  canvas.fill();
+
+  canvas.drawImage(ship, (width - ship.width)/2, (height - ship.height) / 2);
+  canvas.drawImage(ship, (width - 2*ship.width)/2, (height - 2*ship.height), 2*ship.width, 2*ship.height);
 }
 </script>
 </head>
