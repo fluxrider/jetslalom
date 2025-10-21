@@ -18,6 +18,7 @@ cp gamepad/logging.properties build/
 echo "java -Djava.library.path=jinput-2.0.10-natives-all --enable-native-access=ALL-UNNAMED -Djava.util.logging.config.file=logging.properties -jar JetSlalomResurrected.jar" > build/run.sh
 cd build
 chmod +x run.sh
+jarsigner JetSlalomResurrected.jar fluxrider
 zip -r JetSlalomResurrected.zip jinput-2.0.10-natives-all *.*
 mv JetSlalomResurrected.zip ..
 cd ..

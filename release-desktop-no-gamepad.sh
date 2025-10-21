@@ -6,4 +6,6 @@ javac AWT.java -d bin
 cd bin
 jar cfev ../JetSlalomResurrected.jar AWT *.class ../res
 cd ..
+jarsigner JetSlalomResurrected.jar fluxrider
+
 # java -jar JetSlalomResurrected.jar

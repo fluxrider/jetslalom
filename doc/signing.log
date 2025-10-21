@@ -1,0 +1,22 @@
+----- Signing JAR files for desktop releases -----
+
+From JDK:
+keytool --version
+keytool 25.0.1
+jarsigner --version
+jarsigner 25.0.1
+
+keytool -genkeypair -keystore fluxrider.jks -keyalg RSA -alias fluxrider -validity 365000
+Generating 3072-bit RSA key pair and self-signed certificate (SHA384withRSA) with a validity of 365,000 days
+        for: CN=fluxrider, OU=Unknown, O=Unknown, L=Unknown, ST=Unknown, C=CA
+
+I have to guard this fluxrider.jks with my life now...
+cp fluxrider.jks ~/.keystore
+
+jarsigner JetSlalomResurrected.jar fluxrider
+
+jarsigner -verify -verbose JetSlalomResurrected.jar
+The warnings are many (and don't matter):
+This jar contains entries whose certificate chain is invalid. Reason: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+This jar contains entries whose signer certificate is self-signed.
+This jar contains signatures that do not include a timestamp. Without a timestamp, users may not be able to validate this jar after any of the signer certificates expire (as early as 3025-02-21).
