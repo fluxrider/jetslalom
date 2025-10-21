@@ -9,7 +9,7 @@ android/
 # desktop and release scripts
 bin/
 build/
-JetSlalomResurrected.jar
-JetSlalomResurrected.zip
-JetSlalomResurrected.apk
-JetSlalomResurrected.apk.idsig
+*.jar
+*.zip
+*.apk
+*.apk.idsig

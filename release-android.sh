@@ -10,4 +10,9 @@ cp android/build/outputs/apk/release/android-release-unsigned.apk JetSlalomResur
 # however, the zip align step seems to be already done, when we verify
 #~/_/apps/android-sdk/build-tools/36.1.0/zipalign -c -P 16 -v 4 JetSlalomResurrected.apk
 
-~/_/apps/android-sdk/build-tools/36.1.0/apksigner sign -ks ~/.keystore -ks-key-alias fluxrider JetSlalomResurrected.apk 
+~/_/apps/android-sdk/build-tools/36.1.0/apksigner sign -ks ~/.keystore -ks-key-alias fluxrider JetSlalomResurrected.apk
+
+# rename to something informative
+mv JetSlalomResurrected.apk JetSlalomResurrected-sdk36-os16-$(date +"%Y-%m-%d").apk
+
+./clean.sh

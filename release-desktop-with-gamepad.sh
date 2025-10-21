@@ -15,12 +15,16 @@ mv JetSlalomResurrected.jar build/
 cp -R gamepad/jinput-2.0.10-natives-all build/
 cp gamepad/jinput-2.0.10.jar build/
 cp gamepad/logging.properties build/
-echo "java -Djava.library.path=jinput-2.0.10-natives-all --enable-native-access=ALL-UNNAMED -Djava.util.logging.config.file=logging.properties -jar JetSlalomResurrected.jar" > build/run.sh
+echo "java -Djava.library.path=jinput-2.0.10-natives-all --enable-native-access=ALL-UNNAMED -Djava.util.logging.config.file=logging.properties -jar JetSlalomResurrected-$(date +'%Y-%m-%d').jar" > build/run.sh
 cd build
 chmod +x run.sh
 jarsigner JetSlalomResurrected.jar fluxrider
+mv JetSlalomResurrected.jar JetSlalomResurrected-$(date +"%Y-%m-%d").jar
 zip -r JetSlalomResurrected.zip jinput-2.0.10-natives-all *.*
 mv JetSlalomResurrected.zip ..
 cd ..
 
-# extract the zip and execute run.sh
+# rename to something informative
+mv JetSlalomResurrected.zip JetSlalomResurrected-$(date +"%Y-%m-%d").zip
+
+./clean.sh

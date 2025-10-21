@@ -8,4 +8,7 @@ jar cfev ../JetSlalomResurrected.jar AWT *.class ../res
 cd ..
 jarsigner JetSlalomResurrected.jar fluxrider
 
-# java -jar JetSlalomResurrected.jar
+# rename to something informative
+mv JetSlalomResurrected.jar JetSlalomResurrected-$(date +"%Y-%m-%d").jar
+
+./clean.sh
