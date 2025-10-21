@@ -38,6 +38,8 @@ public class Android extends Activity {
       private Game game = new Game();
 
       {
+        setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() { public WindowInsets onApplyWindowInsets(View v, WindowInsets insets) { paused = true; return insets; } });
+        getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() { public void onSystemUiVisibilityChange(int visibility) { paused = true; } });
         this.setFocusable(true);
         this.set_logical_size(1);
         this.game.startGame(false, false);
@@ -57,6 +59,7 @@ public class Android extends Activity {
         });
         this.gameThread.start();
       }
+      protected void onVisibilityChanged(View v, int viz) { super.onVisibilityChanged(v, viz); if(viz != View.VISIBLE) this.paused = true; }
 
       private void set_logical_size(double scale) {
         this.logical_w = (int)(320 * scale);
@@ -81,6 +84,7 @@ public class Android extends Activity {
           case MotionEvent.ACTION_UP:
           case MotionEvent.ACTION_POINTER_UP:
           case MotionEvent.ACTION_CANCEL:
+            this.paused = false;
             synchronized(touches_x) { touches_x.remove(pointer_id); }
             if(game.title_mode) {
               game.startGame(true, e.getX(index) > getWidth()/2);
