@@ -7,41 +7,51 @@
 <title>Jet Slalom Resurrected</title>
 <script>
 async function start_canvas() {
-  console.log("start_canvas()")
   const canvas_element = document.getElementById("canvas");
   const width = canvas_element.width; const height = canvas_element.height;
   const canvas = canvas_element.getContext("2d");
   canvas.imageSmoothingEnabled = false;
-  console.log(canvas);
   
-  canvas.fillStyle = "rgb(200 0 0)";
-  canvas.fillRect(10, 10, 50, 50);
+  const logical_width = 320; const logical_height = 200;
+  const logical_canvas_element = new OffscreenCanvas(logical_width, logical_height);
+  const logical_canvas = logical_canvas_element.getContext("2d");
+  logical_canvas.imageSmoothingEnabled = false;
+  logical_canvas.filter = 'url(#remove-alpha)'; // TODO this hack doesn't seem to work for me
+  
+  console.log(canvas_element);
+  console.log(logical_canvas_element);
+  
+  logical_canvas.fillStyle = "rgb(0 196 196)";
+  logical_canvas.fillRect(0, 0, logical_width, logical_height);
 
-  canvas.fillStyle = "rgb(0 255 0)";
-  canvas.beginPath();
-  canvas.moveTo(30, 20);
-  canvas.lineTo(90, 20);
-  canvas.lineTo(195, 70.5);
-  canvas.lineTo(15, 90);
-  canvas.closePath();
-  canvas.fill();
+  logical_canvas.fillStyle = "rgb(255 0 0)";
+  logical_canvas.beginPath();
+  logical_canvas.moveTo(30, 20);
+  logical_canvas.lineTo(90, 20);
+  logical_canvas.lineTo(195, 70);
+  logical_canvas.lineTo(15, 90);
+  logical_canvas.closePath();
+  logical_canvas.fill();
 
   const ship = new Image(); ship.src = "res/jiki.gif"; await ship.decode();
-  canvas.drawImage(ship, (width - ship.width)/2, (height - ship.height) / 2);
-  canvas.drawImage(ship, (width - 2*ship.width)/2, (height - 2*ship.height), 2*ship.width, 2*ship.height);
+  logical_canvas.drawImage(ship, (logical_width - ship.width)/2, (logical_height - ship.height) / 2);
+  logical_canvas.drawImage(ship, (logical_width - 2*ship.width)/2, (logical_height - 2*ship.height), 2*ship.width, 2*ship.height);
 
+  canvas.drawImage(logical_canvas_element, 0, 0, width, height);
   canvas.fillStyle = "rgb(0 0 0)";
-  canvas.font = "24px serif";
+  canvas.font = "48px serif";
   const msg = "Hello World";
   const fm = canvas.measureText("Hello world");
-  console.log(fm);
   canvas.fillText(msg, 0, height);
   canvas.fillText(msg, width - fm.width, height);
   canvas.fillText(msg, 0, fm.actualBoundingBoxAscent);
+  // image-rendering: -moz-crisp-edges; image-rendering: -webkit-crisp-edges; image-rendering: pixelated; image-rendering: crisp-edges;
 }
 </script>
 </head>
 <body onload="start_canvas();">
-<canvas id="canvas" width="320" height="200" style="border: 3px solid black;"></canvas>
+<canvas id="canvas" width="1280" height="800" style="border: 3px solid black; image-rendering: pixelated;"></canvas>
+<!-- hack to disable anti-alias drawing: https://stackoverflow.com/questions/4261090/html5-canvas-and-anti-aliasing -->
+<svg width="0" height="0" style="position:absolute;z-index:-1;"><defs><filter id="remove-alpha" x="0" y="0" width="100%" height="100%"><feComponentTransfer><feFuncA type="discrete" tableValues="0 1"></feFuncA></feComponentTransfer></filter></defs></svg>
 </body>
 </html>
