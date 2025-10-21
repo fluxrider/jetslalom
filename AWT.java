@@ -88,7 +88,7 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
     this.set_logical_size(arg_hq? 6 : 1);
     try {
       this.explosion = AudioSystem.getClip();
-      this.explosion.open(AudioSystem.getAudioInputStream(new File("res/explosion.wav")));
+      this.explosion.open(AudioSystem.getAudioInputStream(AWT.class.getResourceAsStream("/res/explosion.wav")));
     } catch(Exception e) {
       e.printStackTrace();
     }
@@ -110,8 +110,8 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
     this.scene_g.fillRect(0, 0, this.logical_w, this.logical_h);
     try {
       int image_scale = (int)(this.logical_w * 0.7 * 120 / 1.6 / 320);
-      this.ship[0] = ImageIO.read(new File("res/jiki.gif")).getScaledInstance(image_scale * 2, image_scale / 4, Image.SCALE_FAST);
-      this.ship[1] = ImageIO.read(new File("res/jiki2.gif")).getScaledInstance(image_scale * 2, image_scale / 4, Image.SCALE_FAST);
+      this.ship[0] = ImageIO.read(AWT.class.getResourceAsStream("/res/jiki.gif")).getScaledInstance(image_scale * 2, image_scale / 4, Image.SCALE_FAST);
+      this.ship[1] = ImageIO.read(AWT.class.getResourceAsStream("/res/jiki2.gif")).getScaledInstance(image_scale * 2, image_scale / 4, Image.SCALE_FAST);
     } catch(Exception e) {
       e.printStackTrace();
     }
@@ -241,7 +241,7 @@ class AWT extends Panel implements Runnable, MouseListener, MouseMotionListener,
       // overlay, now that I'm using drawString on the window size surface for all text instead of widgets, I need to ensure the font scales
       try {
         if(this.font == null) {
-          this.font = Font.createFont(Font.TRUETYPE_FONT, new File("res/OpenSans-Regular.ttf"));
+          this.font = Font.createFont(Font.TRUETYPE_FONT, AWT.class.getResourceAsStream("/res/OpenSans-Regular.ttf"));
           this.font = this.font.deriveFont(Font.PLAIN, b_h / 25);
         }
         // in the event that the window is very thin, then we'll have to reduce the font so the longuest line fits
