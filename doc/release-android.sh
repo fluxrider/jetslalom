@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 ./clean.sh
+
 ./android.sh just-project-setup
 gradle assembleRelease
 cp android/build/outputs/apk/release/android-release-unsigned.apk JetSlalomResurrected.apk
