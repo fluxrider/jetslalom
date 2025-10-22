@@ -129,7 +129,6 @@ async function app_start() {
   // start draw loop
   t0 = currentTimeMillis(); t1 = t0;
   app_draw();
-  // explosion.play(); TODO
 }
 
 function app_draw() {
@@ -139,16 +138,19 @@ function app_draw() {
   const canvas = canvas_element.getContext("2d");
   const logical_width = 320; const logical_height = 200;
   canvas.imageSmoothingEnabled = false;
-  
+
   // input
   gamepad.poll(); let dead_zone = .05;
   let ship_left = key_a || key_j || key_left || (mouse_held && mouse_x < width / 2) || gamepad.left || gamepad.left_shoulder || gamepad.lx < -dead_zone || gamepad.rx < -dead_zone || gamepad.left_trigger > dead_zone;
   let ship_right = key_d || key_l || key_right || (mouse_held && mouse_x > width / 2) || gamepad.right || gamepad.right_shoulder || gamepad.lx > dead_zone || gamepad.rx > dead_zone || gamepad.right_trigger > dead_zone;
 
+  // tmp
+  if(gamepad.n_south) explosion.play();
+
   // the svg trick to disable anti-alias of shapes does not work on an offscreen surface, so I scale the real one instead
   canvas.filter = 'url(#remove-alpha)';
   canvas.scale(4,4); draw_scene(canvas, logical_width, logical_height);
-  
+
   // text overlay
   canvas.filter = original_filter; canvas.scale(.25,.25);
   canvas.fillStyle = "rgb(0 0 0)";
