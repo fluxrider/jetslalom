@@ -7,19 +7,36 @@
 <title>Jet Slalom Resurrected</title>
 <script>
 function go_fullscreen() { const canvas_element = document.getElementById("canvas"); if(canvas_element.requestFullScreen) { canvas_element.requestFullScreen(); } else if(canvas_element.webkitRequestFullScreen) { canvas_element.webkitRequestFullScreen(); } else if(canvas_element.mozRequestFullScreen) { canvas_element.mozRequestFullScreen(); } }
+function currentTimeMillis() { var now = new Date(); return Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),  now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds()); }
 
 var ship_0, ship_1;
-async function start_canvas() {
+
+var target_dt = 55;
+var delay = target_dt;
+var t0, t1;
+var original_filter;
+
+async function app_start() {
   const canvas_element = document.getElementById("canvas");
-  const width = canvas_element.width; const height = canvas_element.height;
   const canvas = canvas_element.getContext("2d");
-  const logical_width = 320; const logical_height = 200;
-  const original_filter = canvas.filter;
-  canvas.imageSmoothingEnabled = false;
+  original_filter = canvas.filter;
 
   // load assets
   ship_0 = new Image(); ship_0.src = "res/jiki.gif"; await ship_0.decode();
   ship_1 = new Image(); ship_1.src = "res/jiki2.gif"; await ship_1.decode();
+
+  // start draw loop
+  t0 = currentTimeMillis(); t1 = t0;
+  app_draw();
+}
+
+function app_draw() {
+  t0 = t1; t1 = currentTimeMillis(); let dt = t1 - t0;
+  const canvas_element = document.getElementById("canvas");
+  const width = canvas_element.width; const height = canvas_element.height;
+  const canvas = canvas_element.getContext("2d");
+  const logical_width = 320; const logical_height = 200;
+  canvas.imageSmoothingEnabled = false;
 
   // the svg trick to disable anti-alias of shapes does not work on an offscreen surface, so I scale the real one instead
   canvas.filter = 'url(#remove-alpha)';
@@ -29,11 +46,17 @@ async function start_canvas() {
   canvas.filter = original_filter; canvas.scale(.25,.25);
   canvas.fillStyle = "rgb(0 0 0)";
   canvas.font = "48px serif";
-  const msg = "Hello World";
-  const fm = canvas.measureText("Hello world");
+  const msg = "delay:" + delay + " dt:" + dt + " target:"+target_dt;
+  const fm = canvas.measureText(msg);
   canvas.fillText(msg, 0, height);
   canvas.fillText(msg, width - fm.width, height);
   canvas.fillText(msg, 0, fm.actualBoundingBoxAscent);
+
+  // request another draw later
+  if(dt > target_dt) { delay--; } // framerate too low, try faster
+  if(dt < target_dt) { delay++; } // framerate too high, try slower
+  if(delay < 1) delay = 1;
+  window.setTimeout(app_draw, delay);
 }
 
 function draw_scene(canvas, width, height) {
@@ -55,7 +78,7 @@ function draw_scene(canvas, width, height) {
 
 </script>
 </head>
-<body onload="start_canvas();">
+<body onload="app_start();">
 <p><button onclick="go_fullscreen();">Go Fullscreen</button>&emsp;<a href="https://github.com/fluxrider/jetslalom">Github</a></p>
 <canvas id="canvas" width="1280" height="800" style="border: 3px solid black; image-rendering: pixelated;"></canvas>
 <!-- hack to disable anti-alias drawing: https://stackoverflow.com/questions/4261090/html5-canvas-and-anti-aliasing -->
