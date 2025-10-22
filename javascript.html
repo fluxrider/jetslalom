@@ -87,7 +87,7 @@ var gamepad = {
         this.north = pad.buttons[3].pressed;
         this.left_shoulder = pad.buttons[4].pressed;
         this.right_shoulder = pad.buttons[5].pressed;
-        this.left_trigger = pad.buttons[6].value;
+        this.left_trigger = pad.buttons[6].value; // note: I was not able to test these, I get nothing from 6 or 7 on my gamepad. omg 6,7.
         this.right_trigger = pad.buttons[7].value;
         this.select = pad.buttons[8].pressed;
         this.start = pad.buttons[9].pressed;
@@ -141,9 +141,9 @@ function app_draw() {
   canvas.imageSmoothingEnabled = false;
   
   // input
-  gamepad.poll();
-  let ship_left = key_a || key_j || key_left || (mouse_held && mouse_x < width / 2);
-  let ship_right = key_d || key_l || key_right || (mouse_held && mouse_x > width / 2);
+  gamepad.poll(); let dead_zone = .05;
+  let ship_left = key_a || key_j || key_left || (mouse_held && mouse_x < width / 2) || gamepad.left || gamepad.left_shoulder || gamepad.lx < -dead_zone || gamepad.rx < -dead_zone || gamepad.left_trigger > dead_zone;
+  let ship_right = key_d || key_l || key_right || (mouse_held && mouse_x > width / 2) || gamepad.right || gamepad.right_shoulder || gamepad.lx > dead_zone || gamepad.rx > dead_zone || gamepad.right_trigger > dead_zone;
 
   // the svg trick to disable anti-alias of shapes does not work on an offscreen surface, so I scale the real one instead
   canvas.filter = 'url(#remove-alpha)';
@@ -153,7 +153,7 @@ function app_draw() {
   canvas.filter = original_filter; canvas.scale(.25,.25);
   canvas.fillStyle = "rgb(0 0 0)";
   canvas.font = "48px serif";
-  const msg = ship_left + " " + ship_right + gamepad.south;
+  const msg = ship_left + " " + ship_right;
   const fm = canvas.measureText(msg);
   canvas.fillText(msg, 0, height);
   canvas.fillText(msg, width - fm.width, height);
