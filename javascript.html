@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Jet Slalom Resurrected</title>
 <script>
-function go_fullscreen() { const canvas_element = document.getElementById("canvas"); if(canvas_element.requestFullScreen) { canvas_element.requestFullScreen(); } else if(canvas_element.webkitRequestFullScreen) { canvas_element.webkitRequestFullScreen(); } else if(canvas_element.mozRequestFullScreen) { canvas_element.mozRequestFullScreen(); } }
+function go_fullscreen() { const canvas_element = document.getElementById("canvas"); if(canvas_element.requestFullScreen) { canvas_element.requestFullScreen(); } else if(canvas_element.webkitRequestFullScreen) { canvas_element.webkitRequestFullScreen(); } else if(canvas_element.mozRequestFullScreen) { canvas_element.mozRequestFullScreen(); } canvas_element.focus(); }
 function currentTimeMillis() { var now = new Date(); return Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),  now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds()); }
 
 var ship_0, ship_1;
@@ -63,6 +63,7 @@ async function app_start() {
   canvas_element.onmousemove = on_mouse_move;
   canvas_element.onkeydown = on_key_down; // the key events only work if the html canvas has a tabindex
   canvas_element.onkeyup = on_key_up;
+  canvas_element.focus();
   const canvas = canvas_element.getContext("2d");
   original_filter = canvas.filter;
 
