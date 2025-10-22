@@ -10,6 +10,7 @@ function go_fullscreen() { const canvas_element = document.getElementById("canva
 function currentTimeMillis() { var now = new Date(); return Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),  now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds()); }
 
 var ship_0, ship_1;
+const explosion = new Audio('res/explosion.wav');
 
 var target_dt = 55;
 var delay = target_dt;
@@ -28,6 +29,7 @@ async function app_start() {
   // start draw loop
   t0 = currentTimeMillis(); t1 = t0;
   app_draw();
+  // explosion.play(); TODO
 }
 
 function app_draw() {
