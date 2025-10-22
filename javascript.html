@@ -17,8 +17,29 @@ var delay = target_dt;
 var t0, t1;
 var original_filter;
 
+var mouse_held = false;
+var mouse_x, mouse_y;
+function on_mouse_down(e) {
+  mouse_x = e.offsetX;
+  mouse_y = e.offsetY;
+  mouse_held = true;
+}
+function on_mouse_up(e) {
+  mouse_held = false;
+}
+
+function on_mouse_move(e) {
+  if(mouse_held) {
+    mouse_x = e.offsetX;
+    mouse_y = e.offsetY;
+  }
+}
+
 async function app_start() {
   const canvas_element = document.getElementById("canvas");
+  canvas_element.onmousedown = on_mouse_down;
+  canvas_element.onmouseup = on_mouse_up;
+  canvas_element.onmousemove = on_mouse_move;
   const canvas = canvas_element.getContext("2d");
   original_filter = canvas.filter;
 
@@ -48,7 +69,7 @@ function app_draw() {
   canvas.filter = original_filter; canvas.scale(.25,.25);
   canvas.fillStyle = "rgb(0 0 0)";
   canvas.font = "48px serif";
-  const msg = "delay:" + delay + " dt:" + dt + " target:"+target_dt;
+  const msg = mouse_held? (mouse_x + " " + mouse_y) : "no mouse";
   const fm = canvas.measureText(msg);
   canvas.fillText(msg, 0, height);
   canvas.fillText(msg, width - fm.width, height);
