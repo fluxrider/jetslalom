@@ -27,7 +27,6 @@ function on_mouse_down(e) {
 function on_mouse_up(e) {
   mouse_held = false;
 }
-
 function on_mouse_move(e) {
   if(mouse_held) {
     mouse_x = e.offsetX;
@@ -35,11 +34,35 @@ function on_mouse_move(e) {
   }
 }
 
+var key_left = false, key_right = false;
+var key_a = false, key_d = false;
+var key_j = false, key_l = false;
+function on_key_down(e) {
+  if(e.repeat) return;
+  // key:   ArrowUp ArrowDown w s f h + - ' ' Enter c t p
+  if(e.key == "ArrowLeft") key_left = true;
+  if(e.key == "ArrowRight") key_right = true;
+  if(e.key == "a") key_a = true;
+  if(e.key == "d") key_d = true;
+  if(e.key == "j") key_j = true;
+  if(e.key == "l") key_l = true;
+}
+function on_key_up(e) {
+  if(e.key == "ArrowLeft") key_left = false;
+  if(e.key == "ArrowRight") key_right = false;
+  if(e.key == "a") key_a = false;
+  if(e.key == "d") key_d = false;
+  if(e.key == "j") key_j = false;
+  if(e.key == "l") key_l = false;
+}
+
 async function app_start() {
   const canvas_element = document.getElementById("canvas");
   canvas_element.onmousedown = on_mouse_down;
   canvas_element.onmouseup = on_mouse_up;
   canvas_element.onmousemove = on_mouse_move;
+  canvas_element.onkeydown = on_key_down; // the key events only work if the html canvas has a tabindex
+  canvas_element.onkeyup = on_key_up;
   const canvas = canvas_element.getContext("2d");
   original_filter = canvas.filter;
 
@@ -60,6 +83,10 @@ function app_draw() {
   const canvas = canvas_element.getContext("2d");
   const logical_width = 320; const logical_height = 200;
   canvas.imageSmoothingEnabled = false;
+  
+  // input
+  let ship_left = key_a || key_j || key_left || (mouse_held && mouse_x < width / 2);
+  let ship_right = key_d || key_l || key_right || (mouse_held && mouse_x > width / 2);
 
   // the svg trick to disable anti-alias of shapes does not work on an offscreen surface, so I scale the real one instead
   canvas.filter = 'url(#remove-alpha)';
@@ -69,7 +96,7 @@ function app_draw() {
   canvas.filter = original_filter; canvas.scale(.25,.25);
   canvas.fillStyle = "rgb(0 0 0)";
   canvas.font = "48px serif";
-  const msg = mouse_held? (mouse_x + " " + mouse_y) : "no mouse";
+  const msg = ship_left + " " + ship_right;
   const fm = canvas.measureText(msg);
   canvas.fillText(msg, 0, height);
   canvas.fillText(msg, width - fm.width, height);
@@ -103,7 +130,7 @@ function draw_scene(canvas, width, height) {
 </head>
 <body onload="app_start();">
 <p><button onclick="go_fullscreen();">Go Fullscreen</button>&emsp;<a href="https://github.com/fluxrider/jetslalom">Github</a></p>
-<canvas id="canvas" width="1280" height="800" style="border: 3px solid black; image-rendering: pixelated;"></canvas>
+<canvas id="canvas" width="1280" height="800" style="border: 3px solid black; image-rendering: pixelated;" tabindex="1"></canvas>
 <!-- hack to disable anti-alias drawing: https://stackoverflow.com/questions/4261090/html5-canvas-and-anti-aliasing -->
 <svg width="0" height="0" style="position:absolute;z-index:-1;"><defs><filter id="remove-alpha" x="0" y="0" width="100%" height="100%"><feComponentTransfer><feFuncA type="discrete" tableValues="0 1"></feFuncA></feComponentTransfer></filter></defs></svg>
 </body>
