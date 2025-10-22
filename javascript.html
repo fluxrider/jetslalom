@@ -56,6 +56,61 @@ function on_key_up(e) {
   if(e.key == "l") key_l = false;
 }
 
+var gamepad = {
+  param_dpad_diag_count: true,
+  start: false, select: false,
+  south: false, north: false, west: false, east: false,
+  up: false, down: false, left: false, right: false,
+  left_shoulder: false, right_shoulder: false,
+  l3: false, r3: false,
+  left_trigger: 0, right_trigger: 0,
+  lx: 0, ly: 0, rx: 0, ry: 0,
+  n_start: false, n_select: false,
+  n_south: false, n_north: false, n_west: false, n_east: false,
+  n_up: false, n_down: false, n_left: false, n_right: false,
+  n_left_shoulder: false, n_right_shoulder: false,
+  n_l3: false, n_r3: false,
+  available: false,
+  poll: function () {
+    this.n_start = this.start; this.n_select = this.select;
+    this.n_south = this.south; this.n_north = this.north; this.n_west = this.west; this.n_east = this.east;
+    this.n_up = this.up; this.n_down = this.down; this.n_left = this.left; this.n_right = this.right;
+    this.n_left_shoulder = this.left_shoulder; this.n_right_shoulder = this.right_shoulder;
+    this.n_l3 = this.l3; this.n_r3 = this.r3;
+    for(const pad of navigator.getGamepads()) { if(!pad) continue;
+      // see gamepad mapping at https://w3c.github.io/gamepad/#remapping
+      if(pad.mapping == "standard") {
+        this.available = true;
+        this.south = pad.buttons[0].pressed;
+        this.east = pad.buttons[1].pressed;
+        this.west = pad.buttons[2].pressed;
+        this.north = pad.buttons[3].pressed;
+        this.left_shoulder = pad.buttons[4].pressed;
+        this.right_shoulder = pad.buttons[5].pressed;
+        this.left_trigger = pad.buttons[6].value;
+        this.right_trigger = pad.buttons[7].value;
+        this.select = pad.buttons[8].pressed;
+        this.start = pad.buttons[9].pressed;
+        this.l3 = pad.buttons[10].pressed;
+        this.r3 = pad.buttons[11].pressed;
+        this.up = pad.buttons[12].pressed;
+        this.down = pad.buttons[13].pressed;
+        this.left = pad.buttons[14].pressed;
+        this.right = pad.buttons[15].pressed;
+        this.lx = pad.axes[0];
+        this.ly = pad.axes[1];
+        this.rx = pad.axes[2];
+        this.ry = pad.axes[3];
+      }
+    }
+    this.n_start = this.start != this.n_start; this.n_select = this.select != this.n_select;
+    this.n_south_maybe = this.south_maybe != this.n_south_maybe; this.n_north_maybe = this.north_maybe != this.n_north_maybe; this.n_west_maybe = this.west_maybe != this.n_west_maybe; this.n_east_maybe = this.east_maybe != this.n_east_maybe;
+    this.n_up = this.up != this.n_up; this.n_down = this.down != this.n_down; this.n_left = this.left != this.n_left; this.n_right = this.right != this.n_right;
+    this.n_left_shoulder = this.left_shoulder != this.n_left_shoulder; this.n_right_shoulder = this.right_shoulder != this.n_right_shoulder;
+    this.n_l3 = this.l3 != this.n_l3; this.n_r3 = this.r3 != this.n_r3;
+  }
+};
+
 async function app_start() {
   const canvas_element = document.getElementById("canvas");
   canvas_element.onmousedown = on_mouse_down;
@@ -86,6 +141,7 @@ function app_draw() {
   canvas.imageSmoothingEnabled = false;
   
   // input
+  gamepad.poll();
   let ship_left = key_a || key_j || key_left || (mouse_held && mouse_x < width / 2);
   let ship_right = key_d || key_l || key_right || (mouse_held && mouse_x > width / 2);
 
@@ -97,7 +153,7 @@ function app_draw() {
   canvas.filter = original_filter; canvas.scale(.25,.25);
   canvas.fillStyle = "rgb(0 0 0)";
   canvas.font = "48px serif";
-  const msg = ship_left + " " + ship_right;
+  const msg = ship_left + " " + ship_right + gamepad.south;
   const fm = canvas.measureText(msg);
   canvas.fillText(msg, 0, height);
   canvas.fillText(msg, width - fm.width, height);
