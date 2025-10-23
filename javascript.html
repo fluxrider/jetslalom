@@ -38,6 +38,45 @@ function on_mouse_move(e) {
   }
 }
 
+var touches_x = new Map();
+function on_touch_start(e) {
+  e.preventDefault();
+  const canvas_element = document.getElementById("canvas");
+  let canvas_rect = canvas_element.getBoundingClientRect();
+  for(let i = 0; i < e.changedTouches.length; i++) {
+    t = e.changedTouches.item(i);
+    let id = t.identifier;
+    let x = t.clientX - canvas_rect.left
+    touches_x.set(id, x);
+  }
+}
+function on_touch_move(e) {
+  e.preventDefault();
+  const canvas_element = document.getElementById("canvas");
+  let canvas_rect = canvas_element.getBoundingClientRect();
+  for(let i = 0; i < e.changedTouches.length; i++) {
+    t = e.changedTouches.item(i);
+    let id = t.identifier;
+    let x = t.clientX - canvas_rect.left
+    touches_x.set(id, x);
+  }
+}
+function on_touch_cancel(e) {
+  e.preventDefault();
+  for(let i = 0; i < e.changedTouches.length; i++) {
+    t = e.changedTouches.item(i);
+    let id = t.identifier;
+    let x = t.clientX - canvas_rect.left
+    touches_x.delete(id);
+    if(game.title_mode) {
+      game.startGame(true, x > canvas_rect.width/2);
+    }
+  }
+}
+function on_touch_end(e) {
+  on_touch_cancel(e);
+}
+
 var key_left = false, key_right = false;
 var key_a = false, key_d = false;
 var key_j = false, key_l = false;
@@ -133,6 +172,10 @@ async function app_start() {
   canvas_element.onmousemove = on_mouse_move;
   canvas_element.onkeydown = on_key_down; // the key events only work if the html canvas has a tabindex
   canvas_element.onkeyup = on_key_up;
+  canvas_element.touchstart = on_touch_start;
+  canvas_element.touchmove = on_touch_move;
+  canvas_element.touchcancel = on_touch_cancel;
+  canvas_element.touchend = on_touch_end;
   canvas_element.focus();
   const canvas = canvas_element.getContext("2d");
   original_filter = canvas.filter;
@@ -177,6 +220,11 @@ function app_draw() {
     if(gamepad.start && gamepad.n_start) this.paused = !this.paused;
   }
   
+  let touch_left = false, touch_right = false;
+  for (const [key, value] of touches_x) {
+    if(value < width/2) touch_left = true;
+    if(value > width/2) touch_right = true;
+  }
   let ship_left = key_a || key_j || key_left || (mouse_held && mouse_x < width / 2) || gamepad.left || gamepad.left_shoulder || gamepad.lx < -dead_zone || gamepad.rx < -dead_zone || gamepad.left_trigger > dead_zone;
   let ship_right = key_d || key_l || key_right || (mouse_held && mouse_x > width / 2) || gamepad.right || gamepad.right_shoulder || gamepad.lx > dead_zone || gamepad.rx > dead_zone || gamepad.right_trigger > dead_zone;
 
