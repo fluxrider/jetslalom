@@ -165,7 +165,9 @@ function app_draw() {
         
   // text overlay
   canvas.filter = original_filter; canvas.scale(.25,.25);
-  canvas.font = "48px serif";
+  let font_size = Math.round(height / 15);
+  canvas.font = Math.round(font_size * .6) + "px serif"; sfm = canvas.measureText("font metrics");
+  canvas.font = font_size + "px serif";
   canvas.fillStyle = "rgb(255 255 255)";
 
   // const fm = canvas.measureText(msg); width fontBoundingBoxAscent fontBoundingBoxDescent actualBoundingBoxAscent actualBoundingBoxDescent
@@ -179,7 +181,6 @@ function app_draw() {
   if(game.contNum > 0) canvas.fillText(penalty, offset, score_fm.fontBoundingBoxAscent);
   
   if(game.title_mode) {
-    sfm = fm; // tmp?
     line_h = fm.fontBoundingBoxAscent + fm.fontBoundingBoxDescent; small_line_h = sfm.fontBoundingBoxAscent + sfm.fontBoundingBoxDescent;
     spacing = 3, small_spacing = 2;
     n = 4, small_n = 3 + (gamepad.available? 4 : 0);
@@ -190,7 +191,7 @@ function app_draw() {
     msg = "by David Lareau in 2025"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += line_h + spacing;
     msg = "github.com/fluxrider/jetslalom"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += line_h + spacing;
     msg = "Original 1997 version by MR-C"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += line_h + spacing;
-    // pt.setTextSize(font_size_small);
+    canvas.font = Math.round(font_size * .6) + "px serif";
     msg = "-- Touch --"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing;
     msg = "Ship(L/R side of screen)"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing;
     msg = "Restart(L side tap), Continue(R side tap)"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing;
@@ -202,7 +203,7 @@ function app_draw() {
     }
   }
   if(this.paused) {
-    //pt.setTextSize(font_size);
+    canvas.font = font_size + "px serif";
     canvas.fillStyle = "rgb(255 0 0)";
     offset = height * (currentTimeMillis() % 10000) / 10000.0;
     msg = "Paused"; fm = canvas.measureText(msg); canvas.drawText(msg, (width - fm.width) / 2, offset);
