@@ -43,13 +43,17 @@ var key_a = false, key_d = false;
 var key_j = false, key_l = false;
 function on_key_down(e) {
   if(e.repeat) return;
-  // key:   ArrowUp ArrowDown w s f h + - ' ' Enter c t p
   if(e.key == "ArrowLeft") key_left = true;
   if(e.key == "ArrowRight") key_right = true;
   if(e.key == "a") key_a = true;
   if(e.key == "d") key_d = true;
   if(e.key == "j") key_j = true;
   if(e.key == "l") key_l = true;
+  if(game.title_mode) {
+    if(e.key == ' ' || e.key == "Enter") game.startGame(true, false);
+    if(e.key == 'w' || e.key == "ArrowUp" || e.key == 'c') game.startGame(true, true);
+    if(e.key == 't') { game.prevScore = 110000; game.contNum = 100; game.startGame(true, true); } // some sort of cheat
+  }
 }
 function on_key_up(e) {
   if(e.key == "ArrowLeft") key_left = false;
@@ -58,6 +62,9 @@ function on_key_up(e) {
   if(e.key == "d") key_d = false;
   if(e.key == "j") key_j = false;
   if(e.key == "l") key_l = false;
+  if(e.key == 'p') paused = !paused;
+  if(e.key == '+') target_dt+=5;
+  if(e.key == '-') target_dt-=5;
 }
 
 var gamepad = {
@@ -227,7 +234,7 @@ function app_draw() {
     canvas.font = font_size + "px serif";
     canvas.fillStyle = "rgb(255 0 0)";
     offset = height * (currentTimeMillis() % 10000) / 10000.0;
-    msg = "Paused"; fm = canvas.measureText(msg); canvas.drawText(msg, (width - fm.width) / 2, offset);
+    msg = "Paused"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset);
   }
 
   // request another draw later
