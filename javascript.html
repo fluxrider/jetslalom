@@ -178,35 +178,35 @@ function app_draw() {
   canvas.fillText(score, offset, score_fm.fontBoundingBoxAscent); offset += score_w + padding;
   if(game.contNum > 0) canvas.fillText(penalty, offset, score_fm.fontBoundingBoxAscent);
   
-  /*
   if(game.title_mode) {
-    int line_h = -fm.ascent + fm.descent; int small_line_h = -sfm.ascent + sfm.descent;
-    int spacing = 3, small_spacing = 2;
-    int n = 4, small_n = 3 + (gamepad.available? 4 : 0);
+    sfm = fm; // tmp?
+    line_h = fm.fontBoundingBoxAscent + fm.fontBoundingBoxDescent; small_line_h = sfm.fontBoundingBoxAscent + sfm.fontBoundingBoxDescent;
+    spacing = 3, small_spacing = 2;
+    n = 4, small_n = 3 + (gamepad.available? 4 : 0);
     offset = (height - ((line_h + spacing) * n + (small_line_h + small_spacing) * small_n - small_spacing)) / 2;
-    offset += (-fm.ascent);
-    offset -= 15; // no matter what I do, it's not perfectly centered unless I hack this value, but of course this cannot survive resolution changes
-    { String msg = "Jet Slalom Resurrected"; canvas.fillText(msg, (width - fm.width) / 2, offset); offset += line_h + spacing; }
-    { String msg = "by David Lareau in 2025"; canvas.fillText(msg, (width - fm.width) / 2, offset); offset += line_h + spacing; }
-    { String msg = "github.com/fluxrider/jetslalom"; canvas.fillText(msg, (width - fm.width) / 2, offset); offset += line_h + spacing; }
-    { String msg = "Original 1997 version by MR-C"; canvas.fillText(msg, (width - fm.width) / 2, offset); offset += line_h + spacing; }
-    pt.setTextSize(font_size_small);
-    { String msg = "-- Touch --"; canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing; }
-    { String msg = "Ship(L/R side of screen)"; canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing; }
-    { String msg = "Restart(L side tap), Continue(R side tap)"; canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing; }
+    offset += fm.fontBoundingBoxAscent;
+    //offset -= 15; // no matter what I do, it's not perfectly centered unless I hack this value, but of course this cannot survive resolution changes
+    msg = "Jet Slalom Resurrected"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += line_h + spacing;
+    msg = "by David Lareau in 2025"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += line_h + spacing;
+    msg = "github.com/fluxrider/jetslalom"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += line_h + spacing;
+    msg = "Original 1997 version by MR-C"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += line_h + spacing;
+    // pt.setTextSize(font_size_small);
+    msg = "-- Touch --"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing;
+    msg = "Ship(L/R side of screen)"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing;
+    msg = "Restart(L side tap), Continue(R side tap)"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing;
     if(gamepad.available) {
-      { String msg = "-- Gamepad --"; canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing; }
-      { String msg = "HighRez(L3), Stretch(R3), Speed(Select+LB/RB)"; canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing; }
-      { String msg = "Re(Start/Down), Resume(A/B/X/Y/Up), Cheat(Select+Start)"; canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing; }
-      { String msg = "Pause(Start), Quit(LB+RB+Start+Select), Ship(Sticks/Dpad/Shoulders)"; canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing; }
+      msg = "-- Gamepad --"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing;
+      msg = "HighRez(L3), Stretch(R3), Speed(Select+LB/RB)"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing;
+      msg = "Re(Start/Down), Resume(A/B/X/Y/Up), Cheat(Select+Start)"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing;
+      msg = "Pause(Start), Quit(LB+RB+Start+Select), Ship(Sticks/Dpad/Shoulders)"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing;
     }
   }
   if(this.paused) {
-    pt.setTextSize(font_size);
-    pt.setColor(C.rgb(255,0,0));
-    offset = (int)(b_h * (System.currentTimeMillis() % 10000) / 10000.0);
-    { String msg = "Paused"; canvas.drawText(msg, (width - fm.width) / 2, offset); }
-  }*/
+    //pt.setTextSize(font_size);
+    canvas.fillStyle = "rgb(255 0 0)";
+    offset = height * (currentTimeMillis() % 10000) / 10000.0;
+    msg = "Paused"; fm = canvas.measureText(msg); canvas.drawText(msg, (width - fm.width) / 2, offset);
+  }
 
   // request another draw later
   if(dt > target_dt) { delay--; } // framerate too low, try faster
