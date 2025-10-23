@@ -5,17 +5,21 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Jet Slalom Resurrected</title>
+<script src="js/M.js"></script>
+<script src="js/C.js"></script>
+<script src="js/Game.js"></script>
 <script>
 function go_fullscreen() { const canvas_element = document.getElementById("canvas"); if(canvas_element.requestFullScreen) { canvas_element.requestFullScreen(); } else if(canvas_element.webkitRequestFullScreen) { canvas_element.webkitRequestFullScreen(); } else if(canvas_element.mozRequestFullScreen) { canvas_element.mozRequestFullScreen(); } canvas_element.focus(); }
 function currentTimeMillis() { var now = new Date(); return Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),  now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds()); }
-
-var ship_0, ship_1;
-const explosion = new Audio('res/explosion.wav');
+// Code from Esailija at https://stackoverflow.com/questions/11866781/how-do-i-convert-an-integer-to-a-javascript-color
+function c2css(num) { num >>>= 0; var b = num & 0xFF, g = (num & 0xFF00) >>> 8, r = (num & 0xFF0000) >>> 16, a = ( (num & 0xFF000000) >>> 24 ) / 255 ; return "rgba(" + [r, g, b, a].join(",") + ")"; }
 
 var target_dt = 55;
 var delay = target_dt;
 var t0, t1;
 var original_filter;
+var paused = false;
+var ship_animation = 0;
 
 var mouse_held = false;
 var mouse_x, mouse_y;
@@ -111,6 +115,10 @@ var gamepad = {
   }
 };
 
+var ship_0, ship_1;
+const explosion = new Audio('res/explosion.wav');
+var game = new Game();
+
 async function app_start() {
   const canvas_element = document.getElementById("canvas");
   canvas_element.onmousedown = on_mouse_down;
@@ -125,6 +133,8 @@ async function app_start() {
   // load assets
   ship_0 = new Image(); ship_0.src = "res/jiki.gif"; await ship_0.decode();
   ship_1 = new Image(); ship_1.src = "res/jiki2.gif"; await ship_1.decode();
+  
+  game.startGame(false, false);
 
   // start draw loop
   t0 = currentTimeMillis(); t1 = t0;
@@ -144,13 +154,15 @@ function app_draw() {
   let ship_left = key_a || key_j || key_left || (mouse_held && mouse_x < width / 2) || gamepad.left || gamepad.left_shoulder || gamepad.lx < -dead_zone || gamepad.rx < -dead_zone || gamepad.left_trigger > dead_zone;
   let ship_right = key_d || key_l || key_right || (mouse_held && mouse_x > width / 2) || gamepad.right || gamepad.right_shoulder || gamepad.lx > dead_zone || gamepad.rx > dead_zone || gamepad.right_trigger > dead_zone;
 
-  // tmp
-  if(gamepad.n_south) explosion.play();
-
+  if(game.title_mode && paused) paused = false;
+  if(!paused) {
+    game.tick(ship_left, ship_right);
+  }
+  
   // the svg trick to disable anti-alias of shapes does not work on an offscreen surface, so I scale the real one instead
   canvas.filter = 'url(#remove-alpha)';
   canvas.scale(4,4); draw_scene(canvas, logical_width, logical_height);
-
+        
   // text overlay
   canvas.filter = original_filter; canvas.scale(.25,.25);
   canvas.fillStyle = "rgb(0 0 0)";
@@ -168,21 +180,66 @@ function app_draw() {
   window.setTimeout(app_draw, delay);
 }
 
-function draw_scene(canvas, width, height) {
-  canvas.fillStyle = "rgb(0 196 196)";
-  canvas.fillRect(0, 0, width, height);
-
-  canvas.fillStyle = "rgb(255 0 0)";
+// draw game primitives
+function drawFace(canvas, width, height, face) {
+  let points = face.points;
+  let d1 = (points[1]).x - (points[0]).x;
+  let d2 = (points[1]).y - (points[0]).y;
+  let d3 = (points[2]).x - (points[0]).x;
+  let d4 = (points[2]).y - (points[0]).y;
+  let f = Math.abs(d1 * d4 - d2 * d3) / face.maxZ;
+  drawPolygon(canvas, width, height, C.drgb(C.fr(face.rgb)*f, C.fg(face.rgb)*f, C.fb(face.rgb)*f), points);
+}
+function drawPolygon(canvas, width, height, color, points) {
+  let d1 = width / 320.0;
+  let d2 = height / 200.0;
   canvas.beginPath();
-  canvas.moveTo(30, 20);
-  canvas.lineTo(90, 20);
-  canvas.lineTo(195, 70);
-  canvas.lineTo(15, 90);
+  for(b = 0; b < points.length; b++) {
+    let point = points[b];
+    let d3 = 120.0 / (1.0 + 0.6 * point.z);
+    let d4 = game.nowCos * point.x + game.nowSin * (point.y - 2.0);
+    let d5 = -game.nowSin * point.x + game.nowCos * (point.y - 2.0) + 2.0;
+    let x  = (d4 * d1 * d3) + width / 2;
+    let y = (d5 * d2 * d3) + height / 2;
+    if(b == 0) canvas.moveTo(x,y);
+    else canvas.lineTo(x,y);
+  }
   canvas.closePath();
+  canvas.fillStyle = c2css(color);
   canvas.fill();
+}
+function draw_obstacle(canvas, width, height, o) {
+  drawFace(canvas, width, height, o.faces[0]);
+  drawFace(canvas, width, height, o.faces[1]);
+}
 
-  canvas.drawImage(ship_0, (width - ship_0.width)/2, (height - ship_0.height) / 2);
-  canvas.drawImage(ship_0, (width - 2*ship_0.width)/2, (height - 2*ship_0.height), 2*ship_0.width, 2*ship_0.height);
+
+function draw_scene(canvas, width, height) {
+  canvas.fillStyle = c2css(game.rounds[game.round].getSkyRGB());
+  canvas.fillRect(0, 0, width, height);
+  drawPolygon(canvas, width, height, game.rounds[game.round].getGroundRGB(), game.ground_points);
+  for(i = 0; i < game.obstacles.length; i++) draw_obstacle(canvas, width, height, game.obstacles[i]);
+  ship_animation++;
+  if(!game.title_mode) {
+    let y = 24 * height / 200;
+    image = this.ship_animation % 4 > 1? ship_1 : ship_0;
+    if(ship_animation % 12 > 6) y = 22 * height / 200;
+    if(game.score < 200) y = (12 + game.score / 20) * height / 200;
+    let image_scale = (int)(width * 0.7 * 120 / 1.6 / 320); let ship_w = image_scale * 2; let ship_h = image_scale / 4;
+    let ship_x = (width / 2) - ship_w/2, ship_y = height - y;
+    if(game.damaged < 10) canvas.drawImage(image, ship_x, ship_y, ship_w, ship_h);
+    if(game.damaged > 0) {
+      if(game.damaged <= 20) {
+        if(game.damaged == 1) { explosion.play(); }
+        canvas.fillStyle = c2css(C.rgb(255, 255 - game.damaged * 12, 240 - game.damaged * 12));
+        let i = game.damaged * 8 * width / 320;
+        let j = game.damaged * 4 * height / 200;
+        let left = (width / 2) - i;
+        let top = 186 * height / 200 - j;
+        // TODO this.scene_c.drawOval(left, top, left + i * 2, top + j * 2, p);
+      }
+    }
+  }
 }
 
 </script>
