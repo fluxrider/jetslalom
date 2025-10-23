@@ -16,28 +16,41 @@ It didn't compile, and had commented bytecode sections. This is me getting it to
 
 ## State
 
-- It compiles and is playable on JDK 25.0.1
-- Heck, I've ported it to Android too, so you can play either on desktop or mobile.
+- The game is available in Desktop, Mobile and the Web.
+- The Java version compiles and is playable on JDK 25.0.1
+- The Android port currently requires Android 16 (which was released on 2025-06-10).
 - I've added a few features.
+  - Fullscreen.
+  - Regulated framerate.
+  - Game speed control.
   - Gamepad Support.
-  - Fullscreen, Stretch or Letterbox.
-  - Toggle higher resolution rendering.
-  - Regulate framerate.
-  - Modify game speed.
-  - Command Line Arguments: 'stretch' 'fullscreen' 'hq' 'period 30'
+  - Some features are not available on all ports:
+    - Stretch or Letterbox.
+    - Toggle higher resolution rendering.
+    - Command Line Arguments: 'stretch' 'fullscreen' 'hq' 'period 55'
 - I have removed features that were broken when I got there.
   - Applet.
   - High Scores.
   - Fast Forward Button (use to be 'A').
 - Codewise, I have removed/rewritten a lot of code.
-  - It started with 18 files 2000 lines, and now it's 5 files 800 lines (not including Android.java).
+  - It started with 18 files 2000 lines, and now it's 5 files 800 lines (in the Desktop version including all new features).
   - There are still some vestige of decompilation.
   - My personal coding style is offensive to most because I'm a disabled hermit.
   - I've done changes that alter a bit the math to my taste, so if you wanted maximum fidelity this ain't it, but it's close enough.
 
 ### Future Work
 
-- Web Browser version somehow. How low did Java fall? Applet and JavaWebStart are both dead. Wikipedia encourages me to look into IcedTea-Web. What the hell is that?
+- Lower the supported Android OS version.
+- After restoring the code for desktop, then porting for mobile and the web, I feel like none of these will survive the test of time. They are all guilty of breaking user space.
+  - Java let Applet and JWS die.
+  - Android
+    - Refuses to install apk build for versions of the OS considered too old.
+    - Google is pushing for disabling side loading.
+    - Even if an old apk installs, it is poorly handled (e.g. old apps have the square icon drawn as a tiny square inside a circle).
+    - Weird new standard like a camera hole sitting in the middle of the screen have non-future proof APIs (e.g. I expected a list of small occupied regions, but instead the OS gives me a single safe zone, not telling me at all where the camera hole is).
+  - Web Browsers add rules, usually for privacy and security reasons, that affect games (e.g. gamepad only shows up if you use it, sound only plays if you've interacted with the page or agreed to let the page play sound).
+    - Gamepads are not mapped correctly after 10 years the standard was implemented in Firefox (e.g. my triggers don't work). Only SDL/Steam does this well and keeps it up to date.
+- The actual jet slalom game logic is quite small, so a C/SDL3 port is probably the most likely to survive the test of time. But SDL3 is not fully stable (e.g. SDL_Mixer requires a version higher than the official release).
 
 ### Known Issue
 
@@ -49,6 +62,8 @@ It didn't compile, and had commented bytecode sections. This is me getting it to
   - I can't figure how to detect when the navigation (i.e. 3 button overlay) or status bar (i.e. clock, battery) overlays show up. I would love to pause when this happens. I tried 3 different ways to no avail.
 
 ### How to run the release files
+
+The web version is the already up at: https://fluxrider.github.io/projects/slalom/javascript.html
 
 The jar file is the simplest possible, which sadly still requires command line 101, and an intuition that when I write 'version' in the filename, it's not verbatim.
 ```
