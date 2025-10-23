@@ -108,7 +108,7 @@ var gamepad = {
       }
     }
     this.n_start = this.start != this.n_start; this.n_select = this.select != this.n_select;
-    this.n_south_maybe = this.south_maybe != this.n_south_maybe; this.n_north_maybe = this.north_maybe != this.n_north_maybe; this.n_west_maybe = this.west_maybe != this.n_west_maybe; this.n_east_maybe = this.east_maybe != this.n_east_maybe;
+    this.n_south = this.south != this.n_south; this.n_north = this.north != this.n_north; this.n_west = this.west != this.n_west; this.n_east = this.east != this.n_east;
     this.n_up = this.up != this.n_up; this.n_down = this.down != this.n_down; this.n_left = this.left != this.n_left; this.n_right = this.right != this.n_right;
     this.n_left_shoulder = this.left_shoulder != this.n_left_shoulder; this.n_right_shoulder = this.right_shoulder != this.n_right_shoulder;
     this.n_l3 = this.l3 != this.n_l3; this.n_r3 = this.r3 != this.n_r3;
@@ -151,6 +151,25 @@ function app_draw() {
 
   // input
   gamepad.poll(); let dead_zone = .05;
+  // advanced system commands
+  if(gamepad.select) {
+    if(gamepad.left_shoulder && gamepad.n_left_shoulder) this.target_dt-=5;
+    if(gamepad.right_shoulder && gamepad.n_right_shoulder) this.target_dt+=5;
+  }
+  // title command
+  if(game.title_mode) {
+    if((gamepad.south && gamepad.n_south) || (gamepad.north && gamepad.n_north) || (gamepad.west && gamepad.n_west) || (gamepad.east && gamepad.n_east) || (gamepad.up && gamepad.n_up)) game.startGame(true, true); // continue
+    if(gamepad.select) {
+      if(gamepad.start && gamepad.n_start) { game.prevScore = 110000; game.contNum = 100; game.startGame(true, true); } // some sort of cheat
+    } else {
+      if((gamepad.start && gamepad.n_start) || (gamepad.down && gamepad.n_down)) game.startGame(true, false); // restart
+    }
+  }
+  // play command
+  else {
+    if(gamepad.start && gamepad.n_start) this.paused = !this.paused;
+  }
+  
   let ship_left = key_a || key_j || key_left || (mouse_held && mouse_x < width / 2) || gamepad.left || gamepad.left_shoulder || gamepad.lx < -dead_zone || gamepad.rx < -dead_zone || gamepad.left_trigger > dead_zone;
   let ship_right = key_d || key_l || key_right || (mouse_held && mouse_x > width / 2) || gamepad.right || gamepad.right_shoulder || gamepad.lx > dead_zone || gamepad.rx > dead_zone || gamepad.right_trigger > dead_zone;
 
@@ -165,7 +184,7 @@ function app_draw() {
         
   // text overlay
   canvas.filter = original_filter; canvas.scale(.25,.25);
-  let font_size = Math.round(height / 15);
+  let font_size = Math.round(height / 20);
   canvas.font = Math.round(font_size * .6) + "px serif"; sfm = canvas.measureText("font metrics");
   canvas.font = font_size + "px serif";
   canvas.fillStyle = "rgb(255 255 255)";
@@ -183,7 +202,7 @@ function app_draw() {
   if(game.title_mode) {
     line_h = fm.fontBoundingBoxAscent + fm.fontBoundingBoxDescent; small_line_h = sfm.fontBoundingBoxAscent + sfm.fontBoundingBoxDescent;
     spacing = 3, small_spacing = 2;
-    n = 4, small_n = 3 + (gamepad.available? 4 : 0);
+    n = 4, small_n = 6 + (gamepad.available? 3 : 0);
     offset = (height - ((line_h + spacing) * n + (small_line_h + small_spacing) * small_n - small_spacing)) / 2;
     offset += fm.fontBoundingBoxAscent;
     offset -= 15; // no matter what I do, it's not perfectly centered unless I hack this value, but of course this cannot survive resolution changes
@@ -192,14 +211,16 @@ function app_draw() {
     msg = "github.com/fluxrider/jetslalom"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += line_h + spacing;
     msg = "Original 1997 version by MR-C"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += line_h + spacing;
     canvas.font = Math.round(font_size * .6) + "px serif";
-    msg = "-- Touch --"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing;
+    msg = "-- Keyboard --"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing;
+    msg = "Restart(Spacebar/Enter), (C)ontinue(up/W), Chea(T)"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing;
+    msg = "(P)ause, Speed(+/-), Ship(Left/Right/A/D/J/L)"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing;
+    msg = "-- Mouse --"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing;
     msg = "Ship(L/R side of screen)"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing;
     msg = "Restart(L side tap), Continue(R side tap)"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing;
     if(gamepad.available) {
       msg = "-- Gamepad --"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing;
-      msg = "HighRez(L3), Stretch(R3), Speed(Select+LB/RB)"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing;
       msg = "Re(Start/Down), Resume(A/B/X/Y/Up), Cheat(Select+Start)"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing;
-      msg = "Pause(Start), Quit(LB+RB+Start+Select), Ship(Sticks/Dpad/Shoulders)"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing;
+      msg = "Pause(Start), Ship(Sticks/Dpad/Shoulders), Speed(Select+LB/RB)"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing;
     }
   }
   if(this.paused) {
@@ -260,7 +281,7 @@ function draw_scene(canvas, width, height) {
     image = this.ship_animation % 4 > 1? ship_1 : ship_0;
     if(ship_animation % 12 > 6) y = 22 * height / 200;
     if(game.score < 200) y = (12 + game.score / 20) * height / 200;
-    let image_scale = (int)(width * 0.7 * 120 / 1.6 / 320); let ship_w = image_scale * 2; let ship_h = image_scale / 4;
+    let image_scale = width * 0.7 * 120 / 1.6 / 320; let ship_w = image_scale * 2; let ship_h = image_scale / 4;
     let ship_x = (width / 2) - ship_w/2, ship_y = height - y;
     if(game.damaged < 10) canvas.drawImage(image, ship_x, ship_y, ship_w, ship_h);
     if(game.damaged > 0) {
