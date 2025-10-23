@@ -106,7 +106,7 @@ class RoundManager {
   }
 
   createObstacleDefault() {
-    return this.createObstacle(M.drand(-16.0, 16.0), 0.6);
+    return this.createObstacle(M.drand_range(-16.0, 16.0), 0.6);
   }
 
   isNextRound(score) {
@@ -183,7 +183,7 @@ class RoadRound extends RoundManager {
 
     if (this.isBrokenRoad && this.roadCounter % 13 < 7) {
       d1 = 0.7;
-      d2 = M.drand(-16.0, 16.0);
+      d2 = M.drand_range(-16.0, 16.0);
       if (d2 < this.OX2 && d2 > this.OX1) {
         d1 = 1.2;
         if (M.coin()) {
@@ -211,7 +211,7 @@ class RoadRound extends RoundManager {
     } else {
       if (this.roadCounter < 0) {
         this.direction = -this.direction;
-        this.roadCounter += 2 * M.rand(4, 11);
+        this.roadCounter += 2 * M.rand_range(4, 11);
       }
       if (this.direction > 0) {
         this.OVX += 0.125;

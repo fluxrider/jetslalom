@@ -14,12 +14,12 @@ const M = (() => {
   }
 
   // [min, max]
-  function randRange(min, max) {
+  function rand_range(min, max) {
     if (min > max) throw new Error(`min > max (${min} > ${max})`);
     return min + (rand() % (max - min + 1));
   }
 
-  function drandRange(min, max) {
+  function drand_range(min, max) {
     if (min > max) throw new Error(`min > max (${min} > ${max})`);
     if (min === max) return min;
     let r = drand();
@@ -38,29 +38,29 @@ const M = (() => {
     return Math.random() < 0.5;
   }
   function d4() {
-    return randRange(1, 4);
+    return rand_range(1, 4);
   }
   function d6() {
-    return randRange(1, 6);
+    return rand_range(1, 6);
   }
   function d8() {
-    return randRange(1, 8);
+    return rand_range(1, 8);
   }
   function d12() {
-    return randRange(1, 12);
+    return rand_range(1, 12);
   }
   function d20() {
-    return randRange(1, 20);
+    return rand_range(1, 20);
   }
   function d(faces) {
-    return randRange(1, faces);
+    return rand_range(1, faces);
   }
 
   // array utils
   function rand_index(length) {
-    return randRange(0, length - 1);
+    return rand_range(0, length - 1);
   }
-  function randFromArray(arr) {
+  function rand_from_array(arr) {
     return arr[rand_index(arr.length)];
   }
 
@@ -68,8 +68,8 @@ const M = (() => {
     sqrt2,
     rand,
     drand,
-    randRange,
-    drandRange,
+    rand_range,
+    drand_range,
     coin,
     d4,
     d6,
@@ -78,6 +78,6 @@ const M = (() => {
     d20,
     d,
     rand_index,
-    rand: randFromArray,
+    rand_from_array,
   };
 })();
