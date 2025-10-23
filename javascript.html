@@ -186,7 +186,7 @@ function app_draw() {
     n = 4, small_n = 3 + (gamepad.available? 4 : 0);
     offset = (height - ((line_h + spacing) * n + (small_line_h + small_spacing) * small_n - small_spacing)) / 2;
     offset += fm.fontBoundingBoxAscent;
-    //offset -= 15; // no matter what I do, it's not perfectly centered unless I hack this value, but of course this cannot survive resolution changes
+    offset -= 15; // no matter what I do, it's not perfectly centered unless I hack this value, but of course this cannot survive resolution changes
     msg = "Jet Slalom Resurrected"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += line_h + spacing;
     msg = "by David Lareau in 2025"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += line_h + spacing;
     msg = "github.com/fluxrider/jetslalom"; fm = canvas.measureText(msg); canvas.fillText(msg, (width - fm.width) / 2, offset); offset += line_h + spacing;
