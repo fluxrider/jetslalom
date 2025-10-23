@@ -171,41 +171,41 @@ function app_draw() {
   // const fm = canvas.measureText(msg); width fontBoundingBoxAscent fontBoundingBoxDescent actualBoundingBoxAscent actualBoundingBoxDescent
   msg = `Your Hi-score:${game.hiscore}`; fm = canvas.measureText(msg); canvas.fillText(msg, 2*fm.fontBoundingBoxDescent/3, height - fm.fontBoundingBoxDescent);
   msg = `Period: ${target_dt}ms (${dt}ms)`; fm = canvas.measureText(msg); canvas.fillText(msg, width - 2*fm.fontBoundingBoxDescent/3 - fm.width, height - fm.fontBoundingBoxDescent);
+
+  score = "Score:" + game.score; score_fm = canvas.measureText(score);
+  penalty = "Continue penalty:" + game.contNum * 1000; penalty_fm = canvas.measureText(penalty);
+  score_w = score_fm.width; penalty_w = penalty_fm.width; padding = width / 10; total_w = game.contNum > 0? score_w + padding + penalty_w : score_w; offset = (width - total_w) / 2;
+  canvas.fillText(score, offset, score_fm.fontBoundingBoxAscent); offset += score_w + padding;
+  if(game.contNum > 0) canvas.fillText(penalty, offset, score_fm.fontBoundingBoxAscent);
   
   /*
-  { String msg = String.format("Period: %dms (%dms)", this.target_dt, this.dt); canvas.drawText(msg, b_w - 2*fm.descent/3 - (int)pt.measureText(msg), b_h - fm.descent, pt); }
-  String score = "Score:" + game.score;
-  String penalty = "Continue penalty:" + game.contNum * 1000;
-  int score_w = (int)pt.measureText(score); int penalty_w = (int)pt.measureText(penalty); int padding = b_w / 10; int total_w = game.contNum > 0? score_w + padding + penalty_w : score_w; int offset = (b_w - total_w) / 2;
-  canvas.drawText(score, offset, safe_top_y + (-fm.ascent), pt); offset += score_w + padding;
-  if(game.contNum > 0) canvas.drawText(penalty, offset, safe_top_y + (-fm.ascent), pt);
   if(game.title_mode) {
     int line_h = -fm.ascent + fm.descent; int small_line_h = -sfm.ascent + sfm.descent;
     int spacing = 3, small_spacing = 2;
     int n = 4, small_n = 3 + (gamepad.available? 4 : 0);
-    offset = (b_h - ((line_h + spacing) * n + (small_line_h + small_spacing) * small_n - small_spacing)) / 2;
+    offset = (height - ((line_h + spacing) * n + (small_line_h + small_spacing) * small_n - small_spacing)) / 2;
     offset += (-fm.ascent);
     offset -= 15; // no matter what I do, it's not perfectly centered unless I hack this value, but of course this cannot survive resolution changes
-    { String msg = "Jet Slalom Resurrected"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += line_h + spacing; }
-    { String msg = "by David Lareau in 2025"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += line_h + spacing; }
-    { String msg = "github.com/fluxrider/jetslalom"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += line_h + spacing; }
-    { String msg = "Original 1997 version by MR-C"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += line_h + spacing; }
+    { String msg = "Jet Slalom Resurrected"; canvas.fillText(msg, (width - fm.width) / 2, offset); offset += line_h + spacing; }
+    { String msg = "by David Lareau in 2025"; canvas.fillText(msg, (width - fm.width) / 2, offset); offset += line_h + spacing; }
+    { String msg = "github.com/fluxrider/jetslalom"; canvas.fillText(msg, (width - fm.width) / 2, offset); offset += line_h + spacing; }
+    { String msg = "Original 1997 version by MR-C"; canvas.fillText(msg, (width - fm.width) / 2, offset); offset += line_h + spacing; }
     pt.setTextSize(font_size_small);
-    { String msg = "-- Touch --"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += small_line_h + small_spacing; }
-    { String msg = "Ship(L/R side of screen)"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += small_line_h + small_spacing; }
-    { String msg = "Restart(L side tap), Continue(R side tap)"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += small_line_h + small_spacing; }
+    { String msg = "-- Touch --"; canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing; }
+    { String msg = "Ship(L/R side of screen)"; canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing; }
+    { String msg = "Restart(L side tap), Continue(R side tap)"; canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing; }
     if(gamepad.available) {
-      { String msg = "-- Gamepad --"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += small_line_h + small_spacing; }
-      { String msg = "HighRez(L3), Stretch(R3), Speed(Select+LB/RB)"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += small_line_h + small_spacing; }
-      { String msg = "Re(Start/Down), Resume(A/B/X/Y/Up), Cheat(Select+Start)"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += small_line_h + small_spacing; }
-      { String msg = "Pause(Start), Quit(LB+RB+Start+Select), Ship(Sticks/Dpad/Shoulders)"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); offset += small_line_h + small_spacing; }
+      { String msg = "-- Gamepad --"; canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing; }
+      { String msg = "HighRez(L3), Stretch(R3), Speed(Select+LB/RB)"; canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing; }
+      { String msg = "Re(Start/Down), Resume(A/B/X/Y/Up), Cheat(Select+Start)"; canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing; }
+      { String msg = "Pause(Start), Quit(LB+RB+Start+Select), Ship(Sticks/Dpad/Shoulders)"; canvas.fillText(msg, (width - fm.width) / 2, offset); offset += small_line_h + small_spacing; }
     }
   }
   if(this.paused) {
     pt.setTextSize(font_size);
     pt.setColor(C.rgb(255,0,0));
     offset = (int)(b_h * (System.currentTimeMillis() % 10000) / 10000.0);
-    { String msg = "Paused"; int line_w = (int)pt.measureText(msg); canvas.drawText(msg, (b_w - line_w) / 2, offset, pt); }
+    { String msg = "Paused"; canvas.drawText(msg, (width - fm.width) / 2, offset); }
   }*/
 
   // request another draw later
