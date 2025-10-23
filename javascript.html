@@ -297,9 +297,7 @@ function draw_scene(canvas, width, height) {
         canvas.fillStyle = c2css(C.rgb(255, 255 - game.damaged * 12, 240 - game.damaged * 12));
         let i = game.damaged * 8 * width / 320;
         let j = game.damaged * 4 * height / 200;
-        let left = (width / 2) - i;
-        let top = 186 * height / 200 - j;
-        // TODO this.scene_c.drawOval(left, top, left + i * 2, top + j * 2, p);
+        canvas.ellipse(width/2, 186 * height / 200, i*2, j*2, 0, 0, Math.PI*2); canvas.fill();
       }
     }
   }
