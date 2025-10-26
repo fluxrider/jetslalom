@@ -54,12 +54,17 @@ It didn't compile, and had commented bytecode sections. This is me getting it to
 
 ### Known Issue
 
-- JInput, the external library I use for gamepad support, requires the gamepad to be plugged before the app starts. I've only tested on Linux.
-- The world of desktop scaling, 2K, 4K, and upscaling is a mess.
-  - When the app was using AWT widgets, it required `-Dsun.java2d.uiScale.enabled=true -Dsun.java2d.uiScale=2 -Djava.awt.headless=false` to look good.
-  - I've replaced the widgets with drawString to make the app more portable and simpler, but I still suspect there are problems depending of your environment, and getting the Font to look good is now a chore.
+- Desktop
+  - JInput, the external library I use for gamepad support, requires the gamepad to be plugged before the app starts. I've only tested on Linux.
+  - The world of desktop scaling, 2K, 4K, and upscaling is a mess.
+    - When the app was using AWT widgets, it required `-Dsun.java2d.uiScale.enabled=true -Dsun.java2d.uiScale=2 -Djava.awt.headless=false` to look good.
+    - I've replaced the widgets with drawString to make the app more portable and simpler, but I still suspect there are problems depending of your environment, and getting the Font to look good is now a chore.
 - Android
   - I can't figure how to detect when the navigation (i.e. 3 button overlay) or status bar (i.e. clock, battery) overlays show up. I would love to pause when this happens. I tried 3 different ways to no avail.
+- Web
+  - The web port sadly renders at high resolution, similar to the HQ toggle of the other versions. I prefer playing at the original 320x200 but the ttf font would look horrible. All other versions have an offscreen buffer at 320x200 scaled up, with high rez font overlay.
+  - There is an OffscreenCanvas I could use, but the problem is that the canvas draws shapes with anti-alias. I found a complex svg trick workaround but it onyl works on on-screen-canvas.
+  - If I cared enough, I'd either have a bitmap font for the web that looks good in low rez, or a weird hacky second on-screen canvas next to the final one.
 
 ### How to run the release files
 
